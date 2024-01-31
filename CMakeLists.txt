@@ -1,6 +1,6 @@
-# Copyright Eleven Engineering 2015
+# Copyright University of Alberta 2024
 # Author: Isaac Joffe <ijoffe@ualberta.ca>
-# License: GPLv3
+# License: CC-BY-4.0
 
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type...")
 set(SXC_CROSS_COMPILE ON)
