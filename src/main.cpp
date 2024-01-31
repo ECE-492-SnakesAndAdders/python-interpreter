@@ -29,22 +29,16 @@
  * \return 0 on success, an error number on failure.
  */
 uint16_t read(char ** input_ptr) {
-    // buffer to read in characters from the keyboard
-    char input_text[MAX_INPUT_LEN] = "";
     // prompt user for command
     xpd_puts(">>> ");
     // read characters until 'enter' key is hit or buffer is full
     for (uint16_t i = 0; i < MAX_INPUT_LEN - 1; i++) {
-        input_text[i] = (char) xpd_getchar();
-        if ((input_text[i] == '\n') || (i == MAX_INPUT_LEN - 2)) {
+        *(*input_ptr + i) = (char) xpd_getchar();
+        if ((*(*input_ptr + i) == '\n') || (i == MAX_INPUT_LEN - 2)) {
             // add NULL terminator character after 'enter' key or final slot
-            input_text[i + 1] = '\0';
+            *(*input_ptr + i + 1) = '\0';
             break;
         }
-    }
-    // transfer this complete buffer into the pointer passed in so data can be recovered
-    for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
-        *(*input_ptr + i) = input_text[i];
     }
     return 0;
 }
@@ -57,19 +51,13 @@ uint16_t read(char ** input_ptr) {
  * \return 0 on success, an error number on failure.
  */
 uint16_t eval(char ** input_ptr, char ** output_ptr) {
-    // buffer to store the input to be evaluated
-    char input_text[MAX_INPUT_LEN] = "";
-    for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
-        input_text[i] =  *(*input_ptr + i);
-    }
-
     // temporary implementation; pass input to output for printing to test pipeline
     uint16_t LEN = MAX_INPUT_LEN;
     if (MAX_INPUT_LEN > MAX_OUTPUT_LEN) {
         LEN = MAX_OUTPUT_LEN;
     }
     for (uint16_t i = 0; i < LEN; i++) {
-        *(*output_ptr + i) = *(*output_ptr + i);
+        *(*output_ptr + i) = *(*input_ptr + i);
     }
     return 0;
 }
