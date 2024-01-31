@@ -29,18 +29,22 @@
  * \return 0 on success, an error number on failure.
  */
 uint16_t read(char ** input_ptr) {
-    char* input_text = *input_ptr;
+    // buffer to read in characters from the keyboard
+    char input_text[MAX_INPUT_LEN] = "";
+    // prompt user for command
     xpd_puts(">>> ");
-    xpd_puts("READ\n");
-    // read characters until 'enter' key is hit
-    for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
+    // read characters until 'enter' key is hit or buffer is full
+    for (uint16_t i = 0; i < MAX_INPUT_LEN - 1; i++) {
         input_text[i] = (char) xpd_getchar();
-        xpd_putc(input_text[i]);
-        xpd_putc('\n');
-        if ((input_text[i] == 10) || (i == MAX_INPUT_LEN - 1)) {
-            // reassign 'enter' key or final slot to NULL terminator character
-            input_text[i] = '\0';
+        if ((input_text[i] == '\n') || (i == MAX_INPUT_LEN - 2)) {
+            // add NULL terminator character after 'enter' key or final slot
+            input_text[i + 1] = '\0';
+            break;
         }
+    }
+    // transfer this complete buffer into the pointer passed in so data can be recovered
+    for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
+        *(*input_ptr + i) = input_text[i];
     }
     return 0;
 }
@@ -53,16 +57,19 @@ uint16_t read(char ** input_ptr) {
  * \return 0 on success, an error number on failure.
  */
 uint16_t eval(char ** input_ptr, char ** output_ptr) {
-    xpd_puts("EVAL\n");
-    char* input_text = *input_ptr;
-    char* output_text = *output_ptr;
+    // buffer to store the input to be evaluated
+    char input_text[MAX_INPUT_LEN] = "";
+    for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
+        input_text[i] =  *(*input_ptr + i);
+    }
+
     // temporary implementation; pass input to output for printing to test pipeline
     uint16_t LEN = MAX_INPUT_LEN;
     if (MAX_INPUT_LEN > MAX_OUTPUT_LEN) {
         LEN = MAX_OUTPUT_LEN;
     }
     for (uint16_t i = 0; i < LEN; i++) {
-        output_text[i] = input_text[i];
+        *(*output_ptr + i) = *(*output_ptr + i);
     }
     return 0;
 }
@@ -74,9 +81,8 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
  * \return 0 on success, an error number on failure.
  */
 uint16_t print(char ** output_ptr) {
-    xpd_puts("PRINT\n");
-    char* output_text = *output_ptr;
-    xpd_puts(output_text);
+    // print the output string received
+    xpd_puts(*output_ptr);
     return 0;
 }
 
@@ -86,14 +92,14 @@ uint16_t print(char ** output_ptr) {
  * \return 0 on success, another integer on failure.
  */
 int main() {
-    xpd_puts("Welcome to Python on the C3 board.\n");
+    xpd_puts("\nWelcome to Python on the C3 board.\n");
 
     // stores the input command received
     char input[MAX_INPUT_LEN] = "";
-    char ** input_ptr = (char **) &input;
+    char * input_ptr = (char *) input;
     // stores the output to be printed
     char output[MAX_OUTPUT_LEN] = "";
-    char ** output_ptr = (char **) &output;
+    char * output_ptr = (char *) output;
 
     uint16_t return_code = 0;
     // REPL: Read-Eval-Print-Loop
@@ -102,7 +108,7 @@ int main() {
         memclear(output, MAX_OUTPUT_LEN);
 
         // read in user input (command / code)
-        if ((return_code = read(input_ptr))) {
+        if ((return_code = read(&input_ptr))) {
             xpd_puts("FATAL: error ");
             xpd_echo_int(return_code, XPD_Flag_UnsignedDecimal);
             xpd_puts(" in read()\n");
@@ -110,7 +116,7 @@ int main() {
         }
 
         // evaluate and execute input received
-        if ((return_code = eval(input_ptr, output_ptr))) {
+        if ((return_code = eval(&input_ptr, &output_ptr))) {
             xpd_puts("FATAL: error ");
             xpd_echo_int(return_code, XPD_Flag_UnsignedDecimal);
             xpd_puts(" in eval()\n");
@@ -118,7 +124,7 @@ int main() {
         }
         
         // display the correct output from this input
-        if ((return_code = print(output_ptr))) {
+        if ((return_code = print(&output_ptr))) {
             xpd_puts("FATAL: error ");
             xpd_echo_int(return_code, XPD_Flag_UnsignedDecimal);
             xpd_puts(" in print()\n");
