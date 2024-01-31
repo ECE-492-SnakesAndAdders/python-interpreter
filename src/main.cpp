@@ -29,6 +29,7 @@
  * \return 0 on success, an error number on failure.
  */
 uint16_t read(char ** input_text) {
+    xpd_puts(">>> ");
     // read characters until 'enter' key is hit
     for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
         input_text[i] = (char) xpd_getchar();
