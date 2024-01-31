@@ -1,8 +1,17 @@
+/*********************************************************************************
+* Description: Main executable file for the Python interpreter
+* Author(s): Isaac Joffe
+* Copyright: University of Alberta, 2024
+* License: CC-BY-4.0
+*********************************************************************************/
+
+
 #include <SystemClock.h>
 #include <XPD.h>
 #include <GPIO.h>
 #include <Thread.h>
 #include "main.h"
+#include "utility.h"
 
 
 #ifndef MAX_INPUT_LEN
@@ -19,7 +28,15 @@
  * \param [in] input_text Pointer to where to store the input received.
  * \return 0 on success, an error number on failure.
  */
-uint16_t read(uint16_t * input_text) {
+uint16_t read(char ** input_text) {
+    // read characters until 'enter' key is hit
+    for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
+        input_text[i] = (char) xpd_getchar();
+        if ((input_text[i] == 10) || (i == MAX_INPUT_LEN - 1)) {
+            // reassign 'enter' key or final slot to NULL terminator character
+            input_text[i] = '\0';
+        }
+    }
     return 0;
 }
 
@@ -30,7 +47,15 @@ uint16_t read(uint16_t * input_text) {
  * \param [in] output_text Pointer to where to store the text to be printed.
  * \return 0 on success, an error number on failure.
  */
-uint16_t eval(uint16_t * input_text, uint16_t * output_text) {
+uint16_t eval(char ** input_text, char ** output_text) {
+    // temporary implementation; pass input to output for printing to test pipeline
+    uint16_t LEN = MAX_INPUT_LEN;
+    if (MAX_INPUT_LEN > MAX_OUTPUT_LEN) {
+        LEN = MAX_OUTPUT_LEN;
+    }
+    for (uint16_t i = 0; i < LEN; i++) {
+        output_text[i] = input_text[i];
+    }
     return 0;
 }
 
@@ -40,7 +65,8 @@ uint16_t eval(uint16_t * input_text, uint16_t * output_text) {
  * \param [in] output_text Pointer to where the text to be printed is stored.
  * \return 0 on success, an error number on failure.
  */
-uint16_t print(uint16_t * output_text) {
+uint16_t print(char ** output_text) {
+    xpd_puts(output_text);
     return 0;
 }
 
@@ -52,13 +78,13 @@ uint16_t print(uint16_t * output_text) {
 int main() {
     xpd_puts("Hello, World!");
 
-    uint16_t input[MAX_INPUT_LEN] = "";
-    uint16_t output[MAX_OUTPUT_LEN] = "";
+    char input[MAX_INPUT_LEN] = {};
+    char output[MAX_OUTPUT_LEN] = {};
     uint16_t return_code = 0;
     // REPL: Read-Eval-Print-Loop
     while (true) {
-        // memset(input, NULL, sizeof(input));
-        // memset(output, NULL, sizeof(output));
+        memclear(input, MAX_INPUT_LEN);
+        memclear(output, MAX_OUTPUT_LEN);
 
         // read in user input (command / code)
         if (return_code = read(&input)) {
