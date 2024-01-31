@@ -12,10 +12,15 @@
 #include <Thread.h>
 #include "main.h"
 #include "utility.h"
+#include "lexer.h"
 
 
 #ifndef MAX_INPUT_LEN
 #define MAX_INPUT_LEN 64
+#endif
+
+#ifndef MAX_INPUT_TOKENS
+#define MAX_INPUT_TOKENS 64
 #endif
 
 #ifndef MAX_OUTPUT_LEN
@@ -51,6 +56,9 @@ uint16_t read(char ** input_ptr) {
  * \return 0 on success, an error number on failure.
  */
 uint16_t eval(char ** input_ptr, char ** output_ptr) {
+    Lexer lexer(input_ptr);
+    lexemes * toks;
+    toks = lexer.scan_input();
     // temporary implementation; pass input to output for printing to test pipeline
     uint16_t LEN = MAX_INPUT_LEN;
     if (MAX_INPUT_LEN > MAX_OUTPUT_LEN) {
