@@ -14,8 +14,20 @@
 #define MAX_INPUT_TOKENS 64
 #endif
 
-#ifndef MAX_STR_LEN
-#define MAX_STR_LEN 16
+#ifndef MAX_LITS
+#define MAX_LITS 16
+#endif
+
+#ifndef MAX_LIT_LEN
+#define MAX_LIT_LEN 32
+#endif
+
+#ifndef MAX_IDENTIFIERS
+#define MAX_IDENTIFIERS 16
+#endif
+
+#ifndef MAX_IDENTIFIER_LEN
+#define MAX_IDENTIFIER_LEN 32
 #endif
 
 
@@ -80,29 +92,43 @@ class Lexer {
         char line[MAX_INPUT_LEN] = "";
         // the list of all tokens in the order they appear in the input
         lexemes tokens[MAX_INPUT_TOKENS];
+        char str_lits[MAX_LITS][MAX_LIT_LEN];
+        uint16_t num_lits[MAX_LITS];
+        char identifiers[MAX_IDENTIFIERS][MAX_IDENTIFIER_LEN];
+        // the number of non-null values of each type produced
+        uint16_t token_count = 0;
+        uint16_t str_lit_count = 0;
+        uint16_t num_lit_count = 0;
+        uint16_t identifier_count = 0;
         // the current character index being read
         uint16_t current = 0;
         // the number of non-null input characters to decode
         uint16_t length = 0;
-        // the number of non-null tokens produced
-        uint16_t token_count = 0;
 
     public:
         // basic constructor for the class
         Lexer(char ** input);
         // converts the input line into a list of tokens
-        lexemes * scan_input();
+        void scan_input();
         // main logic of the lexer; maps charcters to tokens
         void scan_next_token();
-        // adds a token to the end of the token list
+        // adds a value to the end of that value's list
         void add_token(lexemes token);
+        void add_str_lit(char * str_lit);
+        void add_num_lit(uint16_t num_lit);
+        void add_identifier(char * identifier);
         // checks if the next character in the input matches a certain value
         bool next_matches(char character);
         // parses a literal's value
         void match_string(char terminator, char ** output_ptr);
         void match_number(uint16_t * output_ptr);
+        void match_identifier(char ** output_ptr);
+        lexemes iskeyword(char ** input_ptr);
         // helpers to replace unavailable library functions
         bool isdigit(char character);
+        bool isalpha(char character);
+        bool isalphanumeric(char character);
+        bool strcmp(const char* s1, const char* s2);
         uint16_t str_to_int(char ** num_str);
         // checks if there are any more characters to be read
         bool end_reached();

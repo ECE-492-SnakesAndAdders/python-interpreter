@@ -57,8 +57,7 @@ uint16_t read(char ** input_ptr) {
  */
 uint16_t eval(char ** input_ptr, char ** output_ptr) {
     Lexer lexer(input_ptr);
-    lexemes * toks;
-    toks = lexer.scan_input();
+    lexer.scan_input();
     // temporary implementation; pass input to output for printing to test pipeline
     uint16_t LEN = MAX_INPUT_LEN;
     if (MAX_INPUT_LEN > MAX_OUTPUT_LEN) {
