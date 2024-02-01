@@ -23,7 +23,7 @@
  * \brief The list of all possible tokens in Python.
  */
 enum lexemes {
-    // so that array is 'nullable'
+    // so that the array is 'nullable'
     EMPTY,
     // types of brackets
     L_PAREN, R_PAREN, L_BRACE, R_BRACE, L_BRACKET, R_BRACKET,
@@ -76,26 +76,34 @@ const char * const names[] = {
  */
 class Lexer {
     private:
+        // stores the input line to be lexed
         char line[MAX_INPUT_LEN] = "";
+        // the list of all tokens in the order they appear in the input
         lexemes tokens[MAX_INPUT_TOKENS];
-        uint16_t start = 0;
+        // the current character index being read
         uint16_t current = 0;
+        // the number of non-null input characters to decode
         uint16_t length = 0;
+        // the number of non-null tokens produced
         uint16_t token_count = 0;
 
     public:
         // basic constructor for the class
         Lexer(char ** input);
-        //
+        // converts the input line into a list of tokens
         lexemes * scan_input();
-        //
+        // main logic of the lexer; maps charcters to tokens
         void scan_next_token();
-        //
+        // adds a token to the end of the token list
         void add_token(lexemes token);
-        //
+        // checks if the next character in the input matches a certain value
         bool next_matches(char character);
-        //
+        // parses a literal's value
         void match_string(char terminator, char ** output_ptr);
-        //
+        void match_number(uint16_t * output_ptr);
+        // helpers to replace unavailable library functions
+        bool isdigit(char character);
+        uint16_t str_to_int(char ** num_str);
+        // checks if there are any more characters to be read
         bool end_reached();
 };
