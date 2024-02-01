@@ -7,6 +7,7 @@
 
 
 #include <XPD.h>
+#include <math.h>
 #include "lexer.h"
 
 
@@ -59,7 +60,7 @@ lexemes * Lexer::scan_input() {
  */
 void Lexer::scan_next_token() {
     // to store string and number literals
-    char str_lit[MAX_STR_LEN] = "";
+    char str_lit[MAX_LIT_LEN] = "";
     char * str_lit_ptr = (char *) str_lit;
     uint16_t num_lit = 0;
 
@@ -264,8 +265,6 @@ void Lexer::match_string(char terminator, char ** output_ptr) {
         i++;
         current++;
     }
-    // move past the terminator character
-    current++;
 }
 
 
@@ -274,26 +273,27 @@ void Lexer::match_string(char terminator, char ** output_ptr) {
  * \param [in] output_ptr Pointer to where to store the literal value.
  */
 void Lexer::match_number(uint16_t * output_ptr) {
-    char num_str[MAX_STR_LEN] = "";
+    // track the number string to be parsed
+    char num_str[MAX_LIT_LEN] = "";
     char * num_str_ptr = (char *) num_str;
+    // add all numerical characters to a cumulative string
     uint16_t i = 0;
-    xpd_puts("NUMBER STRING READ: ");
     while (isdigit(line[current])) {
-        xpd_putc(line[current]);
         *(num_str_ptr + i) = line[current];
         i++;
         current++;
     }
-    current++;
-    xpd_putc('\n');
-    xpd_puts(num_str);
+    // retreat since we looked at one more than we needed to
+    current--;
+    // convert string to integer and save into output parameter
     *output_ptr = str_to_int(&num_str_ptr);
 }
 
 
 /**
- * \brief Determines if a particular character is a numerical digit or not.
+ * \brief Determines if a particular character is a numerical digit or not, like the standard isdigit().
  * \param [in] character The character to test.
+ * \return True if the character is a digit; false otherwise.
  */
 bool Lexer::isdigit(char character) {
     return (character >= '0') && (character <= '9');
@@ -301,36 +301,21 @@ bool Lexer::isdigit(char character) {
 
 
 /**
- *
+ * \brief Converts a string of numbers to an integer, like the standard atoi().
+ * \param [in] num_str Pointer to the string to be converted.
+ * \return The numerical integer representation of the string.
  */
 uint16_t Lexer::str_to_int(char ** num_str) {
-    uint16_t cumulative_value = 0;
-    uint16_t i = MAX_STR_LEN - 1;
+    uint16_t i = MAX_LIT_LEN - 1;
     while (*(*num_str + i) == '\0') {
         i--;
     }
-    xpd_putc('\n');
-    uint16_t num_digits = i++;
-    for (; i > 0; i--) {
-        uint16_t value =  *(*num_str + i - 1) - 48;
-        uint16_t position = 10 * (num_digits - (i - 1));
-        xpd_puts("HERE: ");
-        xpd_echo_int(num_digits - (i - 1), XPD_Flag_UnsignedDecimal);
-        xpd_putc('-');
-        xpd_echo_int(value, XPD_Flag_UnsignedDecimal);
-        xpd_putc('-');
-        xpd_echo_int(cumulative_value, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
-        for (uint16_t j = 0; j < position; j++) {
-            cumulative_value = cumulative_value + value;
-        }
-        // uint16_t j = 0;
-        // while (j != 10 * (num_digits - (i - 1))) {
-        //     cumulative_value = cumulative_value + value;
-        //     j++;
-        // }
+    uint16_t value = 0;
+    for (uint16_t j = 0; j < i + 1; j++) {
+        value *= 10;
+        value += (*(*num_str + j) - 48);
     }
-    return cumulative_value;
+    return value;
 }
 
 
