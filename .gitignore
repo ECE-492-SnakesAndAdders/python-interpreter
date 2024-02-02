@@ -1,6 +1,9 @@
 # build files (executables)
 build/
 
+# for Intellisense
+.vscode/
+
 # Prerequisites
 *.d
 
