@@ -1,3 +1,6 @@
+# build files (executables)
+build/
+
 # Prerequisites
 *.d
 
