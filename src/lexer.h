@@ -124,12 +124,6 @@ class Lexer {
         void match_number(uint16_t * output_ptr);
         void match_identifier(char ** output_ptr);
         lexemes iskeyword(char ** input_ptr);
-        // helpers to replace unavailable library functions
-        bool isdigit(char character);
-        bool isalpha(char character);
-        bool isalphanumeric(char character);
-        bool strcmp(const char* s1, const char* s2);
-        uint16_t str_to_int(char ** num_str);
         // checks if there are any more characters to be read
         bool end_reached();
 };
