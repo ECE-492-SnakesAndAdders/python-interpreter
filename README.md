@@ -4,6 +4,7 @@ This repository contains the code for a Python interpreter for the XInC2 process
 
 ### Running Instructions
 
+Run ``` open_distro_window``` on your command prompt to open the MinGW terminal.
 To run this program on the C3 board, execute the following commands in the project root directory:
 
 ```
