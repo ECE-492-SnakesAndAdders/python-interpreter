@@ -17,3 +17,5 @@ sxc-xdt --hid -t --hex python-interpreter.hex
 This will flash the program to the board. After turning the board off and back on again twice, the program interpreter will start.
 
 To re-launch the interpreter, simply run `sxc-xdt --hid -t --hex python-interpreter.hex` again. To reflect changes in the code, re-run `make` first.
+
+You may have to run ```open_distro_window``` first to open the MinGW terminal.
