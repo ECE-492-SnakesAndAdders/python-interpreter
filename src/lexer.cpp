@@ -55,6 +55,8 @@ void Lexer::scan_input() {
     xpd_puts("\nPARSED INFO:\n");
     xpd_puts("Tokens: ");
     for (uint16_t i = 0; i < token_count; i++) {
+        xpd_echo_int(tokens[i], XPD_Flag_UnsignedDecimal);
+        xpd_putc(' ');
         xpd_puts(names[tokens[i]]);
         xpd_putc(',');
         xpd_putc(' ');
@@ -134,6 +136,7 @@ void Lexer::scan_next_token() {
             break;
         case '~':
             add_token(B_NOT);
+            break;
         // possible single- or double-character tokens
         case '+':
             add_token(next_matches('=') ? A_ASSIGN : PLUS);
