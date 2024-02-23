@@ -57,8 +57,8 @@ bool isalphanumeric(char character) {
 /**
  * \brief Determines if two strings are equal (look the same).
  * \param [in] s1 The first string to be compared for equality.
- * \param [in] s1 The second string to be compared for equality.
- * \return True if teh two strings are equal; false otehrwise.
+ * \param [in] s2 The second string to be compared for equality.
+ * \return True if the two strings are equal; false otehrwise.
  */
 bool strcmp(const char * s1, const char * s2) {
     // traverse down strng, ensuring it exists and checking for equality
