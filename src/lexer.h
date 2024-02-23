@@ -87,22 +87,31 @@ const char * const names[] = {
 
 
 /**
+ * \brief Holds information about a command.
+ */
+struct lexed_command {
+    // the list of all tokens and other items in the order they appear in the input
+    lexemes tokens[MAX_INPUT_TOKENS];
+    char str_lits[MAX_LITS][MAX_LIT_LEN];
+    uint16_t num_lits[MAX_LITS];
+    char identifiers[MAX_IDENTIFIERS][MAX_IDENTIFIER_LEN];
+    // the number of non-null values of each type produced
+    uint16_t token_count = 0;
+    uint16_t str_lit_count = 0;
+    uint16_t num_lit_count = 0;
+    uint16_t identifier_count = 0;
+};
+
+
+/**
  * \brief The lexer of the interpreter; it takes a string as input and a list of tokens as output.
  */
 class Lexer {
     private:
         // stores the input line to be lexed
         char line[MAX_INPUT_LEN] = "";
-        // the list of all tokens in the order they appear in the input
-        lexemes tokens[MAX_INPUT_TOKENS];
-        char str_lits[MAX_LITS][MAX_LIT_LEN];
-        uint16_t num_lits[MAX_LITS];
-        char identifiers[MAX_IDENTIFIERS][MAX_IDENTIFIER_LEN];
-        // the number of non-null values of each type produced
-        uint16_t token_count = 0;
-        uint16_t str_lit_count = 0;
-        uint16_t num_lit_count = 0;
-        uint16_t identifier_count = 0;
+        // information extracted about the input
+        lexed_command command_info;
         // the current character index being read
         uint16_t current = 0;
         // the number of non-null input characters to decode

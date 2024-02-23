@@ -99,8 +99,8 @@ int main() {
     uint16_t return_code = 0;
     // REPL: Read-Eval-Print-Loop
     while (true) {
-        memclear(input, MAX_INPUT_LEN);
-        memclear(output, MAX_OUTPUT_LEN);
+        memclear(input_ptr, MAX_INPUT_LEN);
+        memclear(output_ptr, MAX_OUTPUT_LEN);
 
         // read in user input (command / code)
         if ((return_code = read(&input_ptr))) {

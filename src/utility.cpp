@@ -15,9 +15,9 @@
  * \param [in] array Pointer to the array fo memory to be erased.
  * \param [in] length Integer number of elements in the array to zero out.
  */
-void memclear(char * array, uint16_t length) {
+void memclear(void * array, uint16_t length) {
     for (uint16_t i = 0; i < length; i++) {
-        array[i] = 0;
+        *(((char *) array) + i) = 0;
     }
 }
 

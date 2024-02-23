@@ -10,7 +10,7 @@
 #define UTILITY_H
 
 // for emptying arrays between runs
-void memclear(char * array, uint16_t length);
+void memclear(void * array, uint16_t length);
 // for checking if a character is a number
 bool isdigit(char character);
 // for checking if a character is a letter
