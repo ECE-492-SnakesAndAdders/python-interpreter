@@ -6,6 +6,9 @@
 *********************************************************************************/
 
 
+#ifndef UTILITY_H
+#define UTILITY_H
+
 // for emptying arrays between runs
 void memclear(char * array, uint16_t length);
 // for checking if a character is a number
@@ -18,3 +21,5 @@ bool isalphanumeric(char character);
 bool strcmp(const char * s1, const char * s2);
 // for converting a numerical string to an integer value
 uint16_t stoi(char ** num_str, uint16_t str_len);
+
+#endif
