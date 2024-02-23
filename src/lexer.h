@@ -6,6 +6,9 @@
 *********************************************************************************/
 
 
+#ifndef LEXER_H
+#define LEXER_H
+
 #ifndef MAX_INPUT_LEN
 #define MAX_INPUT_LEN 64
 #endif
@@ -127,3 +130,5 @@ class Lexer {
         // checks if there are any more characters to be read
         bool end_reached();
 };
+
+#endif
