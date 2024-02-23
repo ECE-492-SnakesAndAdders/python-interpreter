@@ -128,9 +128,6 @@ void Lexer::scan_next_token() {
         case '.':
             add_token(DOT);    // note: no decimals in numbers for now
             break;
-        case ':':
-            add_token(COLON);
-            break;
         case ';':
             add_token(SEMICOLON);
             break;
@@ -138,14 +135,20 @@ void Lexer::scan_next_token() {
             add_token(B_NOT);
             break;
         // possible single- or double-character tokens
+        case ':':
+            add_token(next_matches('=') ? W_ASSIGN : COLON);
+            break;
         case '+':
             add_token(next_matches('=') ? A_ASSIGN : PLUS);
             break;
         case '-':
-            add_token(next_matches('=') ? S_ASSIGN : MINUS);
+            add_token(next_matches('=') ? S_ASSIGN : (next_matches('>') ? ARROW : MINUS));
             break;
         case '%':
             add_token(next_matches('=') ? R_ASSIGN : PERCENT);
+            break;
+        case '@':
+            add_token(next_matches('=') ? I_ASSIGN : AT);
             break;
         case '&':
             add_token(next_matches('=') ? BA_ASSIGN : B_AND);
@@ -226,8 +229,22 @@ void Lexer::scan_next_token() {
             add_token(STRING);
             add_str_lit(str_lit);
             break;
+        // deal with statement spread out over multiple lines
+        case '\\':
+            // TODO: allow multi-line statements to be read
+            break;
         // comment symbol means rest of line is discarded
         case '#':
+            return;
+        // illegal characters that can never occur in a program
+        case '$':
+            // TODO: add error reporting architecture
+            return;
+        case '?':
+            // TODO: add error reporting architecture
+            return;
+        case '`':
+            // TODO: add error reporting architecture
             return;
         // default case handles the rest (number literals, identifiers, keywords, whitespace)
         default:

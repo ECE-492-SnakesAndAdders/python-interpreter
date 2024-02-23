@@ -40,13 +40,13 @@ enum lexemes {
     // types of brackets
     L_PAREN, R_PAREN, L_BRACE, R_BRACE, L_BRACKET, R_BRACKET,
     // significant symbols
-    COMMA, DOT, COLON, SEMICOLON,
+    COMMA, DOT, COLON, SEMICOLON, ARROW,
     // arithmetic operators
-    PLUS, MINUS, STAR, SLASH, PERCENT, D_STAR, D_SLASH,
+    PLUS, MINUS, STAR, SLASH, PERCENT, AT, D_STAR, D_SLASH,
     // bitwise operations
     B_AND, B_OR, B_XOR, B_NOT, B_SLL, B_SAR,
     // assignment operators
-    ASSIGN, A_ASSIGN, S_ASSIGN, M_ASSIGN, D_ASSIGN, R_ASSIGN, E_ASSIGN, F_ASSIGN, BA_ASSIGN, BO_ASSIGN, BX_ASSIGN, BL_ASSIGN, BR_ASSIGN,
+    ASSIGN, A_ASSIGN, S_ASSIGN, M_ASSIGN, I_ASSIGN, D_ASSIGN, R_ASSIGN, E_ASSIGN, F_ASSIGN, BA_ASSIGN, BO_ASSIGN, BX_ASSIGN, BL_ASSIGN, BR_ASSIGN, W_ASSIGN,
     // comparison operators
     EQUAL, GREATER, LESS, N_EQUAL, G_EQUAL, L_EQUAL,
     // literals
@@ -67,10 +67,10 @@ enum lexemes {
 const char * const names[] = {
     "NULL",
     "L_PAREN", "R_PAREN", "L_BRACE", "R_BRACE", "L_BRACKET", "R_BRACKET",
-    "COMMA", "DOT", "COLON", "SEMICOLON",
-    "PLUS", "MINUS", "STAR", "SLASH", "PERCENT", "D_STAR", "D_SLASH",
+    "COMMA", "DOT", "COLON", "SEMICOLON", "ARROW",
+    "PLUS", "MINUS", "STAR", "SLASH", "PERCENT", "AT", "D_STAR", "D_SLASH",
     "B_AND", "B_OR", "B_XOR", "B_NOT", "B_SLL", "B_SAR",
-    "ASSIGN", "A_ASSIGN", "S_ASSIGN", "M_ASSIGN", "D_ASSIGN", "R_ASSIGN", "E_ASSIGN", "F_ASSIGN", "BA_ASSIGN", "BO_ASSIGN", "BX_ASSIGN", "BL_ASSIGN", "BR_ASSIGN",
+    "ASSIGN", "A_ASSIGN", "S_ASSIGN", "M_ASSIGN", "I_ASSIGN", "D_ASSIGN", "R_ASSIGN", "E_ASSIGN", "F_ASSIGN", "BA_ASSIGN", "BO_ASSIGN", "BX_ASSIGN", "BL_ASSIGN", "BR_ASSIGN", "W_ASSIGN",
     "EQUAL", "GREATER", "LESS", "N_EQUAL", "G_EQUAL", "L_EQUAL",
     "STRING", "NUMBER",
     "IDENTIFIER",
