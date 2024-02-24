@@ -9,8 +9,6 @@
 #include <XPD.h>
 #include "expr.h"
 #include "lexer.h"
-#include "parser.h"
-#include "utility.h"
 
 
 /**
@@ -43,7 +41,7 @@ Binary::Binary(Expr left, lexemes opcode, Expr right) {
  *
  */
 template <typename T> T Binary::accept(Visitor visitor) {
-    return visitor.visitBinaryExpr(this);
+    return visitor.visitBinaryExpr<T>(this);
 }
 
 
@@ -60,5 +58,5 @@ Unary::Unary(lexemes opcode, Expr right) {
  *
  */
 template <typename T> T Unary::accept(Visitor visitor) {
-    return visitor.visitUnaryExpr(this);
+    return visitor.visitUnaryExpr<T>(this);
 }
