@@ -1,0 +1,64 @@
+/*********************************************************************************
+* Description:
+* Author(s): Isaac Joffe
+* Copyright: University of Alberta", "2024
+* License: CC-BY-4.0
+*********************************************************************************/
+
+
+#include <XPD.h>
+#include "expr.h"
+#include "lexer.h"
+#include "parser.h"
+#include "utility.h"
+
+
+/**
+ *
+ */
+template <typename T> T Visitor::visitBinaryExpr(Binary expr) {
+    return NULL;
+}
+
+
+/**
+ *
+ */
+template <typename T> T Visitor::visitUnaryExpr(Unary expr) {
+    return NULL;
+}
+
+
+/**
+ *
+ */
+Binary::Binary(Expr left, lexemes opcode, Expr right) {
+    this -> left = left;
+    this -> opcode = opcode;
+    this -> right = right;
+}
+
+
+/**
+ *
+ */
+template <typename T> T Binary::accept(Visitor visitor) {
+    return visitor.visitBinaryExpr(this);
+}
+
+
+/**
+ *
+ */
+Unary::Unary(lexemes opcode, Expr right) {
+    this -> opcode = opcode;
+    this -> right = right;
+}
+
+
+/**
+ *
+ */
+template <typename T> T Unary::accept(Visitor visitor) {
+    return visitor.visitUnaryExpr(this);
+}
