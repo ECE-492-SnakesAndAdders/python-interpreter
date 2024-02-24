@@ -49,7 +49,7 @@ class Expr {
 /**
  *
  */
-class Binary : Expr {
+class Binary : public Expr {
     private:
         Expr left;
         lexemes opcode;
@@ -64,7 +64,7 @@ class Binary : Expr {
 /**
  *
  */
-class Unary : Expr {
+class Unary : public Expr {
     private:
         lexemes opcode;
         Expr right;

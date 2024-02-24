@@ -111,17 +111,11 @@ class Lexer {
         // stores the input line to be lexed
         char line[MAX_INPUT_LEN] = "";
         // information extracted about the input
-        lexed_command command_info;
+        lexed_command * command_info;
         // the current character index being read
         uint16_t current = 0;
         // the number of non-null input characters to decode
         uint16_t length = 0;
-
-    public:
-        // basic constructor for the class
-        Lexer(char ** input);
-        // converts the input line into a list of tokens
-        void scan_input();
         // main logic of the lexer; maps charcters to tokens
         void scan_next_token();
         // adds a value to the end of that value's list
@@ -138,6 +132,12 @@ class Lexer {
         lexemes iskeyword(char ** input_ptr);
         // checks if there are any more characters to be read
         bool end_reached();
+
+    public:
+        // basic constructor for the class
+        Lexer(char ** input);
+        // converts the input line into a list of tokens
+        void scan_input();
 };
 
 #endif

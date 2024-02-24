@@ -20,7 +20,7 @@
 class Parser {
     private:
         // input information
-        lexed_command command_info;
+        lexed_command * command_info;
         // the current token index being read
         uint16_t current = 0;
         // for parsing expressions recursively
@@ -38,6 +38,13 @@ class Parser {
         Expr factor();
         Expr power();
         Expr primary();
+        // checks the current token and sees if it matches a desired value
+        bool current_matches(lexemes token);
+        lexemes current_token();
+        lexemes previous_token();
+        void advance_current();
+        // checks if there are any more characters to be read
+        bool end_reached();
 
     public:
         // basic constructor for the class
