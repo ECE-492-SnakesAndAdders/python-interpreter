@@ -223,7 +223,7 @@ Expr Parser::factor() {
     Expr expr = power();
     while (current_matches(PLUS) || current_matches(MINUS) || current_matches(B_NOT)) {
         lexemes opcode = current_token();
-        Expr right = power();
+        Expr right = factor();
         expr = Unary(opcode, right);
     }
     return expr;
@@ -250,9 +250,30 @@ Expr Parser::power() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::primary() {
-    Expr expr = Expr();
-    // TODO: base case of recursion
-    return expr;
+    // TODO: set up data types so that any value can be used
+    // base case deals with literal values and parentheses
+    // sentinel literal values
+    if (current_matches(FALSE)) {
+        return Literal(false);
+    } else if (current_matches(NONE)) {
+        return Literal(NULL);
+    } else if (current_matches(TRUE)) {
+        return Literal(true);
+    }
+    // number and string literal values that need to be fetched
+    if (current_matches(NUMBER)) {
+        // TODO: logic to get the current number value from the struct
+        return Literal(NULL);
+    } else if (current_matches(STRING)) {
+        // TODO: logic to get the current string value from the struct
+        return Literal(NULL);
+    }
+    // deal with parentheses
+    if (current_matches(L_PAREN)) {
+        // any general expression can be nested in parentheses
+        Expr expr = expression();
+        // TODO: validate and consume closing parenthesis
+    }
 }
 
 

@@ -14,6 +14,8 @@
 
 
 class Binary;
+class Grouping;
+class Literal;
 class Unary;
 
 
@@ -26,8 +28,8 @@ class Unary;
         template <typename T> T visitBinaryExpr(Binary expr);
         // T visitCallExpr(Call expr);
         // T visitGetExpr(Get expr);
-        // T visitGroupingExpr(Grouping expr);
-        // T visitLiteralExpr(Literal expr);
+        template <typename T> T visitGroupingExpr(Grouping expr);
+        template <typename T> T visitLiteralExpr(Literal expr);
         // T visitLogicalExpr(Logical expr);
         // T visitSetExpr(Set expr);
         // T visitSuperExpr(Super expr);
@@ -57,6 +59,32 @@ class Binary : public Expr {
 
     public:
         Binary(Expr left, lexemes opcode, Expr right);
+        template <typename T> T accept(Visitor visitor);
+};
+
+
+/**
+ *
+ */
+class Grouping : public Expr {
+    private:
+        Expr expression;
+
+    public:
+        Grouping(Expr expression);
+        template <typename T> T accept(Visitor visitor);
+};
+
+
+/**
+ *
+ */
+class Literal : public Expr {
+    private:
+        void * value;
+
+    public:
+        Literal(void * value);
         template <typename T> T accept(Visitor visitor);
 };
 

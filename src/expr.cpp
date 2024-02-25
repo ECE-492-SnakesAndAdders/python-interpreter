@@ -48,6 +48,38 @@ template <typename T> T Binary::accept(Visitor visitor) {
 /**
  *
  */
+Grouping::Grouping(Expr expression) {
+    this -> expression = expression;
+}
+
+
+/**
+ *
+ */
+template <typename T> T Grouping::accept(Visitor visitor) {
+    return visitor.visitGroupingExpr<T>(this);
+}
+
+
+/**
+ *
+ */
+Literal::Literal(void * value) {
+    this -> value = value;
+}
+
+
+/**
+ *
+ */
+template <typename T> T Literal::accept(Visitor visitor) {
+    return visitor.visitLiteralExpr<T>(this);
+}
+
+
+/**
+ *
+ */
 Unary::Unary(lexemes opcode, Expr right) {
     this -> opcode = opcode;
     this -> right = right;
