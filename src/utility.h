@@ -10,14 +10,14 @@
 #define UTILITY_H
 
 // for emptying arrays between runs
-void memclear(char * array, uint16_t length);
+void memclear(void * array, uint16_t length);
 // for checking if a character is a number
 bool isdigit(char character);
 // for checking if a character is a letter
 bool isalpha(char character);
 // for checking if a character is a number or letter
 bool isalphanumeric(char character);
-// for chceking if two strings matchs
+// for checking if two strings match
 bool strcmp(const char * s1, const char * s2);
 // for converting a numerical string to an integer value
 uint16_t stoi(char ** num_str, uint16_t str_len);

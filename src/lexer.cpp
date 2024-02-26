@@ -21,20 +21,8 @@ Lexer::Lexer(char ** input) {
         line[i] = *(*input + i);
     }
     // ensure no remnants of previous command in memory
-    for (uint16_t i = 0; i < MAX_INPUT_TOKENS; i++) {
-        tokens[i] = EMPTY;
-    }
-    for (uint16_t i = 0; i < MAX_LITS; i++) {
-        // for (uint16_t j = 0; j < MAX_IDENTIFIER_LEN; j++) {
-        //     str_lits[i][j] = 0;
-        // }
-        num_lits[i] = 0;
-    }
-    for (uint16_t i = 0; i < MAX_IDENTIFIERS; i++) {
-        // for (uint16_t j = 0; j < MAX_IDENTIFIER_LEN; j++) {
-        //     identifiers[i][j] = 0;
-        // }
-    }
+    // TODO: fix, still broken
+    // memclear((void *) &command_info, sizeof(command_info));
     // get the number of non-null characters in the command
     while (*(*input + length) != '\0') {
         length++;
@@ -55,31 +43,31 @@ void Lexer::scan_input() {
     // FOR DEBUGGING; print each token to see that lexer works
     xpd_puts("\nPARSED INFO:\n");
     xpd_puts("Tokens: ");
-    for (uint16_t i = 0; i < token_count; i++) {
-        xpd_echo_int(tokens[i], XPD_Flag_UnsignedDecimal);
+    for (uint16_t i = 0; i < command_info.token_count; i++) {
+        xpd_echo_int(command_info.tokens[i], XPD_Flag_UnsignedDecimal);
         xpd_putc(' ');
-        xpd_puts(names[tokens[i]]);
+        xpd_puts(names[command_info.tokens[i]]);
         xpd_putc(',');
         xpd_putc(' ');
     }
     xpd_putc('\n');
     xpd_puts("Strings: ");
-    for (uint16_t i = 0; i < str_lit_count; i++) {
-        xpd_puts(str_lits[i]);
+    for (uint16_t i = 0; i < command_info.str_lit_count; i++) {
+        xpd_puts(command_info.str_lits[i]);
         xpd_putc(',');
         xpd_putc(' ');
     }
     xpd_putc('\n');
     xpd_puts("Numbers: ");
-    for (uint16_t i = 0; i < num_lit_count; i++) {
-        xpd_echo_int(num_lits[i], XPD_Flag_UnsignedDecimal);
+    for (uint16_t i = 0; i < command_info.num_lit_count; i++) {
+        xpd_echo_int(command_info.num_lits[i], XPD_Flag_UnsignedDecimal);
         xpd_putc(',');
         xpd_putc(' ');
     }
     xpd_putc('\n');
     xpd_puts("Identifiers: ");
-    for (uint16_t i = 0; i < identifier_count; i++) {
-        xpd_puts(identifiers[i]);
+    for (uint16_t i = 0; i < command_info.identifier_count; i++) {
+        xpd_puts(command_info.identifiers[i]);
         xpd_putc(',');
         xpd_putc(' ');
     }
@@ -129,9 +117,6 @@ void Lexer::scan_next_token() {
         case '.':
             add_token(DOT);    // note: no decimals in numbers for now
             break;
-        case ':':
-            add_token(COLON);
-            break;
         case ';':
             add_token(SEMICOLON);
             break;
@@ -139,14 +124,20 @@ void Lexer::scan_next_token() {
             add_token(B_NOT);
             break;
         // possible single- or double-character tokens
+        case ':':
+            add_token(next_matches('=') ? W_ASSIGN : COLON);
+            break;
         case '+':
             add_token(next_matches('=') ? A_ASSIGN : PLUS);
             break;
         case '-':
-            add_token(next_matches('=') ? S_ASSIGN : MINUS);
+            add_token(next_matches('=') ? S_ASSIGN : (next_matches('>') ? ARROW : MINUS));
             break;
         case '%':
             add_token(next_matches('=') ? R_ASSIGN : PERCENT);
+            break;
+        case '@':
+            add_token(next_matches('=') ? I_ASSIGN : AT);
             break;
         case '&':
             add_token(next_matches('=') ? BA_ASSIGN : B_AND);
@@ -227,8 +218,22 @@ void Lexer::scan_next_token() {
             add_token(STRING);
             add_str_lit(str_lit);
             break;
+        // deal with statement spread out over multiple lines
+        case '\\':
+            // TODO: allow multi-line statements to be read
+            break;
         // comment symbol means rest of line is discarded
         case '#':
+            return;
+        // illegal characters that can never occur in a program
+        case '$':
+            // TODO: add error reporting architecture
+            return;
+        case '?':
+            // TODO: add error reporting architecture
+            return;
+        case '`':
+            // TODO: add error reporting architecture
             return;
         // default case handles the rest (number literals, identifiers, keywords, whitespace)
         default:
@@ -263,8 +268,8 @@ void Lexer::scan_next_token() {
  * \param [in] token The lexeme to be added to the list.
  */
 void Lexer::add_token(lexemes token) {
-    tokens[token_count] = token;
-    token_count++;
+    command_info.tokens[command_info.token_count] = token;
+    command_info.token_count++;
 }
 
 
@@ -274,9 +279,9 @@ void Lexer::add_token(lexemes token) {
  */
 void Lexer::add_str_lit(char * str_lit) {
     for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-        str_lits[str_lit_count][i] = *(str_lit + i);
+        command_info.str_lits[command_info.str_lit_count][i] = *(str_lit + i);
     }
-    str_lit_count++;
+    command_info.str_lit_count++;
 }
 
 
@@ -285,8 +290,8 @@ void Lexer::add_str_lit(char * str_lit) {
  * \param [in] num_lit The number literal to be added to the list.
  */
 void Lexer::add_num_lit(uint16_t num_lit) {
-    num_lits[num_lit_count] = num_lit;
-    num_lit_count++;
+    command_info.num_lits[command_info.num_lit_count] = num_lit;
+    command_info.num_lit_count++;
 }
 
 
@@ -296,9 +301,9 @@ void Lexer::add_num_lit(uint16_t num_lit) {
  */
 void Lexer::add_identifier(char * identifier) {
     for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-        identifiers[identifier_count][i] = *(identifier + i);
+        command_info.identifiers[command_info.identifier_count][i] = *(identifier + i);
     }
-    identifier_count++;
+    command_info.identifier_count++;
 }
 
 
@@ -395,80 +400,241 @@ void Lexer::match_identifier(char ** output_ptr) {
  */
 lexemes Lexer::iskeyword(char ** input_ptr) {
     // attempt to map the identifier to a reserved keyword
-    if (strcmp(*input_ptr, "True")) {
-        return TRUE;
-    } else if (strcmp(*input_ptr, "False")) {
-        return FALSE;
-    } else if (strcmp(*input_ptr, "None")) {
-        return NONE;
-    } else if (strcmp(*input_ptr, "and")) {
-        return AND;
-    } else if (strcmp(*input_ptr, "or")) {
-        return OR;
-    } else if (strcmp(*input_ptr, "not")) {
-        return NOT;
-    } else if (strcmp(*input_ptr, "is")) {
-        return IS;
-    } else if (strcmp(*input_ptr, "if")) {
-        return IF;
-    } else if (strcmp(*input_ptr, "elif")) {
-        return ELIF;
-    } else if (strcmp(*input_ptr, "else")) {
-        return ELSE;
-    } else if (strcmp(*input_ptr, "for")) {
-        return FOR;
-    } else if (strcmp(*input_ptr, "while")) {
-        return WHILE;
-    } else if (strcmp(*input_ptr, "continue")) {
-        return CONTINUE;
-    } else if (strcmp(*input_ptr, "break")) {
-        return BREAK;
-    } else if (strcmp(*input_ptr, "pass")) {
-        return PASS;
-    } else if (strcmp(*input_ptr, "in")) {
-        return IN;
-    } else if (strcmp(*input_ptr, "def")) {
-        return DEF;
-    } else if (strcmp(*input_ptr, "return")) {
-        return RETURN;
-    } else if (strcmp(*input_ptr, "yield")) {
-        return YIELD;
-    } else if (strcmp(*input_ptr, "class")) {
-        return CLASS;
-    } else if (strcmp(*input_ptr, "lambda")) {
-        return LAMBDA;
-    } else if (strcmp(*input_ptr, "try")) {
-        return TRY;
-    } else if (strcmp(*input_ptr, "finally")) {
-        return FINALLY;
-    } else if (strcmp(*input_ptr, "except")) {
-        return EXCEPT;
-    } else if (strcmp(*input_ptr, "raise")) {
-        return RAISE;
-    } else if (strcmp(*input_ptr, "import")) {
-        return IMPORT;
-    } else if (strcmp(*input_ptr, "from")) {
-        return FROM;
-    } else if (strcmp(*input_ptr, "with")) {
-        return WITH;
-    } else if (strcmp(*input_ptr, "as")) {
-        return AS;
-    } else if (strcmp(*input_ptr, "global")) {
-        return GLOBAL;
-    } else if (strcmp(*input_ptr, "nonlocal")) {
-        return NONLOCAL;
-    } else if (strcmp(*input_ptr, "async")) {
-        return ASYNC;
-    } else if (strcmp(*input_ptr, "await")) {
-        return AWAIT;
-    } else if (strcmp(*input_ptr, "assert")) {
-        return ASSERT;
-    } else if (strcmp(*input_ptr, "del")) {
-        return DEL;
-    // not a keyword, like returning false
-    } else {
-        return EMPTY;
+    // initial switch statement offers considerable speedup
+    if (**input_ptr) {
+        switch (**input_ptr) {
+            case 'a':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'n') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'd') &&
+                           !(*(*input_ptr + 3))) {
+                    return AND;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 's') &&
+                           !(*(*input_ptr + 2))) {
+                    return AS;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 's') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'y') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'n') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'c') &&
+                           !(*(*input_ptr + 5))) {
+                    return ASYNC;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'w') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'a') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'i') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 't') &&
+                           !(*(*input_ptr + 5))) {
+                    return AWAIT;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 's') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 's') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'e') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'r') &&
+                           (*(*input_ptr + 5)) && (*(*input_ptr + 5) == 't') &&
+                           !(*(*input_ptr + 6))) {
+                    return ASSERT;
+                }
+            case 'b':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'r') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'e') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'a') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'k') &&
+                           !(*(*input_ptr + 5))) {
+                    return BREAK;
+                }
+            case 'c':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'n') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 't') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'i') &&
+                           (*(*input_ptr + 5)) && (*(*input_ptr + 5) == 'n') &&
+                           (*(*input_ptr + 6)) && (*(*input_ptr + 6) == 'u') &&
+                           (*(*input_ptr + 7)) && (*(*input_ptr + 7) == 'e') &&
+                           !(*(*input_ptr + 8))) {
+                    return CONTINUE;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'l') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'a') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 's') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 's') &&
+                           !(*(*input_ptr + 5))) {
+                    return CLASS;
+                }
+            case 'd':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'e') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'f') &&
+                           !(*(*input_ptr + 3))) {
+                    return DEF;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'e') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'l') &&
+                           !(*(*input_ptr + 3))) {
+                    return DEL;
+                }
+            case 'e':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'l') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'i') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'f') &&
+                           !(*(*input_ptr + 4))) {
+                    return ELIF;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'l') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 's') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'e') &&
+                           !(*(*input_ptr + 4))) {
+                    return ELSE;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'x') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'c') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'e') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'p') &&
+                           (*(*input_ptr + 5)) && (*(*input_ptr + 5) == 't') &&
+                           !(*(*input_ptr + 6))) {
+                    return EXCEPT;
+                }
+            case 'f':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'r') &&
+                           !(*(*input_ptr + 3))) {
+                    return FOR;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'i') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'n') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'a') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'l') &&
+                           (*(*input_ptr + 5)) && (*(*input_ptr + 5) == 'l') &&
+                           (*(*input_ptr + 6)) && (*(*input_ptr + 6) == 'y') &&
+                           !(*(*input_ptr + 7))) {
+                    return FINALLY;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'r') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'o') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'm') &&
+                           !(*(*input_ptr + 4))) {
+                    return FROM;
+                }
+            case 'g':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'l') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'o') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'b') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'a') &&
+                           (*(*input_ptr + 5)) && (*(*input_ptr + 5) == 'l') &&
+                           !(*(*input_ptr + 6))) {
+                    return GLOBAL;
+                }
+            case 'i':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 's') &&
+                           !(*(*input_ptr + 2))) {
+                    return IS;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'f') &&
+                           !(*(*input_ptr + 2))) {
+                    return IF;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'n') &&
+                           !(*(*input_ptr + 2))) {
+                    return IN;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'm') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'p') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'o') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'r') &&
+                           (*(*input_ptr + 5)) && (*(*input_ptr + 5) == 't') &&
+                           !(*(*input_ptr + 6))) {
+                    return IMPORT;
+                }
+            case 'l':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'a') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'm') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'b') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'd') &&
+                           (*(*input_ptr + 5)) && (*(*input_ptr + 5) == 'a') &&
+                           !(*(*input_ptr + 6))) {
+                    return LAMBDA;
+                }
+            case 'n':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 't') &&
+                           !(*(*input_ptr + 3))) {
+                    return NOT;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'n') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'l') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'o') &&
+                           (*(*input_ptr + 5)) && (*(*input_ptr + 5) == 'c') &&
+                           (*(*input_ptr + 6)) && (*(*input_ptr + 6) == 'a') &&
+                           (*(*input_ptr + 7)) && (*(*input_ptr + 7) == 'l') &&
+                           !(*(*input_ptr + 8))) {
+                    return NONLOCAL;
+                }
+            case 'o':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'r') &&
+                           !(*(*input_ptr + 2))) {
+                    return OR;
+                }
+            case 'p':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'a') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 's') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 's') &&
+                           !(*(*input_ptr + 4))) {
+                    return PASS;
+                }
+            case 'r':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'e') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 't') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'u') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'r') &&
+                           (*(*input_ptr + 5)) && (*(*input_ptr + 5) == 'n') &&
+                           !(*(*input_ptr + 6))) {
+                    return RETURN;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'a') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'i') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 's') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'e') &&
+                           !(*(*input_ptr + 5))) {
+                    return RAISE;
+                }
+            case 't':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'r') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'y') &&
+                           !(*(*input_ptr + 3))) {
+                    return TRY;
+                }
+            case 'w':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'h') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'i') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'l') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'e') &&
+                           !(*(*input_ptr + 5))) {
+                    return WHILE;
+                } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'i') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 't') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'h') &&
+                           !(*(*input_ptr + 4))) {
+                    return WITH;
+                }
+            case 'y':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'i') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'e') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'l') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'd') &&
+                           !(*(*input_ptr + 5))) {
+                    return YIELD;
+                }
+            case 'F':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'a') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'l') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 's') &&
+                           (*(*input_ptr + 4)) && (*(*input_ptr + 4) == 'e') &&
+                           !(*(*input_ptr + 5))) {
+                    return FALSE;
+                }
+            case 'N':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'n') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'e') &&
+                           !(*(*input_ptr + 4))) {
+                    return NONE;
+                }
+            case 'T':
+                if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'r') &&
+                           (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'u') &&
+                           (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'e') &&
+                           !(*(*input_ptr + 4))) {
+                    return TRUE;
+                }
+        }
     }
+    // not a keyword, like returning false
+    return EMPTY;
 }
 
 
