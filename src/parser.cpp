@@ -278,13 +278,16 @@ Expr Parser::primary() {
 
 
 /**
- *
+ * \brief Determines if the current token being parsed is some particular token. Consumes it if so.
+ * \param [in] token The token type to check equality with.
+ * \return True if the token does match; false otherwise.
  */
 bool Parser::current_matches(lexemes token) {
     if (end_reached()) {
         return false;
     }
     if ((command_info -> tokens[current]) == token) {
+        // must consume this token and move along (assumption of calling code)
         advance_current();
         return true;
     }
@@ -293,7 +296,8 @@ bool Parser::current_matches(lexemes token) {
 
 
 /**
- *
+ * \brief Provides the current token being parsed.
+ * \return The token currently beng parsed.
  */
 lexemes Parser::current_token() {
     if (end_reached()) {
@@ -304,15 +308,19 @@ lexemes Parser::current_token() {
 
 
 /**
- *
+ * \brief Provides the token before the one being parsed.
+ * \return The token prior to the one currently being parsed.
  */
 lexemes Parser::previous_token() {
+    if (current == 0) {
+        return EMPTY;
+    }
     return command_info -> tokens[current - 1];
 }
 
 
 /**
- *
+ * \brief Increments the pointer to the current token being parsed.
  */
 void Parser::advance_current() {
     if (!end_reached()) {
