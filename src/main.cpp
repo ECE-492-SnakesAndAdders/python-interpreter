@@ -28,6 +28,11 @@
 #endif
 
 
+/** This project is a tree-walk interpreter that uses a recursive descent algorithm
+    Much of the code is based on Crafting Interpreters by Robert Nystrom (https://craftinginterpreters.com/)
+*/
+
+
 /**
  * \brief Reads in a line (until a '\n' character) of input.
  * \param [in] input_ptr Pointer to where to store the input received.

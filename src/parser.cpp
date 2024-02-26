@@ -12,6 +12,11 @@
 #include "expr.h"
 
 
+/** Much of this code is based on Crafting Interpreters by Robert Nystrom
+    https://craftinginterpreters.com/representing-code.html, https://craftinginterpreters.com/parsing-expressions.html
+*/
+
+
 /** precedence levels of operators are as follows (from lowest to highest):
     https://docs.python.org/3/reference/grammar.html
         logical or (OR) [disjunction]

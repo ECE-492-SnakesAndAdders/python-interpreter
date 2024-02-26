@@ -11,6 +11,11 @@
 #include "utility.h"
 
 
+/** Much of this code is based on Crafting Interpreters by Robert Nystrom
+    https://craftinginterpreters.com/scanning.html, https://craftinginterpreters.com/scanning-on-demand.html
+*/
+
+
 /**
  * \brief Basic constructor for the lexer.
  * \param [in] input Pointer to the input string entered by the user.
