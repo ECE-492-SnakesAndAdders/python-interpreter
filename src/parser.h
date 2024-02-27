@@ -10,8 +10,13 @@
 #define PARSER_H
 
 
-#include "lexer.h"
 #include "expr.h"
+#include "lexer.h"
+
+
+#ifndef MAX_LIT_LEN
+#define MAX_LIT_LEN 32
+#endif
 
 
 /**
@@ -23,6 +28,8 @@ class Parser {
         lexed_command * command_info;
         // the current token index being read
         uint16_t current = 0;
+        uint16_t current_str_lit = 0;
+        uint16_t current_num_lit = 0;
         // for parsing expressions recursively
         Expr expression();
         Expr disjunction();

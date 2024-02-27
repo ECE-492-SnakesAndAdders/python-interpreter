@@ -9,6 +9,7 @@
 #include <XPD.h>
 #include "expr.h"
 #include "lexer.h"
+#include "parser.h"
 
 
 /**
@@ -64,7 +65,7 @@ template <typename T> T Grouping::accept(Visitor visitor) {
 /**
  *
  */
-Literal::Literal(void * value) {
+Literal::Literal(literal_value value) {
     this -> value = value;
 }
 

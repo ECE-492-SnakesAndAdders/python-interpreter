@@ -13,10 +13,32 @@
 #include "lexer.h"
 
 
+class Expr;
 class Binary;
 class Grouping;
 class Literal;
 class Unary;
+
+/**
+ * \brief The list of all possible literal types in Python.
+ */
+enum literal_types {
+    FALSE_VALUE, NONE_VALUE, NUMBER_VALUE, STRING_VALUE, TRUE_VALUE
+};
+
+
+/**
+ * \brief The internal representation of a literal value.
+ */
+struct literal_value {
+    // the data type of the value being stored
+    literal_types type;
+    // the actual data being stored
+    union {
+        uint16_t number;
+        char string[MAX_LIT_LEN];
+    } data;
+};
 
 
 /**
@@ -81,10 +103,10 @@ class Grouping : public Expr {
  */
 class Literal : public Expr {
     private:
-        void * value;
+        literal_value value;
 
     public:
-        Literal(void * value);
+        Literal(literal_value value);
         template <typename T> T accept(Visitor visitor);
 };
 

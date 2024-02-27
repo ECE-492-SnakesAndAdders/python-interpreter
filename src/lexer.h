@@ -9,6 +9,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+
 #ifndef MAX_INPUT_LEN
 #define MAX_INPUT_LEN 64
 #endif
@@ -67,7 +68,7 @@ enum lexemes {
 
 
 // for ease of printing
-const char * const names[] = {
+const char * const token_names[] = {
     "NULL",
     "L_PAREN", "R_PAREN", "L_BRACE", "R_BRACE", "L_BRACKET", "R_BRACKET",
     "COMMA", "DOT", "COLON", "SEMICOLON", "ARROW",

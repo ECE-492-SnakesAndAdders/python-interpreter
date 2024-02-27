@@ -258,27 +258,43 @@ Expr Parser::primary() {
     // TODO: set up data types so that any value can be used
     // base case deals with literal values and parentheses
     // sentinel literal values
+    literal_value lit;
     if (current_matches(FALSE)) {
-        return Literal(false);
+        lit.type = FALSE_VALUE;
+        return Literal(lit);
     } else if (current_matches(NONE)) {
-        return Literal(NULL);
+        lit.type = NONE_VALUE;
+        return Literal(lit);
     } else if (current_matches(TRUE)) {
-        return Literal(true);
+        lit.type = TRUE_VALUE;
+        return Literal(lit);
     }
     // number and string literal values that need to be fetched
     if (current_matches(NUMBER)) {
-        // TODO: logic to get the current number value from the struct
-        return Literal(NULL);
+        lit.type = NUMBER_VALUE;
+        lit.data.number = command_info -> num_lits[current_num_lit];
+        current_num_lit++;
+        return Literal(lit);
     } else if (current_matches(STRING)) {
-        // TODO: logic to get the current string value from the struct
-        return Literal(NULL);
+        lit.type = STRING_VALUE;
+        char * temp = command_info -> str_lits[current_str_lit];
+        for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
+            lit.data.string[i] = *(temp + i);
+        }
+        current_str_lit++;
+        return Literal(lit);
     }
     // deal with parentheses
     if (current_matches(L_PAREN)) {
         // any general expression can be nested in parentheses
         Expr expr = expression();
-        // TODO: validate and consume closing parenthesis
+        if (!current_matches(R_PAREN)) {
+            // TODO: report error
+        }
+        return Grouping(expr);
     }
+    // theoretically unreachable
+    return Expr();
 }
 
 

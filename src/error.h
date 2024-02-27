@@ -9,6 +9,21 @@
 #ifndef ERROR_H
 #define ERROR_H
 
+
+/**
+ * \brief The list of all possible error classes in Python.
+ */
+enum error_types {
+    ASSERTION, INDEX, NAME, NOTIMPLEMENTED, SYNTAX, INDENTATION, TYPE, RUNTIME
+};
+
+
+// for ease of printing
+const char * const error_names[] = {
+    "AssertionError", "IndexError", "NameError", "NotImplementedError", "SyntaxError", "IndentationError", "TypeError", "RuntimeError"
+};
+
+
 // prints error information for the user
 void report_error(const char * type, const char * message);
 

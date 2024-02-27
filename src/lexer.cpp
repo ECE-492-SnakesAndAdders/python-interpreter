@@ -640,7 +640,7 @@ void Lexer::scan_input() {
     for (uint16_t i = 0; i < command_info -> token_count; i++) {
         xpd_echo_int(command_info -> tokens[i], XPD_Flag_UnsignedDecimal);
         xpd_putc(' ');
-        xpd_puts(names[command_info -> tokens[i]]);
+        xpd_puts(token_names[command_info -> tokens[i]]);
         xpd_putc(',');
         xpd_putc(' ');
     }

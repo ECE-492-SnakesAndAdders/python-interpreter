@@ -7,6 +7,7 @@
 
 
 #include <XPD.h>
+#include "error.h"
 
 
 /** The main error types are the following:
@@ -27,12 +28,12 @@
  * \param [in] type The type of error that occurred.
  * \param [in] message The specific error information to share.
  */
-void report_error(const char * type, const char * message) {
+void report_error(error_types type, const char * message) {
     // standard Python error reporting template, support details later
     xpd_puts("Traceback (most recent call last):\n");
     xpd_puts("  File \"<stdin>\", line 1, in <module>\n");
     // display error info shared from interpreter in useful format
-    xpd_puts(type);
+    xpd_puts(error_names[type]);
     xpd_puts(": ");
     xpd_puts(message);
     xpd_putc('\n');
