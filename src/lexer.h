@@ -112,7 +112,7 @@ class Lexer {
         // stores the input line to be lexed
         char line[MAX_INPUT_LEN] = "";
         // information extracted about the input
-        lexed_command * command_info;
+        lexed_command command_info;
         // the current character index being read
         uint16_t current = 0;
         // the number of non-null input characters to decode
