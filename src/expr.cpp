@@ -15,22 +15,6 @@
 /**
  *
  */
-template <typename T> T Visitor::visitBinaryExpr(Binary expr) {
-    return NULL;
-}
-
-
-/**
- *
- */
-template <typename T> T Visitor::visitUnaryExpr(Unary expr) {
-    return NULL;
-}
-
-
-/**
- *
- */
 Binary::Binary(Expr left, lexemes opcode, Expr right) {
     this -> left = left;
     this -> opcode = opcode;
@@ -41,8 +25,32 @@ Binary::Binary(Expr left, lexemes opcode, Expr right) {
 /**
  *
  */
-template <typename T> T Binary::accept(Visitor visitor) {
-    return visitor.visitBinaryExpr<T>(this);
+Expr Binary::get_left() {
+    return left;
+}
+
+
+/**
+ *
+ */
+lexemes Binary::get_opcode() {
+    return opcode;
+}
+
+
+/**
+ *
+ */
+Expr Binary::get_right() {
+    return right;
+}
+
+
+/**
+ *
+ */
+literal_value Binary::accept(Visitor visitor) {
+    return visitor.visitBinaryExpr(*this);
 }
 
 
@@ -57,8 +65,8 @@ Grouping::Grouping(Expr expression) {
 /**
  *
  */
-template <typename T> T Grouping::accept(Visitor visitor) {
-    return visitor.visitGroupingExpr<T>(this);
+literal_value Grouping::accept(Visitor visitor) {
+    return visitor.visitGroupingExpr(*this);
 }
 
 
@@ -73,8 +81,8 @@ Literal::Literal(literal_value value) {
 /**
  *
  */
-template <typename T> T Literal::accept(Visitor visitor) {
-    return visitor.visitLiteralExpr<T>(this);
+literal_value Literal::accept(Visitor visitor) {
+    return visitor.visitLiteralExpr(*this);
 }
 
 
@@ -90,6 +98,22 @@ Unary::Unary(lexemes opcode, Expr right) {
 /**
  *
  */
-template <typename T> T Unary::accept(Visitor visitor) {
-    return visitor.visitUnaryExpr<T>(this);
+lexemes Unary::get_opcode() {
+    return opcode;
+}
+
+
+/**
+ *
+ */
+Expr Unary::get_right() {
+    return right;
+}
+
+
+/**
+ *
+ */
+literal_value Unary::accept(Visitor visitor) {
+    return visitor.visitUnaryExpr(*this);
 }

@@ -15,6 +15,12 @@
 class Evaluator : public Visitor {
     private:
     public:
+        Evaluator(uint16_t nothing);
+        literal_value visitBinaryExpr(Binary expr);
+        literal_value visitGroupingExpr(Grouping expr);
+        literal_value visitLiteralExpr(Literal expr);
+        literal_value visitUnaryExpr(Unary expr);
+        literal_value evaluate(Expr expr);
 };
 
 #endif

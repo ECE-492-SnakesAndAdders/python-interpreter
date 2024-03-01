@@ -20,6 +20,7 @@ class Grouping;
 class Literal;
 class Unary;
 
+
 /**
  * \brief The list of all possible literal types in Python.
  */
@@ -48,16 +49,16 @@ struct literal_value {
  class Visitor {
     public:
         // T visitAssignExpr(Assign expr);
-        template <typename T> T visitBinaryExpr(Binary expr);
+        literal_value visitBinaryExpr(Binary expr);
         // T visitCallExpr(Call expr);
         // T visitGetExpr(Get expr);
-        template <typename T> T visitGroupingExpr(Grouping expr);
-        template <typename T> T visitLiteralExpr(Literal expr);
+        literal_value visitGroupingExpr(Grouping expr);
+        literal_value visitLiteralExpr(Literal expr);
         // T visitLogicalExpr(Logical expr);
         // T visitSetExpr(Set expr);
         // T visitSuperExpr(Super expr);
         // T visitThisExpr(This expr);
-        template <typename T> T visitUnaryExpr(Unary expr);
+        literal_value visitUnaryExpr(Unary expr);
         // T visitVariableExpr(Variable expr);
 };
 
@@ -67,7 +68,7 @@ struct literal_value {
  */
 class Expr {
     public:
-        template <typename T> T accept(Visitor visitor);
+        literal_value accept(Visitor visitor);
 };
 
 
@@ -82,7 +83,10 @@ class Binary : public Expr {
 
     public:
         Binary(Expr left, lexemes opcode, Expr right);
-        template <typename T> T accept(Visitor visitor);
+        Expr get_left();
+        lexemes get_opcode();
+        Expr get_right();
+        literal_value accept(Visitor visitor);
 };
 
 
@@ -95,7 +99,7 @@ class Grouping : public Expr {
 
     public:
         Grouping(Expr expression);
-        template <typename T> T accept(Visitor visitor);
+        literal_value accept(Visitor visitor);
 };
 
 
@@ -108,7 +112,7 @@ class Literal : public Expr {
 
     public:
         Literal(literal_value value);
-        template <typename T> T accept(Visitor visitor);
+        literal_value accept(Visitor visitor);
 };
 
 
@@ -122,7 +126,9 @@ class Unary : public Expr {
 
     public:
         Unary(lexemes opcode, Expr right);
-        template <typename T> T accept(Visitor visitor);
+        lexemes get_opcode();
+        Expr get_right();
+        literal_value accept(Visitor visitor);
 };
 
 #endif

@@ -39,7 +39,7 @@
  * \brief Basic constructor for the parser.
  * \param [in] input Pointer to the token list returned by the lexer.
  */
-Parser::Parser(lexed_command * input) {
+Parser::Parser(lexed_command input) {
     command_info = input;
 }
 
@@ -100,8 +100,12 @@ Expr Parser::conjunction() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::inversion() {
-    // TODO: deal with unary operator
     Expr expr = comparison();
+    while (current_matches(NOT)) {
+        lexemes opcode = current_token();
+        Expr right = inversion();
+        expr = Unary(opcode, right);
+    }
     return expr;
 }
 
@@ -272,12 +276,12 @@ Expr Parser::primary() {
     // number and string literal values that need to be fetched
     if (current_matches(NUMBER)) {
         lit.type = NUMBER_VALUE;
-        lit.data.number = command_info -> num_lits[current_num_lit];
+        lit.data.number = command_info.num_lits[current_num_lit];
         current_num_lit++;
         return Literal(lit);
     } else if (current_matches(STRING)) {
         lit.type = STRING_VALUE;
-        char * temp = command_info -> str_lits[current_str_lit];
+        char * temp = command_info.str_lits[current_str_lit];
         for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
             lit.data.string[i] = *(temp + i);
         }
@@ -307,7 +311,7 @@ bool Parser::current_matches(lexemes token) {
     if (end_reached()) {
         return false;
     }
-    if ((command_info -> tokens[current]) == token) {
+    if ((command_info.tokens[current]) == token) {
         // must consume this token and move along (assumption of calling code)
         advance_current();
         return true;
@@ -324,7 +328,7 @@ lexemes Parser::current_token() {
     if (end_reached()) {
         return EMPTY;
     }
-    return command_info -> tokens[current];
+    return command_info.tokens[current];
 }
 
 
@@ -336,7 +340,7 @@ lexemes Parser::previous_token() {
     if (current == 0) {
         return EMPTY;
     }
-    return command_info -> tokens[current - 1];
+    return command_info.tokens[current - 1];
 }
 
 
@@ -355,7 +359,7 @@ void Parser::advance_current() {
  * \return True if the end has been reached; false otherwise.
  */
 bool Parser::end_reached() {
-    return current >= (command_info -> token_count);
+    return current >= (command_info.token_count);
 }
 
 

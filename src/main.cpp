@@ -13,6 +13,9 @@
 #include "main.h"
 #include "utility.h"
 #include "lexer.h"
+#include "parser.h"
+#include "expr.h"
+#include "evaluator.h"
 
 
 #ifndef MAX_INPUT_LEN
@@ -62,7 +65,11 @@ uint16_t read(char ** input_ptr) {
  */
 uint16_t eval(char ** input_ptr, char ** output_ptr) {
     Lexer lexer(input_ptr);
-    lexer.scan_input();
+    lexed_command token_sequence = lexer.scan_input();
+    Parser parser(token_sequence);
+    Expr tree = parser.parse_input();
+    Evaluator evaluator(0);
+    evaluator.evaluate(tree);
     // temporary implementation; pass input to output for printing to test pipeline
     uint16_t LEN = MAX_INPUT_LEN;
     if (MAX_INPUT_LEN > MAX_OUTPUT_LEN) {

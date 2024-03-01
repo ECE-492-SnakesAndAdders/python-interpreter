@@ -138,7 +138,7 @@ class Lexer {
         // basic constructor for the class
         Lexer(char ** input);
         // converts the input line into a list of tokens
-        void scan_input();
+        lexed_command scan_input();
 };
 
 #endif

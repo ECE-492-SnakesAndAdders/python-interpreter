@@ -627,7 +627,7 @@ bool Lexer::end_reached() {
 /**
  * \brief scans the input string and returns a list of its tokens.
  */
-void Lexer::scan_input() {
+lexed_command Lexer::scan_input() {
     // keep on reading next character until command is over
     while (!(end_reached())) {
         scan_next_token();
@@ -668,4 +668,6 @@ void Lexer::scan_input() {
     xpd_putc('\n');
     xpd_putc('\n');
     // ------------------------------------------------------------------------
+
+    return command_info;
 }

@@ -25,7 +25,7 @@
 class Parser {
     private:
         // input information
-        lexed_command * command_info;
+        lexed_command command_info;
         // the current token index being read
         uint16_t current = 0;
         uint16_t current_str_lit = 0;
@@ -55,7 +55,7 @@ class Parser {
 
     public:
         // basic constructor for the class
-        Parser(lexed_command * input);
+        Parser(lexed_command input);
         // converts the input token list into a syntax tree
         Expr parse_input();
 };
