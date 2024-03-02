@@ -38,7 +38,6 @@ class Parser {
         node tree_nodes[MAX_NUM_NODES];
         uint16_t current_node = 0;
         node * write_new_node(node * value);
-        node * write_new_node(node value);
         // for parsing expressions recursively
         node * expression();
         node * disjunction();

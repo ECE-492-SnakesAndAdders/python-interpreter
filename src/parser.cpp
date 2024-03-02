@@ -45,6 +45,9 @@ Parser::Parser(lexed_command input) {
 }
 
 
+/**
+ *
+ */
 node * Parser::write_new_node(node * value) {
     xpd_puts("HERE IN WRITE_NEW_NODE()\n");
     xpd_echo_int(value -> type, XPD_Flag_UnsignedDecimal);
@@ -60,28 +63,15 @@ node * Parser::write_new_node(node * value) {
     xpd_echo_int(node_type, XPD_Flag_UnsignedDecimal);
     xpd_echo_int(LITERAL_NODE, XPD_Flag_UnsignedDecimal);
     xpd_puts("HERE IN WRITE_NEW_NODE() PLEASE\n");
-    // if (node_type == LITERAL_NODE) {
-    //     xpd_puts("HERE IN WRITE_NEW_NODE() YES\n");
-    //     tree_nodes[current_node].entry.literal_val.type = value -> entry.literal_val.type;
-    //     if (tree_nodes[current_node].entry.literal_val.type == NUMBER_VALUE) {
-    //         tree_nodes[current_node].entry.literal_val.data.number = value -> entry.literal_val.data.number;
-    //     } else if (tree_nodes[current_node].entry.literal_val.type == STRING_VALUE) {
-    //         for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-    //             tree_nodes[current_node].entry.literal_val.data.string[i] = value -> entry.literal_val.data.string[i];
-    //         }
-    //     }
-    //     xpd_puts("HERE IN WRITE_NEW_NODE() GOOD\n");
-    // } else if (node_type == UNARY_NODE) {
-    //     tree_nodes[current_node].entry.unary_val.opcode = value -> entry.unary_val.opcode;
-    //     tree_nodes[current_node].entry.unary_val.right = value -> entry.unary_val.right;
-    // } else if (node_type == BINARY_NODE) {
-    //     tree_nodes[current_node].entry.binary_val.left = value -> entry.binary_val.left;
-    //     tree_nodes[current_node].entry.binary_val.opcode = value -> entry.binary_val.opcode;
-    //     tree_nodes[current_node].entry.binary_val.right = value -> entry.binary_val.right;
-    // } else if (node_type == GROUPING_NODE) {
-    //     tree_nodes[current_node].entry.grouping_val.expression = value -> entry.grouping_val.expression;;
-    // }
     switch (node_type) {
+        case BINARY_NODE:
+            tree_nodes[current_node].entry.binary_val.left = value -> entry.binary_val.left;
+            tree_nodes[current_node].entry.binary_val.opcode = value -> entry.binary_val.opcode;
+            tree_nodes[current_node].entry.binary_val.right = value -> entry.binary_val.right;
+            break;
+        case GROUPING_NODE:
+            tree_nodes[current_node].entry.grouping_val.expression = value -> entry.grouping_val.expression;
+            break;
         case LITERAL_NODE:
             xpd_puts("HERE IN WRITE_NEW_NODE()\n");
             tree_nodes[current_node].entry.literal_val.type = value -> entry.literal_val.type;
@@ -97,81 +87,6 @@ node * Parser::write_new_node(node * value) {
         case UNARY_NODE:
             tree_nodes[current_node].entry.unary_val.opcode = value -> entry.unary_val.opcode;
             tree_nodes[current_node].entry.unary_val.right = value -> entry.unary_val.right;
-            break;
-        case BINARY_NODE:
-            tree_nodes[current_node].entry.binary_val.left = value -> entry.binary_val.left;
-            tree_nodes[current_node].entry.binary_val.opcode = value -> entry.binary_val.opcode;
-            tree_nodes[current_node].entry.binary_val.right = value -> entry.binary_val.right;
-            break;
-        case GROUPING_NODE:
-            tree_nodes[current_node].entry.grouping_val.expression = value -> entry.grouping_val.expression;
-            break;
-    }
-    xpd_puts("YAY\n");
-    return &tree_nodes[current_node++];
-}
-
-
-node * Parser::write_new_node(node value) {
-    xpd_puts("HERE IN WRITE_NEW_NODE()\n");
-    xpd_echo_int(value.type, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
-    xpd_echo_int(value.entry.literal_val.type, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
-    xpd_echo_int(value.entry.literal_val.data.number, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
-    node_types node_type = value.type;
-    tree_nodes[current_node].type = value.type;
-    xpd_echo_int(tree_nodes[current_node].type, XPD_Flag_UnsignedDecimal);
-    xpd_echo_int(value.type, XPD_Flag_UnsignedDecimal);
-    xpd_echo_int(node_type, XPD_Flag_UnsignedDecimal);
-    xpd_echo_int(LITERAL_NODE, XPD_Flag_UnsignedDecimal);
-    xpd_puts("HERE IN WRITE_NEW_NODE() PLEASE\n");
-    // if (node_type == LITERAL_NODE) {
-    //     xpd_puts("HERE IN WRITE_NEW_NODE() YES\n");
-    //     tree_nodes[current_node].entry.literal_val.type = value.entry.literal_val.type;
-    //     if (tree_nodes[current_node].entry.literal_val.type == NUMBER_VALUE) {
-    //         tree_nodes[current_node].entry.literal_val.data.number = value.entry.literal_val.data.number;
-    //     } else if (tree_nodes[current_node].entry.literal_val.type == STRING_VALUE) {
-    //         for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-    //             tree_nodes[current_node].entry.literal_val.data.string[i] = value.entry.literal_val.data.string[i];
-    //         }
-    //     }
-    //     xpd_puts("HERE IN WRITE_NEW_NODE() GOOD\n");
-    // } else if (node_type == UNARY_NODE) {
-    //     tree_nodes[current_node].entry.unary_val.opcode = value.entry.unary_val.opcode;
-    //     tree_nodes[current_node].entry.unary_val.right = value.entry.unary_val.right;
-    // } else if (node_type == BINARY_NODE) {
-    //     tree_nodes[current_node].entry.binary_val.left = value.entry.binary_val.left;
-    //     tree_nodes[current_node].entry.binary_val.opcode = value.entry.binary_val.opcode;
-    //     tree_nodes[current_node].entry.binary_val.right = value.entry.binary_val.right;
-    // } else if (node_type == GROUPING_NODE) {
-    //     tree_nodes[current_node].entry.grouping_val.expression = value.entry.grouping_val.expression;;
-    // }
-    switch (node_type) {
-        case LITERAL_NODE:
-            xpd_puts("HERE IN WRITE_NEW_NODE()\n");
-            tree_nodes[current_node].entry.literal_val.type = value.entry.literal_val.type;
-            if (tree_nodes[current_node].entry.literal_val.type == NUMBER_VALUE) {
-                tree_nodes[current_node].entry.literal_val.data.number = value.entry.literal_val.data.number;
-            } else if (tree_nodes[current_node].entry.literal_val.type == STRING_VALUE) {
-                for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-                    tree_nodes[current_node].entry.literal_val.data.string[i] = value.entry.literal_val.data.string[i];
-                }
-            }
-            xpd_puts("HERE IN WRITE_NEW_NODE()\n");
-            break;
-        case UNARY_NODE:
-            tree_nodes[current_node].entry.unary_val.opcode = value.entry.unary_val.opcode;
-            tree_nodes[current_node].entry.unary_val.right = value.entry.unary_val.right;
-            break;
-        case BINARY_NODE:
-            tree_nodes[current_node].entry.binary_val.left = value.entry.binary_val.left;
-            tree_nodes[current_node].entry.binary_val.opcode = value.entry.binary_val.opcode;
-            tree_nodes[current_node].entry.binary_val.right = value.entry.binary_val.right;
-            break;
-        case GROUPING_NODE:
-            tree_nodes[current_node].entry.grouping_val.expression = value.entry.grouping_val.expression;
             break;
     }
     xpd_puts("YAY\n");
@@ -466,7 +381,7 @@ node * Parser::primary() {
         xpd_putc('\n');
         xpd_echo_int(expr.entry.literal_val.data.number, XPD_Flag_UnsignedDecimal);
         xpd_putc('\n');
-        expr_ptr = write_new_node(expr);
+        expr_ptr = write_new_node(&expr);
         xpd_puts("HERE IN PRIMARY() 3-6\n");
     } else if (current_matches(STRING)) {
         lit.type = STRING_VALUE;
