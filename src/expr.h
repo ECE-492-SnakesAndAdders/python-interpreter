@@ -14,11 +14,11 @@
 #include "lexer.h"
 
 
-class Expr;
-class Binary;
-class Grouping;
-class Literal;
-class Unary;
+// class Expr;
+// class Binary;
+// class Grouping;
+// class Literal;
+// class Unary;
 struct node;
 
 /**
@@ -83,123 +83,128 @@ struct node {
 };
 
 
-/**
- *
- */
- class Visitor {
-    public:
-        // T visitAssignExpr(Assign expr);
-        literal_value visitBinaryExpr(Binary expr);
-        // T visitCallExpr(Call expr);
-        // T visitGetExpr(Get expr);
-        literal_value visitGroupingExpr(Grouping expr);
-        literal_value visitLiteralExpr(Literal expr);
-        // T visitLogicalExpr(Logical expr);
-        // T visitSetExpr(Set expr);
-        // T visitSuperExpr(Super expr);
-        // T visitThisExpr(This expr);
-        literal_value visitUnaryExpr(Unary expr);
-        // T visitVariableExpr(Variable expr);
-};
+node make_new_binary(node * left, lexemes opcode, node * right);
+node make_new_unary(lexemes opcode, node * right);
+node make_new_literal(literal_value value);
+node make_new_grouping(node * expression);
+
+// /**
+//  *
+//  */
+//  class Visitor {
+//     public:
+//         // T visitAssignExpr(Assign expr);
+//         literal_value visitBinaryExpr(Binary expr);
+//         // T visitCallExpr(Call expr);
+//         // T visitGetExpr(Get expr);
+//         literal_value visitGroupingExpr(Grouping expr);
+//         literal_value visitLiteralExpr(Literal expr);
+//         // T visitLogicalExpr(Logical expr);
+//         // T visitSetExpr(Set expr);
+//         // T visitSuperExpr(Super expr);
+//         // T visitThisExpr(This expr);
+//         literal_value visitUnaryExpr(Unary expr);
+//         // T visitVariableExpr(Variable expr);
+// };
 
 
-/**
- *
- */
-class Expr {
-    public:
-        node expr;
-        literal_value accept(Visitor visitor);
-};
+// /**
+//  *
+//  */
+// class Expr {
+//     public:
+//         node expr;
+//         literal_value accept(Visitor visitor);
+// };
 
 
+// // /**
+// //  *
+// //  */
+// // class Binary : public Expr {
+// //     private:
+// //         Expr left;
+// //         lexemes opcode;
+// //         Expr right;
+
+// //     public:
+// //         Binary(Expr left, lexemes opcode, Expr right);
+// //         Expr get_left();
+// //         lexemes get_opcode();
+// //         Expr get_right();
+// //         literal_value accept(Visitor visitor);
+// // };
 // /**
 //  *
 //  */
 // class Binary : public Expr {
-//     private:
-//         Expr left;
-//         lexemes opcode;
-//         Expr right;
+//     // private:
+//     //     Expr left;
+//     //     lexemes opcode;
+//     //     Expr right;
 
 //     public:
-//         Binary(Expr left, lexemes opcode, Expr right);
-//         Expr get_left();
-//         lexemes get_opcode();
-//         Expr get_right();
+//         Binary(node * left, lexemes opcode, node * right);
+//         // Expr get_left();
+//         // lexemes get_opcode();
+//         // Expr get_right();
 //         literal_value accept(Visitor visitor);
 // };
-/**
- *
- */
-class Binary : public Expr {
-    // private:
-    //     Expr left;
-    //     lexemes opcode;
-    //     Expr right;
-
-    public:
-        Binary(node * left, lexemes opcode, node * right);
-        // Expr get_left();
-        // lexemes get_opcode();
-        // Expr get_right();
-        literal_value accept(Visitor visitor);
-};
-
-
-/**
- *
- */
-class Grouping : public Expr {
-    // private:
-    //     Expr expression;
-
-    public:
-        Grouping(node * expression);
-        literal_value accept(Visitor visitor);
-};
-
-
-/**
- *
- */
-class Literal : public Expr {
-    // private:
-    //     literal_value value;
-
-    public:
-        Literal(node * value);
-        literal_value accept(Visitor visitor);
-};
 
 
 // /**
 //  *
 //  */
-// class Unary : public Expr {
-//     private:
-//         lexemes opcode;
-//         Expr right;
+// class Grouping : public Expr {
+//     // private:
+//     //     Expr expression;
 
 //     public:
-//         Unary(lexemes opcode, Expr right);
-//         lexemes get_opcode();
-//         Expr get_right();
+//         Grouping(node * expression);
 //         literal_value accept(Visitor visitor);
 // };
-/**
- *
- */
-class Unary : public Expr {
-    // private:
-    //     lexemes opcode;
-    //     Expr right;
 
-    public:
-        Unary(lexemes opcode, node * right);
-        // lexemes get_opcode();
-        // Expr get_right();
-        literal_value accept(Visitor visitor);
-};
+
+// /**
+//  *
+//  */
+// class Literal : public Expr {
+//     // private:
+//     //     literal_value value;
+
+//     public:
+//         Literal(node * value);
+//         literal_value accept(Visitor visitor);
+// };
+
+
+// // /**
+// //  *
+// //  */
+// // class Unary : public Expr {
+// //     private:
+// //         lexemes opcode;
+// //         Expr right;
+
+// //     public:
+// //         Unary(lexemes opcode, Expr right);
+// //         lexemes get_opcode();
+// //         Expr get_right();
+// //         literal_value accept(Visitor visitor);
+// // };
+// /**
+//  *
+//  */
+// class Unary : public Expr {
+//     // private:
+//     //     lexemes opcode;
+//     //     Expr right;
+
+//     public:
+//         Unary(lexemes opcode, node * right);
+//         // lexemes get_opcode();
+//         // Expr get_right();
+//         literal_value accept(Visitor visitor);
+// };
 
 #endif

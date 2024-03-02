@@ -46,11 +46,78 @@ Parser::Parser(lexed_command input) {
 }
 
 
+node * Parser::write_new_node(node * value) {
+    xpd_puts("HERE IN WRITE_NEW_NODE()\n");
+    xpd_echo_int(value -> type, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    xpd_echo_int(value -> entry.literal_val.type, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    xpd_echo_int(value -> entry.literal_val.data.number, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    node_types node_type = value -> type;
+    nodes[current_node].type = value -> type;
+    xpd_echo_int(nodes[current_node].type, XPD_Flag_UnsignedDecimal);
+    xpd_echo_int(value -> type, XPD_Flag_UnsignedDecimal);
+    xpd_echo_int(node_type, XPD_Flag_UnsignedDecimal);
+    xpd_echo_int(LITERAL_NODE, XPD_Flag_UnsignedDecimal);
+    xpd_puts("HERE IN WRITE_NEW_NODE() PLEASE\n");
+    // if (node_type == LITERAL_NODE) {
+    //     xpd_puts("HERE IN WRITE_NEW_NODE() YES\n");
+    //     nodes[current_node].entry.literal_val.type = value -> entry.literal_val.type;
+    //     if (nodes[current_node].entry.literal_val.type == NUMBER_VALUE) {
+    //         nodes[current_node].entry.literal_val.data.number = value -> entry.literal_val.data.number;
+    //     } else if (nodes[current_node].entry.literal_val.type == STRING_VALUE) {
+    //         for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
+    //             nodes[current_node].entry.literal_val.data.string[i] = value -> entry.literal_val.data.string[i];
+    //         }
+    //     }
+    //     xpd_puts("HERE IN WRITE_NEW_NODE() GOOD\n");
+    // } else if (node_type == UNARY_NODE) {
+    //     nodes[current_node].entry.unary_val.opcode = value -> entry.unary_val.opcode;
+    //     nodes[current_node].entry.unary_val.right = value -> entry.unary_val.right;
+    // } else if (node_type == BINARY_NODE) {
+    //     nodes[current_node].entry.binary_val.left = value -> entry.binary_val.left;
+    //     nodes[current_node].entry.binary_val.opcode = value -> entry.binary_val.opcode;
+    //     nodes[current_node].entry.binary_val.right = value -> entry.binary_val.right;
+    // } else if (node_type == GROUPING_NODE) {
+    //     nodes[current_node].entry.grouping_val.expression = value -> entry.grouping_val.expression;;
+    // }
+    switch (node_type) {
+        case LITERAL_NODE:
+            xpd_puts("HERE IN WRITE_NEW_NODE()\n");
+            nodes[current_node].entry.literal_val.type = value -> entry.literal_val.type;
+            if (nodes[current_node].entry.literal_val.type == NUMBER_VALUE) {
+                nodes[current_node].entry.literal_val.data.number = value -> entry.literal_val.data.number;
+            } else if (nodes[current_node].entry.literal_val.type == STRING_VALUE) {
+                for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
+                    nodes[current_node].entry.literal_val.data.string[i] = value -> entry.literal_val.data.string[i];
+                }
+            }
+            xpd_puts("HERE IN WRITE_NEW_NODE()\n");
+            break;
+        case UNARY_NODE:
+            nodes[current_node].entry.unary_val.opcode = value -> entry.unary_val.opcode;
+            nodes[current_node].entry.unary_val.right = value -> entry.unary_val.right;
+            break;
+        case BINARY_NODE:
+            nodes[current_node].entry.binary_val.left = value -> entry.binary_val.left;
+            nodes[current_node].entry.binary_val.opcode = value -> entry.binary_val.opcode;
+            nodes[current_node].entry.binary_val.right = value -> entry.binary_val.right;
+            break;
+        case GROUPING_NODE:
+            nodes[current_node].entry.grouping_val.expression = value -> entry.grouping_val.expression;
+            break;
+    }
+    xpd_puts("YAY\n");
+    return &nodes[current_node++];
+}
+
+
 /**
  * \brief Starts the chain of parsing a Python expression.
  * \return The internal representation of the expression.
  */
-Expr Parser::expression() {
+node * Parser::expression() {
     xpd_puts("HERE IN EXPRESSION()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     return disjunction();
@@ -61,7 +128,7 @@ Expr Parser::expression() {
  * \brief Handles the lowest priority operator: "or"/"OR".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::disjunction() {
+node * Parser::disjunction() {
     /** general strategy for all levels is as follows:
      *    recurse down, allowing higher priority operators to start, then
      *    deal with current operator as it arises, then
@@ -71,18 +138,20 @@ Expr Parser::disjunction() {
     xpd_puts("HERE IN DISJUNCTION()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     // recurse to higher priority operators
-    Expr expr = conjunction();
+    node * expr_ptr = conjunction();
     // deal with any OR operators
     while (current_matches(OR)) {
         // find the operation to be completed
         lexemes opcode = current_token();
         // recurse again to get the right operand
-        Expr right = conjunction();
+        node * right = conjunction();
+        node * right_ptr = write_new_node(right);
         // combine the operands, building up the syntax tree
-        expr = Binary(expr, opcode, right);
+        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
     // combined nested expressions is the new expression
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -90,16 +159,18 @@ Expr Parser::disjunction() {
  * \brief Handles the next lowest priority operator: "and"/"AND".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::conjunction() {
+node * Parser::conjunction() {
     xpd_puts("HERE IN CONJUNCTION()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-    Expr expr = inversion();
+    node * expr_ptr = inversion();
     while (current_matches(AND)) {
         lexemes opcode = current_token();
-        Expr right = inversion();
-        expr = Binary(expr, opcode, right);
+        node * right = inversion();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -107,16 +178,18 @@ Expr Parser::conjunction() {
  * \brief Handles the next lowest priority operator: "not"/"NOT".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::inversion() {
+node * Parser::inversion() {
     xpd_puts("HERE IN INVERSION()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-    Expr expr = comparison();
+    node * expr_ptr = comparison();
     while (current_matches(NOT)) {
         lexemes opcode = current_token();
-        Expr right = inversion();
-        expr = Unary(opcode, right);
+        node * right = inversion();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_unary(opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -126,20 +199,22 @@ Expr Parser::inversion() {
  *                                                   "is"/"IS", "is not"/"", "in"/"IN", "not in"/"") .
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::comparison() {
+node * Parser::comparison() {
     xpd_puts("HERE IN COMPARISON()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-    Expr expr = bor();
+    node * expr_ptr = bor();
     // TODO: handle cascaded comaprison operators properly
     // TODO: handle "is not" and "not in" keywords
     while (current_matches(EQUAL) || current_matches(N_EQUAL) || current_matches(GREATER) ||
            current_matches(G_EQUAL) || current_matches(LESS) || current_matches(L_EQUAL) ||
            current_matches(IS) || current_matches(IN)) {
         lexemes opcode = current_token();
-        Expr right = bor();
-        expr = Binary(expr, opcode, right);
+        node * right = bor();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -147,16 +222,18 @@ Expr Parser::comparison() {
  * \brief Handles the next lowest priority operator: "|"/"B_OR".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::bor() {
+node * Parser::bor() {
     xpd_puts("HERE IN BOR()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-    Expr expr = bxor();
+    node * expr_ptr = bxor();
     while (current_matches(B_OR)) {
         lexemes opcode = current_token();
-        Expr right = bxor();
-        expr = Binary(expr, opcode, right);
+        node * right = bxor();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -164,16 +241,18 @@ Expr Parser::bor() {
  * \brief Handles the next lowest priority operator: "^"/"B_XOR".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::bxor() {
+node * Parser::bxor() {
     xpd_puts("HERE IN BXOR()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-    Expr expr = band();
+    node * expr_ptr = band();
     while (current_matches(B_XOR)) {
         lexemes opcode = current_token();
-        Expr right = band();
-        expr = Binary(expr, opcode, right);
+        node * right = band();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -181,16 +260,18 @@ Expr Parser::bxor() {
  * \brief Handles the next lowest priority operator: "&"/"B_AND".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::band() {
+node * Parser::band() {
     xpd_puts("HERE IN BAND()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-    Expr expr = shift();
+    node * expr_ptr = shift();
     while (current_matches(B_AND)) {
         lexemes opcode = current_token();
-        Expr right = shift();
-        expr = Binary(expr, opcode, right);
+        node * right = shift();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -198,16 +279,18 @@ Expr Parser::band() {
  * \brief Handles the next lowest priority operator: "<<"/"B_SLL", ">>"/"B_SAR".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::shift() {
+node * Parser::shift() {
     xpd_puts("HERE IN SHIFT()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-    Expr expr = sum();
+    node * expr_ptr = sum();
     while (current_matches(B_SLL) || current_matches(B_SAR)) {
         lexemes opcode = current_token();
-        Expr right = sum();
-        expr = Binary(expr, opcode, right);
+        node * right = sum();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -215,21 +298,23 @@ Expr Parser::shift() {
  * \brief Handles the next lowest priority operator: "+"/"PLUS", "-"/"MINUS".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::sum() {
+node * Parser::sum() {
     // TODO: deal with unary versions
     xpd_puts("HERE IN SUM()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-    Expr expr = term();
+    node * expr_ptr = term();
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     while (current_matches(PLUS) || current_matches(MINUS)) {
         xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
         xpd_echo_int(previous_token(), XPD_Flag_UnsignedDecimal);
-        xpd_puts("HERE in (+)\n");
+        xpd_puts("HERE in (+) BINARY\n");
         lexemes opcode = current_token();
-        Expr right = term();
-        expr = Binary(expr, opcode, right);
+        node * right = term();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -237,17 +322,19 @@ Expr Parser::sum() {
  * \brief Handles the next lowest priority operator: "*"/"STAR", "/"/"SLASH", "//"/"D_SLASH", "%"/"PERCENT", "@"/"AT".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::term() {
+node * Parser::term() {
     xpd_puts("HERE IN TERM()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-    Expr expr = factor();
+    node * expr_ptr = factor();
     while (current_matches(STAR) || current_matches(SLASH) || current_matches(D_SLASH) ||
            current_matches(PERCENT) || current_matches(AT)) {
         lexemes opcode = current_token();
-        Expr right = factor();
-        expr = Binary(expr, opcode, right);
+        node * right = factor();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -255,18 +342,20 @@ Expr Parser::term() {
  * \brief Handles the next lowest priority operator: "+"/"PLUS", "-"/"MINUS", "~"/"B_NOT".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::factor() {
+node * Parser::factor() {
     xpd_puts("HERE IN FACTOR()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     // TODO: deal with binary versions
-    Expr expr = power();
+    node * expr_ptr = power();
     while (current_matches(PLUS) || current_matches(MINUS) || current_matches(B_NOT)) {
-        xpd_puts("HERE in (+)\n");
+        xpd_puts("HERE in (+) UNARY\n");
         lexemes opcode = current_token();
-        Expr right = factor();
-        expr = Unary(opcode, right);
+        node * right = factor();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_unary(opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -274,16 +363,18 @@ Expr Parser::factor() {
  * \brief Handles the next lowest priority operator: "**"/"D_STAR".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::power() {
+node * Parser::power() {
     xpd_puts("HERE IN POWER()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-    Expr expr = primary();
+    node * expr_ptr = primary();
     while (current_matches(D_STAR)) {
         lexemes opcode = current_token();
-        Expr right = primary();
-        expr = Binary(expr, opcode, right);
+        node * right = primary();
+        node * right_ptr = write_new_node(right);
+        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        expr_ptr = write_new_node(&expr);
     }
-    return expr;
+    return expr_ptr;
 }
 
 
@@ -291,30 +382,49 @@ Expr Parser::power() {
  * \brief Handles literal values: "STRING", "NUMBER", "TRUE", "FALSE", "NONE".
  * \return The internal representation of the expression parsed so far.
  */
-Expr Parser::primary() {
+node * Parser::primary() {
     xpd_puts("HERE IN PRIMARY()\n");
     xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     // TODO: set up data types so that any value can be used
     // base case deals with literal values and parentheses
     // sentinel literal values
+    xpd_puts("HERE IN PRIMARY() 1\n");
+    node * expr_ptr = NULL;
+    xpd_puts("HERE IN PRIMARY() 2\n");
     literal_value lit;
     if (current_matches(FALSE)) {
         lit.type = FALSE_VALUE;
-        return Literal(lit);
+        node expr = make_new_literal(lit);
+        expr_ptr = write_new_node(&expr);
     } else if (current_matches(NONE)) {
         lit.type = NONE_VALUE;
-        return Literal(lit);
+        node expr = make_new_literal(lit);
+        expr_ptr = write_new_node(&expr);
     } else if (current_matches(TRUE)) {
         lit.type = TRUE_VALUE;
-        return Literal(lit);
+        node expr = make_new_literal(lit);
+        expr_ptr = write_new_node(&expr);
     }
+    xpd_puts("HERE IN PRIMARY() 3\n");
     // number and string literal values that need to be fetched
     if (current_matches(NUMBER)) {
-        xpd_puts
+        xpd_puts("HERE IN PRIMARY() 3-1\n");
         lit.type = NUMBER_VALUE;
+        xpd_puts("HERE IN PRIMARY() 3-2\n");
         lit.data.number = command_info.num_lits[current_num_lit];
+        xpd_puts("HERE IN PRIMARY() 3-3\n");
         current_num_lit++;
-        return Literal(lit);
+        xpd_puts("HERE IN PRIMARY() 3-4\n");
+        node expr = make_new_literal(lit);
+        xpd_puts("HERE IN PRIMARY() 3-5\n");
+        xpd_echo_int(expr.type, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
+        xpd_echo_int(expr.entry.literal_val.type, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
+        xpd_echo_int(expr.entry.literal_val.data.number, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
+        expr_ptr = write_new_node(&expr);
+        xpd_puts("HERE IN PRIMARY() 3-6\n");
     } else if (current_matches(STRING)) {
         lit.type = STRING_VALUE;
         char * temp = command_info.str_lits[current_str_lit];
@@ -322,19 +432,23 @@ Expr Parser::primary() {
             lit.data.string[i] = *(temp + i);
         }
         current_str_lit++;
-        return Literal(lit);
+        node expr = make_new_literal(lit);
+        expr_ptr = write_new_node(&expr);
     }
+    xpd_puts("HERE IN PRIMARY() 4\n");
     // deal with parentheses
     if (current_matches(L_PAREN)) {
         // any general expression can be nested in parentheses
-        Expr expr = expression();
+        node * expr_x = expression();
+        node expr = make_new_grouping(expr_x);
+        expr_ptr = write_new_node(&expr);
         if (!current_matches(R_PAREN)) {
             // TODO: report error
         }
-        return Grouping(expr);
     }
+    xpd_puts("HERE IN PRIMARY() 5\n");
     // theoretically unreachable
-    return Expr();
+    return expr_ptr;
 }
 
 
@@ -403,7 +517,7 @@ bool Parser::end_reached() {
  * \brief Parses the input tokens into an expression.
  * \return The internal representation of the expression.
  */
-Expr Parser::parse_input() {
+node * Parser::parse_input() {
     // TODO: handle more complex inputs (statements, blocks, ...)
     xpd_puts("HERE IN PARSE()\n");
     xpd_echo_int(current, XPD_Flag_UnsignedDecimal);

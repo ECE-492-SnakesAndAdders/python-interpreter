@@ -23,11 +23,13 @@
 /**
  *
  */
-Binary::Binary(node * left, lexemes opcode, node * right) {
-    expr.type = BINARY_NODE;
-    expr.entry.binary_val.left = left;
-    expr.entry.binary_val.opcode = opcode;
-    expr.entry.binary_val.right = right;
+node make_new_binary(node * left, lexemes opcode, node * right) {
+    node current;
+    current.type = BINARY_NODE;
+    current.entry.binary_val.left = left;
+    current.entry.binary_val.opcode = opcode;
+    current.entry.binary_val.right = right;
+    return current;
 }
 
 
@@ -55,12 +57,12 @@ Binary::Binary(node * left, lexemes opcode, node * right) {
 // }
 
 
-/**
- *
- */
-literal_value Binary::accept(Visitor visitor) {
-    return visitor.visitBinaryExpr(*this);
-}
+// /**
+//  *
+//  */
+// literal_value Binary::accept(Visitor visitor) {
+//     return visitor.visitBinaryExpr(*this);
+// }
 
 
 // /**
@@ -72,18 +74,20 @@ literal_value Binary::accept(Visitor visitor) {
 /**
  *
  */
-Grouping::Grouping(node * expression) {
-    expr.type = GROUPING_NODE;
-    expr.entry.grouping_val.expression = expression;
+node make_new_grouping(node * expression) {
+    node current;
+    current.type = GROUPING_NODE;
+    current.entry.grouping_val.expression = expression;
+    return current;
 }
 
 
-/**
- *
- */
-literal_value Grouping::accept(Visitor visitor) {
-    return visitor.visitGroupingExpr(*this);
-}
+// /**
+//  *
+//  */
+// literal_value Grouping::accept(Visitor visitor) {
+//     return visitor.visitGroupingExpr(*this);
+// }
 
 
 // /**
@@ -95,25 +99,27 @@ literal_value Grouping::accept(Visitor visitor) {
 /**
  *
  */
-Literal::Literal(node * value) {
-    expr.type = LITERAL_NODE;
-    expr.entry.literal_val.type = value -> entry.literal_val.type;
-    if (expr.entry.literal_val.type == NUMBER_VALUE) {
-        expr.entry.literal_val.data.number = value -> entry.literal_val.data.number;
-    } else if (expr.entry.literal_val.type == STRING_VALUE) {
+node make_new_literal(literal_value value) {
+    node current;
+    current.type = LITERAL_NODE;
+    current.entry.literal_val.type = value.type;
+    if (current.entry.literal_val.type == NUMBER_VALUE) {
+        current.entry.literal_val.data.number = value.data.number;
+    } else if (current.entry.literal_val.type == STRING_VALUE) {
         for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-            expr.entry.literal_val.data.string[i] = value -> entry.literal_val.data.string[i];
+            current.entry.literal_val.data.string[i] = value.data.string[i];
         }
     }
+    return current;
 }
 
 
-/**
- *
- */
-literal_value Literal::accept(Visitor visitor) {
-    return visitor.visitLiteralExpr(*this);
-}
+// /**
+//  *
+//  */
+// literal_value Literal::accept(Visitor visitor) {
+//     return visitor.visitLiteralExpr(*this);
+// }
 
 
 // /**
@@ -126,10 +132,12 @@ literal_value Literal::accept(Visitor visitor) {
 /**
  *
  */
-Unary::Unary(lexemes opcode, node * right) {
-    expr.type = UNARY_NODE;
-    expr.entry.unary_val.opcode = opcode;
-    expr.entry.unary_val.right = right;
+node make_new_unary(lexemes opcode, node * right) {
+    node current;
+    current.type = UNARY_NODE;
+    current.entry.unary_val.opcode = opcode;
+    current.entry.unary_val.right = right;
+    return current;
 }
 
 
@@ -149,9 +157,9 @@ Unary::Unary(lexemes opcode, node * right) {
 // }
 
 
-/**
- *
- */
-literal_value Unary::accept(Visitor visitor) {
-    return visitor.visitUnaryExpr(*this);
-}
+// /**
+//  *
+//  */
+// literal_value Unary::accept(Visitor visitor) {
+//     return visitor.visitUnaryExpr(*this);
+// }

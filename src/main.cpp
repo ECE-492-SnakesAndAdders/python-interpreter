@@ -102,7 +102,7 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
     xpd_putc('\n');
     // ------------------------------------------------------------------------
     Parser parser(token_sequence);
-    Expr tree = parser.parse_input();
+    node * tree = parser.parse_input();
     // xpd_echo_int(((Binary) tree).get_left(), XPD_Flag_UnsignedDecimal);
     // Evaluator evaluator(0);
     // evaluator.evaluate(tree);
