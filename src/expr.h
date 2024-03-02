@@ -19,7 +19,7 @@ class Binary;
 class Grouping;
 class Literal;
 class Unary;
-
+struct node;
 
 /**
  * \brief The list of all possible literal types in Python.
@@ -40,6 +40,46 @@ struct literal_value {
         uint16_t number;
         char string[MAX_LIT_LEN];
     } data;
+};
+
+
+struct unary_value {
+    lexemes opcode;
+    node * right;
+};
+
+
+struct binary_value {
+    node * left;
+    lexemes opcode;
+    node * right;
+};
+
+
+struct grouping_value {
+    node * expression;
+};
+
+
+/**
+ * \brief
+ */
+enum node_types {
+    LITERAL_NODE, UNARY_NODE, BINARY_NODE, GROUPING_NODE
+};
+
+
+/**
+ *
+ */
+struct node {
+    node_types type;
+    union {
+        literal_value literal_val;
+        unary_value unary_val;
+        binary_value binary_val;
+        grouping_value grouping_val;
+    } entry;
 };
 
 
@@ -68,24 +108,41 @@ struct literal_value {
  */
 class Expr {
     public:
+        node expr;
         literal_value accept(Visitor visitor);
 };
 
 
+// /**
+//  *
+//  */
+// class Binary : public Expr {
+//     private:
+//         Expr left;
+//         lexemes opcode;
+//         Expr right;
+
+//     public:
+//         Binary(Expr left, lexemes opcode, Expr right);
+//         Expr get_left();
+//         lexemes get_opcode();
+//         Expr get_right();
+//         literal_value accept(Visitor visitor);
+// };
 /**
  *
  */
 class Binary : public Expr {
-    private:
-        Expr left;
-        lexemes opcode;
-        Expr right;
+    // private:
+    //     Expr left;
+    //     lexemes opcode;
+    //     Expr right;
 
     public:
-        Binary(Expr left, lexemes opcode, Expr right);
-        Expr get_left();
-        lexemes get_opcode();
-        Expr get_right();
+        Binary(node * left, lexemes opcode, node * right);
+        // Expr get_left();
+        // lexemes get_opcode();
+        // Expr get_right();
         literal_value accept(Visitor visitor);
 };
 
@@ -94,11 +151,11 @@ class Binary : public Expr {
  *
  */
 class Grouping : public Expr {
-    private:
-        Expr expression;
+    // private:
+    //     Expr expression;
 
     public:
-        Grouping(Expr expression);
+        Grouping(node * expression);
         literal_value accept(Visitor visitor);
 };
 
@@ -107,27 +164,41 @@ class Grouping : public Expr {
  *
  */
 class Literal : public Expr {
-    private:
-        literal_value value;
+    // private:
+    //     literal_value value;
 
     public:
-        Literal(literal_value value);
+        Literal(node * value);
         literal_value accept(Visitor visitor);
 };
 
 
+// /**
+//  *
+//  */
+// class Unary : public Expr {
+//     private:
+//         lexemes opcode;
+//         Expr right;
+
+//     public:
+//         Unary(lexemes opcode, Expr right);
+//         lexemes get_opcode();
+//         Expr get_right();
+//         literal_value accept(Visitor visitor);
+// };
 /**
  *
  */
 class Unary : public Expr {
-    private:
-        lexemes opcode;
-        Expr right;
+    // private:
+    //     lexemes opcode;
+    //     Expr right;
 
     public:
-        Unary(lexemes opcode, Expr right);
-        lexemes get_opcode();
-        Expr get_right();
+        Unary(lexemes opcode, node * right);
+        // lexemes get_opcode();
+        // Expr get_right();
         literal_value accept(Visitor visitor);
 };
 

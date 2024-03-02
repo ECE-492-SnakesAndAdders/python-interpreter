@@ -40,6 +40,8 @@
  * \param [in] input Pointer to the token list returned by the lexer.
  */
 Parser::Parser(lexed_command input) {
+    xpd_puts("HERE IN PARSER()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     command_info = input;
 }
 
@@ -49,6 +51,8 @@ Parser::Parser(lexed_command input) {
  * \return The internal representation of the expression.
  */
 Expr Parser::expression() {
+    xpd_puts("HERE IN EXPRESSION()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     return disjunction();
 }
 
@@ -64,6 +68,8 @@ Expr Parser::disjunction() {
      *    recurse down for subsequent operand, then
      *    combine these two operands with the current operator
      */
+    xpd_puts("HERE IN DISJUNCTION()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     // recurse to higher priority operators
     Expr expr = conjunction();
     // deal with any OR operators
@@ -85,6 +91,8 @@ Expr Parser::disjunction() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::conjunction() {
+    xpd_puts("HERE IN CONJUNCTION()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     Expr expr = inversion();
     while (current_matches(AND)) {
         lexemes opcode = current_token();
@@ -100,6 +108,8 @@ Expr Parser::conjunction() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::inversion() {
+    xpd_puts("HERE IN INVERSION()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     Expr expr = comparison();
     while (current_matches(NOT)) {
         lexemes opcode = current_token();
@@ -117,6 +127,8 @@ Expr Parser::inversion() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::comparison() {
+    xpd_puts("HERE IN COMPARISON()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     Expr expr = bor();
     // TODO: handle cascaded comaprison operators properly
     // TODO: handle "is not" and "not in" keywords
@@ -136,6 +148,8 @@ Expr Parser::comparison() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::bor() {
+    xpd_puts("HERE IN BOR()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     Expr expr = bxor();
     while (current_matches(B_OR)) {
         lexemes opcode = current_token();
@@ -151,6 +165,8 @@ Expr Parser::bor() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::bxor() {
+    xpd_puts("HERE IN BXOR()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     Expr expr = band();
     while (current_matches(B_XOR)) {
         lexemes opcode = current_token();
@@ -166,6 +182,8 @@ Expr Parser::bxor() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::band() {
+    xpd_puts("HERE IN BAND()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     Expr expr = shift();
     while (current_matches(B_AND)) {
         lexemes opcode = current_token();
@@ -181,6 +199,8 @@ Expr Parser::band() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::shift() {
+    xpd_puts("HERE IN SHIFT()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     Expr expr = sum();
     while (current_matches(B_SLL) || current_matches(B_SAR)) {
         lexemes opcode = current_token();
@@ -197,8 +217,14 @@ Expr Parser::shift() {
  */
 Expr Parser::sum() {
     // TODO: deal with unary versions
+    xpd_puts("HERE IN SUM()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     Expr expr = term();
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     while (current_matches(PLUS) || current_matches(MINUS)) {
+        xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
+        xpd_echo_int(previous_token(), XPD_Flag_UnsignedDecimal);
+        xpd_puts("HERE in (+)\n");
         lexemes opcode = current_token();
         Expr right = term();
         expr = Binary(expr, opcode, right);
@@ -212,6 +238,8 @@ Expr Parser::sum() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::term() {
+    xpd_puts("HERE IN TERM()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     Expr expr = factor();
     while (current_matches(STAR) || current_matches(SLASH) || current_matches(D_SLASH) ||
            current_matches(PERCENT) || current_matches(AT)) {
@@ -228,9 +256,12 @@ Expr Parser::term() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::factor() {
+    xpd_puts("HERE IN FACTOR()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     // TODO: deal with binary versions
     Expr expr = power();
     while (current_matches(PLUS) || current_matches(MINUS) || current_matches(B_NOT)) {
+        xpd_puts("HERE in (+)\n");
         lexemes opcode = current_token();
         Expr right = factor();
         expr = Unary(opcode, right);
@@ -244,6 +275,8 @@ Expr Parser::factor() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::power() {
+    xpd_puts("HERE IN POWER()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     Expr expr = primary();
     while (current_matches(D_STAR)) {
         lexemes opcode = current_token();
@@ -259,6 +292,8 @@ Expr Parser::power() {
  * \return The internal representation of the expression parsed so far.
  */
 Expr Parser::primary() {
+    xpd_puts("HERE IN PRIMARY()\n");
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     // TODO: set up data types so that any value can be used
     // base case deals with literal values and parentheses
     // sentinel literal values
@@ -275,6 +310,7 @@ Expr Parser::primary() {
     }
     // number and string literal values that need to be fetched
     if (current_matches(NUMBER)) {
+        xpd_puts
         lit.type = NUMBER_VALUE;
         lit.data.number = command_info.num_lits[current_num_lit];
         current_num_lit++;
@@ -369,5 +405,7 @@ bool Parser::end_reached() {
  */
 Expr Parser::parse_input() {
     // TODO: handle more complex inputs (statements, blocks, ...)
+    xpd_puts("HERE IN PARSE()\n");
+    xpd_echo_int(current, XPD_Flag_UnsignedDecimal);
     return expression();
 }
