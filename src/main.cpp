@@ -66,44 +66,8 @@ uint16_t read(char ** input_ptr) {
 uint16_t eval(char ** input_ptr, char ** output_ptr) {
     Lexer lexer(input_ptr);
     lexed_command token_sequence = lexer.scan_input();
-    // ------------------------------------------------------------------------
-    // FOR DEBUGGING; print each token to see that lexer works
-    xpd_puts("\nLEXED INFO:\n");
-    xpd_puts("Tokens: ");
-    for (uint16_t i = 0; i < token_sequence.token_count; i++) {
-        xpd_echo_int(token_sequence.tokens[i], XPD_Flag_UnsignedDecimal);
-        xpd_putc(' ');
-        xpd_puts(token_names[token_sequence.tokens[i]]);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_puts("Strings: ");
-    for (uint16_t i = 0; i < token_sequence.str_lit_count; i++) {
-        xpd_puts(token_sequence.str_lits[i]);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_puts("Numbers: ");
-    for (uint16_t i = 0; i < token_sequence.num_lit_count; i++) {
-        xpd_echo_int(token_sequence.num_lits[i], XPD_Flag_UnsignedDecimal);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_puts("Identifiers: ");
-    for (uint16_t i = 0; i < token_sequence.identifier_count; i++) {
-        xpd_puts(token_sequence.identifiers[i]);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_putc('\n');
-    // ------------------------------------------------------------------------
     Parser parser(token_sequence);
     node * tree = parser.parse_input();
-    // xpd_echo_int(((Binary) tree).get_left(), XPD_Flag_UnsignedDecimal);
     // Evaluator evaluator(0);
     // evaluator.evaluate(tree);
     // temporary implementation; pass input to output for printing to test pipeline
