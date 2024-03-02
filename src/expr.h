@@ -14,18 +14,36 @@
 #include "lexer.h"
 
 
-// class Expr;
-// class Binary;
-// class Grouping;
-// class Literal;
-// class Unary;
-struct node;
+struct node;    // forward declaration
+
 
 /**
  * \brief The list of all possible literal types in Python.
  */
 enum literal_types {
     FALSE_VALUE, NONE_VALUE, NUMBER_VALUE, STRING_VALUE, TRUE_VALUE
+};
+
+
+/**
+ * \brief The internal representation of a binary operation.
+ */
+struct binary_value {
+    // the first operand of this operation
+    node * left;
+    // the actual operation to complete
+    lexemes opcode;
+    // the second operand of this operation
+    node * right;
+};
+
+
+/**
+ * \brief The internal representation of a parenthetical expression.
+ */
+struct grouping_value {
+    // the expression inside the parentheses
+    node * expression;
 };
 
 
@@ -43,168 +61,45 @@ struct literal_value {
 };
 
 
+/**
+ * \brief The internal representation of a unary operation.
+ */
 struct unary_value {
+    // the actual operation to complete
     lexemes opcode;
+    // the operand of this operation
     node * right;
-};
-
-
-struct binary_value {
-    node * left;
-    lexemes opcode;
-    node * right;
-};
-
-
-struct grouping_value {
-    node * expression;
 };
 
 
 /**
- * \brief
+ * \brief The list of all possible nodes in the syntax tree.
  */
 enum node_types {
-    LITERAL_NODE, UNARY_NODE, BINARY_NODE, GROUPING_NODE
+    BINARY_NODE, GROUPING_NODE, LITERAL_NODE, UNARY_NODE
 };
 
 
 /**
- *
+ * \brief The internal representation of a node in the syntax tree.
  */
 struct node {
+    // the type of node -- unary, binary, literal, etc.
     node_types type;
+    // the internal representation of that type of node, conserving memory
     union {
-        literal_value literal_val;
-        unary_value unary_val;
         binary_value binary_val;
         grouping_value grouping_val;
+        literal_value literal_val;
+        unary_value unary_val;
     } entry;
 };
 
 
+// constructor functions for these node structs
 node make_new_binary(node * left, lexemes opcode, node * right);
-node make_new_unary(lexemes opcode, node * right);
-node make_new_literal(literal_value value);
 node make_new_grouping(node * expression);
-
-// /**
-//  *
-//  */
-//  class Visitor {
-//     public:
-//         // T visitAssignExpr(Assign expr);
-//         literal_value visitBinaryExpr(Binary expr);
-//         // T visitCallExpr(Call expr);
-//         // T visitGetExpr(Get expr);
-//         literal_value visitGroupingExpr(Grouping expr);
-//         literal_value visitLiteralExpr(Literal expr);
-//         // T visitLogicalExpr(Logical expr);
-//         // T visitSetExpr(Set expr);
-//         // T visitSuperExpr(Super expr);
-//         // T visitThisExpr(This expr);
-//         literal_value visitUnaryExpr(Unary expr);
-//         // T visitVariableExpr(Variable expr);
-// };
-
-
-// /**
-//  *
-//  */
-// class Expr {
-//     public:
-//         node expr;
-//         literal_value accept(Visitor visitor);
-// };
-
-
-// // /**
-// //  *
-// //  */
-// // class Binary : public Expr {
-// //     private:
-// //         Expr left;
-// //         lexemes opcode;
-// //         Expr right;
-
-// //     public:
-// //         Binary(Expr left, lexemes opcode, Expr right);
-// //         Expr get_left();
-// //         lexemes get_opcode();
-// //         Expr get_right();
-// //         literal_value accept(Visitor visitor);
-// // };
-// /**
-//  *
-//  */
-// class Binary : public Expr {
-//     // private:
-//     //     Expr left;
-//     //     lexemes opcode;
-//     //     Expr right;
-
-//     public:
-//         Binary(node * left, lexemes opcode, node * right);
-//         // Expr get_left();
-//         // lexemes get_opcode();
-//         // Expr get_right();
-//         literal_value accept(Visitor visitor);
-// };
-
-
-// /**
-//  *
-//  */
-// class Grouping : public Expr {
-//     // private:
-//     //     Expr expression;
-
-//     public:
-//         Grouping(node * expression);
-//         literal_value accept(Visitor visitor);
-// };
-
-
-// /**
-//  *
-//  */
-// class Literal : public Expr {
-//     // private:
-//     //     literal_value value;
-
-//     public:
-//         Literal(node * value);
-//         literal_value accept(Visitor visitor);
-// };
-
-
-// // /**
-// //  *
-// //  */
-// // class Unary : public Expr {
-// //     private:
-// //         lexemes opcode;
-// //         Expr right;
-
-// //     public:
-// //         Unary(lexemes opcode, Expr right);
-// //         lexemes get_opcode();
-// //         Expr get_right();
-// //         literal_value accept(Visitor visitor);
-// // };
-// /**
-//  *
-//  */
-// class Unary : public Expr {
-//     // private:
-//     //     lexemes opcode;
-//     //     Expr right;
-
-//     public:
-//         Unary(lexemes opcode, node * right);
-//         // lexemes get_opcode();
-//         // Expr get_right();
-//         literal_value accept(Visitor visitor);
-// };
+node make_new_literal(literal_value value);
+node make_new_unary(lexemes opcode, node * right);
 
 #endif

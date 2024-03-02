@@ -12,16 +12,12 @@
 #include "parser.h"
 
 
-// /**
-//  *
-//  */
-// Binary::Binary(Expr left, lexemes opcode, Expr right) {
-//     this -> left = left;
-//     this -> opcode = opcode;
-//     this -> right = right;
-// }
 /**
- *
+ * \brief Constructor for a binary operation's syntax tree node.
+ * \param [in] left Pointer to the node representing the first operand.
+ * \param [in] opcode The token representing the operation to complete.
+ * \param [in] right Pointer to the node representing the second operand.
+ * \return A structure representing the syntax tree node.
  */
 node make_new_binary(node * left, lexemes opcode, node * right) {
     node current;
@@ -33,46 +29,10 @@ node make_new_binary(node * left, lexemes opcode, node * right) {
 }
 
 
-// /**
-//  *
-//  */
-// Expr Binary::get_left() {
-//     return left;
-// }
-
-
-// /**
-//  *
-//  */
-// lexemes Binary::get_opcode() {
-//     return opcode;
-// }
-
-
-// /**
-//  *
-//  */
-// Expr Binary::get_right() {
-//     return right;
-// }
-
-
-// /**
-//  *
-//  */
-// literal_value Binary::accept(Visitor visitor) {
-//     return visitor.visitBinaryExpr(*this);
-// }
-
-
-// /**
-//  *
-//  */
-// Grouping::Grouping(Expr expression) {
-//     this -> expression = expression;
-// }
 /**
- *
+ * \brief Constructor for a grouping's syntax tree node.
+ * \param [in] expression Pointer to the node representing the nested expression.
+ * \return A structure representing the syntax tree node.
  */
 node make_new_grouping(node * expression) {
     node current;
@@ -82,22 +42,10 @@ node make_new_grouping(node * expression) {
 }
 
 
-// /**
-//  *
-//  */
-// literal_value Grouping::accept(Visitor visitor) {
-//     return visitor.visitGroupingExpr(*this);
-// }
-
-
-// /**
-//  *
-//  */
-// Literal::Literal(literal_value value) {
-//     this -> value = value;
-// }
 /**
- *
+ * \brief Constructor for a literal value's syntax tree node.
+ * \param [in] value A structure representing the literal's value.
+ * \return A structure representing the syntax tree node.
  */
 node make_new_literal(literal_value value) {
     node current;
@@ -114,23 +62,11 @@ node make_new_literal(literal_value value) {
 }
 
 
-// /**
-//  *
-//  */
-// literal_value Literal::accept(Visitor visitor) {
-//     return visitor.visitLiteralExpr(*this);
-// }
-
-
-// /**
-//  *
-//  */
-// Unary::Unary(lexemes opcode, Expr right) {
-//     this -> opcode = opcode;
-//     this -> right = right;
-// }
 /**
- *
+ * \brief Constructor for a unary operation's syntax tree node.
+ * \param [in] opcode The token representing the operation to complete.
+ * \param [in] right Pointer to the node representing the operand.
+ * \return A structure representing the syntax tree node.
  */
 node make_new_unary(lexemes opcode, node * right) {
     node current;
@@ -139,27 +75,3 @@ node make_new_unary(lexemes opcode, node * right) {
     current.entry.unary_val.right = right;
     return current;
 }
-
-
-// /**
-//  *
-//  */
-// lexemes Unary::get_opcode() {
-//     return opcode;
-// }
-
-
-// /**
-//  *
-//  */
-// Expr Unary::get_right() {
-//     return right;
-// }
-
-
-// /**
-//  *
-//  */
-// literal_value Unary::accept(Visitor visitor) {
-//     return visitor.visitUnaryExpr(*this);
-// }
