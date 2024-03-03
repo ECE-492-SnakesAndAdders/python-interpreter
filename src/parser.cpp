@@ -52,68 +52,19 @@ Parser::Parser(lexed_command input) {
  * \brief Under construction.
  */
 node * Parser::write_new_node(node * value) {
-    // xpd_puts("HERE IN WRITE_NEW_NODE()\n");
-    // xpd_echo_int(value -> type, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
-    // xpd_echo_int(value -> entry.literal_val.type, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
-    // xpd_echo_int(value -> entry.literal_val.data.number, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
-    node_types node_type = value -> type;
+    // determine the type of node needed to be created
     tree_nodes[current_node].type = value -> type;
-    // xpd_echo_int(tree_nodes[current_node].type, XPD_Flag_UnsignedDecimal);
-    // xpd_echo_int(value -> type, XPD_Flag_UnsignedDecimal);
-    // xpd_echo_int(node_type, XPD_Flag_UnsignedDecimal);
-    // xpd_echo_int(LITERAL_NODE, XPD_Flag_UnsignedDecimal);
-    // for (int i = 0; i < 10000; ++i) {
-    //     sys_clock_wait(10000);
-    // }
-    // xpd_puts("HERE IN WRITE_NEW_NODE() PLEASE\n");
-    // for (int i = 0; i < 10000; ++i) {
-    //     sys_clock_wait(10000);
-    // }
-    // xpd_puts("HERE IN WRITE_NEW_NODE() PLEASE\n");
-    // for (int i = 0; i < 10000; ++i) {
-    //     sys_clock_wait(10000);
-    // }
-    // if (!(node_type == LITERAL_NODE)) {
-    //     xpd_puts("FUN\n");
-    //     for (int i = 0; i < 10000; ++i) {
-    //         sys_clock_wait(10000);
-    //     }
-    // }
-    // return &tree_nodes[current_node++];
-    switch (node_type) {
+    // transfer the data correctly into this safe memory location
+    switch (tree_nodes[current_node].type) {
         case BINARY_NODE:
-            // for (int i = 0; i < 10000; ++i) {
-            //     sys_clock_wait(10000);
-            // }
-            // xpd_puts("HERE IN WRITE_NEW_NODE()\n");
-            // for (int i = 0; i < 10000; ++i) {
-            //     sys_clock_wait(10000);
-            // }
             tree_nodes[current_node].entry.binary_val.left = value -> entry.binary_val.left;
             tree_nodes[current_node].entry.binary_val.opcode = value -> entry.binary_val.opcode;
             tree_nodes[current_node].entry.binary_val.right = value -> entry.binary_val.right;
             break;
         case GROUPING_NODE:
-            // for (int i = 0; i < 10000; ++i) {
-            //     sys_clock_wait(10000);
-            // }
-            // xpd_puts("HERE IN WRITE_NEW_NODE()\n");
-            // for (int i = 0; i < 10000; ++i) {
-            //     sys_clock_wait(10000);
-            // }
             tree_nodes[current_node].entry.grouping_val.expression = value -> entry.grouping_val.expression;
             break;
         case LITERAL_NODE:
-            // for (int i = 0; i < 10000; ++i) {
-            //     sys_clock_wait(10000);
-            // }
-            // xpd_puts("HERE IN WRITE_NEW_NODE()\n");
-            // for (int i = 0; i < 10000; ++i) {
-            //     sys_clock_wait(10000);
-            // }
             tree_nodes[current_node].entry.literal_val.type = value -> entry.literal_val.type;
             if (tree_nodes[current_node].entry.literal_val.type == NUMBER_VALUE) {
                 tree_nodes[current_node].entry.literal_val.data.number = value -> entry.literal_val.data.number;
@@ -122,21 +73,13 @@ node * Parser::write_new_node(node * value) {
                     tree_nodes[current_node].entry.literal_val.data.string[i] = value -> entry.literal_val.data.string[i];
                 }
             }
-            // xpd_puts("HERE IN WRITE_NEW_NODE()\n");
             break;
         case UNARY_NODE:
-            // for (int i = 0; i < 10000; ++i) {
-            //     sys_clock_wait(10000);
-            // }
-            // xpd_puts("HERE IN WRITE_NEW_NODE()\n");
-            // for (int i = 0; i < 10000; ++i) {
-            //     sys_clock_wait(10000);
-            // }
             tree_nodes[current_node].entry.unary_val.opcode = value -> entry.unary_val.opcode;
             tree_nodes[current_node].entry.unary_val.right = value -> entry.unary_val.right;
             break;
     }
-    // xpd_puts("YAY\n");
+    // return the address of this current node while moving along counter to new node location
     return &tree_nodes[current_node++];
 }
 
@@ -146,7 +89,6 @@ node * Parser::write_new_node(node * value) {
  * \return The internal representation of the expression.
  */
 node * Parser::expression() {
-    // xpd_puts("HERE IN EXPRESSION()\n");
     return disjunction();
 }
 
@@ -162,7 +104,6 @@ node * Parser::disjunction() {
      *    recurse down for subsequent operand, then
      *    combine these two operands with the current operator
      */
-    // xpd_puts("HERE IN DISJUNCTION()\n");
     // recurse to higher priority operators
     node * expr_ptr = conjunction();
     // deal with any OR operators
@@ -170,8 +111,7 @@ node * Parser::disjunction() {
         // find the operation to be completed
         lexemes opcode = previous_token();
         // recurse again to get the right operand
-        node * right = conjunction();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(conjunction());
         // combine the operands, building up the syntax tree
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
@@ -186,12 +126,10 @@ node * Parser::disjunction() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::conjunction() {
-    // xpd_puts("HERE IN CONJUNCTION()\n");
     node * expr_ptr = inversion();
     while (current_matches(AND)) {
         lexemes opcode = previous_token();
-        node * right = inversion();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(inversion());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
@@ -204,16 +142,13 @@ node * Parser::conjunction() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::inversion() {
-    // xpd_puts("HERE IN INVERSION()\n");
-    node * expr_ptr = comparison();
     while (current_matches(NOT)) {
         lexemes opcode = previous_token();
-        node * right = inversion();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(inversion());
         node expr = make_new_unary(opcode, right_ptr);
-        expr_ptr = write_new_node(&expr);
+        return write_new_node(&expr);
     }
-    return expr_ptr;
+    return comparison();
 }
 
 
@@ -224,7 +159,6 @@ node * Parser::inversion() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::comparison() {
-    // xpd_puts("HERE IN COMPARISON()\n");
     node * expr_ptr = bor();
     // TODO: handle cascaded comaprison operators properly
     // TODO: handle "is not" and "not in" keywords
@@ -232,8 +166,7 @@ node * Parser::comparison() {
            current_matches(G_EQUAL) || current_matches(LESS) || current_matches(L_EQUAL) ||
            current_matches(IS) || current_matches(IN)) {
         lexemes opcode = previous_token();
-        node * right = bor();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(bor());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
@@ -246,12 +179,10 @@ node * Parser::comparison() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::bor() {
-    // xpd_puts("HERE IN BOR()\n");
     node * expr_ptr = bxor();
     while (current_matches(B_OR)) {
         lexemes opcode = previous_token();
-        node * right = bxor();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(bxor());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
@@ -264,12 +195,10 @@ node * Parser::bor() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::bxor() {
-    // xpd_puts("HERE IN BXOR()\n");
     node * expr_ptr = band();
     while (current_matches(B_XOR)) {
         lexemes opcode = previous_token();
-        node * right = band();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(band());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
@@ -282,12 +211,10 @@ node * Parser::bxor() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::band() {
-    // xpd_puts("HERE IN BAND()\n");
     node * expr_ptr = shift();
     while (current_matches(B_AND)) {
         lexemes opcode = previous_token();
-        node * right = shift();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(shift());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
@@ -300,12 +227,10 @@ node * Parser::band() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::shift() {
-    // xpd_puts("HERE IN SHIFT()\n");
     node * expr_ptr = sum();
     while (current_matches(B_SLL) || current_matches(B_SAR)) {
         lexemes opcode = previous_token();
-        node * right = sum();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(sum());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
@@ -318,15 +243,10 @@ node * Parser::shift() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::sum() {
-    // xpd_puts("HERE IN SUM()\n");
     node * expr_ptr = term();
     while (current_matches(PLUS) || current_matches(MINUS)) {
-        // xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
-        // xpd_echo_int(previous_token(), XPD_Flag_UnsignedDecimal);
-        // xpd_puts("HERE in (+) BINARY\n");
         lexemes opcode = previous_token();
-        node * right = term();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(term());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
@@ -339,13 +259,11 @@ node * Parser::sum() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::term() {
-    // xpd_puts("HERE IN TERM()\n");
     node * expr_ptr = factor();
     while (current_matches(STAR) || current_matches(SLASH) || current_matches(D_SLASH) ||
            current_matches(PERCENT) || current_matches(AT)) {
         lexemes opcode = previous_token();
-        node * right = factor();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(factor());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
@@ -358,15 +276,11 @@ node * Parser::term() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::factor() {
-    // xpd_puts("HERE IN FACTOR()\n");
     while (current_matches(PLUS) || current_matches(MINUS) || current_matches(B_NOT)) {
-        // xpd_puts("HERE in (+) UNARY\n");
         lexemes opcode = previous_token();
-        node * right = factor();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(factor());
         node expr = make_new_unary(opcode, right_ptr);
-        node * expr_ptr = write_new_node(&expr);
-        return expr_ptr;
+        return write_new_node(&expr);
     }
     return power();
 }
@@ -377,12 +291,10 @@ node * Parser::factor() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::power() {
-    // xpd_puts("HERE IN POWER()\n");
     node * expr_ptr = primary();
     while (current_matches(D_STAR)) {
         lexemes opcode = previous_token();
-        node * right = primary();
-        node * right_ptr = write_new_node(right);
+        node * right_ptr = write_new_node(primary());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
@@ -395,7 +307,6 @@ node * Parser::power() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::primary() {
-    // xpd_puts("HERE IN PRIMARY()\n");
     // TODO: set up data types so that any value can be used
     // base case deals with literal values and parentheses
     // sentinel literal values
@@ -434,8 +345,7 @@ node * Parser::primary() {
     // deal with parentheses
     if (current_matches(L_PAREN)) {
         // any general expression can be nested in parentheses
-        node * expr_x = expression();
-        node expr = make_new_grouping(expr_x);
+        node expr = make_new_grouping(expression());
         expr_ptr = write_new_node(&expr);
         if (!current_matches(R_PAREN)) {
             // TODO: report error
