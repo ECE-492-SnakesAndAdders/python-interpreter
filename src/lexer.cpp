@@ -7,6 +7,7 @@
 
 
 #include <XPD.h>
+#include "error.h"
 #include "lexer.h"
 #include "utility.h"
 
@@ -22,7 +23,7 @@
  * \brief Basic constructor for the lexer.
  * \param [in] input Pointer to the input string entered by the user.
  */
-Lexer::Lexer(char ** input) {
+Lexer::Lexer(char ** input, lexed_command * output) {
     // transfer input string into object
     for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
         line[i] = *(*input + i);
@@ -34,6 +35,7 @@ Lexer::Lexer(char ** input) {
     while (*(*input + length) != '\0') {
         length++;
     }
+    command_info = output;
 }
 
 
@@ -187,13 +189,16 @@ void Lexer::scan_next_token() {
             return;
         // illegal characters that can never occur in a program
         case '$':
-            // TODO: add error reporting architecture
+            report_error(SYNTAX, "invalid syntax");
+            error_occurred = true;
             return;
         case '?':
-            // TODO: add error reporting architecture
+            report_error(SYNTAX, "invalid syntax");
+            error_occurred = true;
             return;
         case '`':
-            // TODO: add error reporting architecture
+            report_error(SYNTAX, "invalid syntax");
+            error_occurred = true;
             return;
         // default case handles the rest (number literals, identifiers, keywords, whitespace)
         default:
@@ -228,8 +233,8 @@ void Lexer::scan_next_token() {
  * \param [in] token The lexeme to be added to the list.
  */
 void Lexer::add_token(lexemes token) {
-    command_info.tokens[command_info.token_count] = token;
-    command_info.token_count++;
+    command_info -> tokens[command_info -> token_count] = token;
+    command_info -> token_count++;
 }
 
 
@@ -239,9 +244,9 @@ void Lexer::add_token(lexemes token) {
  */
 void Lexer::add_str_lit(char * str_lit) {
     for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-        command_info.str_lits[command_info.str_lit_count][i] = *(str_lit + i);
+        command_info -> str_lits[command_info -> str_lit_count][i] = *(str_lit + i);
     }
-    command_info.str_lit_count++;
+    command_info -> str_lit_count++;
 }
 
 
@@ -250,8 +255,8 @@ void Lexer::add_str_lit(char * str_lit) {
  * \param [in] num_lit The number literal to be added to the list.
  */
 void Lexer::add_num_lit(uint16_t num_lit) {
-    command_info.num_lits[command_info.num_lit_count] = num_lit;
-    command_info.num_lit_count++;
+    command_info -> num_lits[command_info -> num_lit_count] = num_lit;
+    command_info -> num_lit_count++;
 }
 
 
@@ -261,9 +266,9 @@ void Lexer::add_num_lit(uint16_t num_lit) {
  */
 void Lexer::add_identifier(char * identifier) {
     for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-        command_info.identifiers[command_info.identifier_count][i] = *(identifier + i);
+        command_info -> identifiers[command_info -> identifier_count][i] = *(identifier + i);
     }
-    command_info.identifier_count++;
+    command_info -> identifier_count++;
 }
 
 
@@ -627,47 +632,24 @@ bool Lexer::end_reached() {
 
 
 /**
- * \brief scans the input string and returns a list of its tokens.
+ * \brief Tells if an error has occurred while lexing a token.
+ * \return True if an error has occurred; false otherwise.
  */
-lexed_command Lexer::scan_input() {
+bool Lexer::has_error() {
+    return error_occurred;
+}
+
+
+/**
+ * \brief Scans the input string and returns a list of its tokens.
+ */
+uint16_t Lexer::scan_input() {
     // keep on reading next character until command is over
     while (!(end_reached())) {
+        if (has_error()) {
+            return 1;
+        }
         scan_next_token();
     }
-    // ------------------------------------------------------------------------
-    // FOR DEBUGGING; print each token to see that lexer works
-    xpd_puts("\nLEXED INFO:\n");
-    xpd_puts("Tokens: ");
-    for (uint16_t i = 0; i < command_info.token_count; i++) {
-        xpd_echo_int(command_info.tokens[i], XPD_Flag_UnsignedDecimal);
-        xpd_putc(' ');
-        xpd_puts(token_names[command_info.tokens[i]]);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_puts("Strings: ");
-    for (uint16_t i = 0; i < command_info.str_lit_count; i++) {
-        xpd_puts(command_info.str_lits[i]);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_puts("Numbers: ");
-    for (uint16_t i = 0; i < command_info.num_lit_count; i++) {
-        xpd_echo_int(command_info.num_lits[i], XPD_Flag_UnsignedDecimal);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_puts("Identifiers: ");
-    for (uint16_t i = 0; i < command_info.identifier_count; i++) {
-        xpd_puts(command_info.identifiers[i]);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_putc('\n');
-    // ------------------------------------------------------------------------
-    return command_info;
+    return 0;
 }

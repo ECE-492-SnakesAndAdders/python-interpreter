@@ -524,6 +524,5 @@ bool Parser::end_reached() {
 node * Parser::parse_input() {
     // TODO: handle more complex inputs (statements, blocks, ...)
     xpd_puts("HERE IN PARSE()\n");
-    xpd_echo_int(current, XPD_Flag_UnsignedDecimal);
     return expression();
 }
