@@ -123,3 +123,48 @@ void stringify_value(literal_value value, char ** output_ptr) {
             break;
     }
 }
+
+
+/**
+ * \brief Prints the generated syntax tree for debugging.
+ * \param [in] tree The tree (or subtree, or node) to print.
+ */
+void print_tree(node tree) {
+    switch (tree.type) {
+        case BINARY_NODE:
+            xpd_puts(" ( ");
+            print_tree(*(tree.entry.binary_val.left));
+            xpd_puts(token_names[tree.entry.binary_val.opcode]);
+            print_tree(*(tree.entry.binary_val.right));
+            xpd_puts(" ) ");
+            break;
+        case GROUPING_NODE:
+            xpd_puts(" ( ");
+            print_tree(*(tree.entry.grouping_val.expression));
+            xpd_puts(" ) ");
+            break;
+        case LITERAL_NODE:
+            if (tree.entry.literal_val.type == FALSE_VALUE) {
+                xpd_puts(" False ");
+            } else if (tree.entry.literal_val.type == NONE_VALUE) {
+                xpd_puts(" None ");
+            } else if (tree.entry.literal_val.type == NUMBER_VALUE) {
+                xpd_putc(' ');
+                xpd_echo_int(tree.entry.literal_val.data.number, XPD_Flag_SignedDecimal);
+                xpd_putc(' ');
+            } else if (tree.entry.literal_val.type == STRING_VALUE) {
+                xpd_putc(' ');
+                xpd_puts(tree.entry.literal_val.data.string);
+                xpd_putc(' ');
+            } else if (tree.entry.literal_val.type == TRUE_VALUE) {
+                xpd_puts(" True ");
+            }
+            break;
+        case UNARY_NODE:
+            xpd_puts(" ( ");
+            xpd_puts(token_names[tree.entry.unary_val.opcode]);
+            print_tree(*(tree.entry.unary_val.right));
+            xpd_puts(" ) ");
+            break;
+    }
+}
