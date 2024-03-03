@@ -40,3 +40,14 @@ void report_error(error_types type, const char * message) {
     xpd_puts(message);
     xpd_putc('\n');
 }
+
+
+/**
+ * \brief Prints error information for the developer.
+ * \param [in] message The specific information to share.
+ */
+void report_failure(const char * message) {
+    xpd_puts("FATAL: unexpected error internal to interpreter\n  ");
+    xpd_puts(message);
+    xpd_puts("\nreboot the interpreter for safety\n");
+}

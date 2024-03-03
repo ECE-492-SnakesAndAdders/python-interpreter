@@ -7,6 +7,7 @@
 
 
 #include <XPD.h>
+#include "error.h"
 #include "evaluator.h"
 
 
@@ -19,6 +20,36 @@
 // Placeholder
 Evaluator::Evaluator(uint16_t nothing) {
     // TODO: remove or make useful
+}
+
+
+/**
+ * \brief Determines if a literal value is legal to use in a numerical operation.
+ * \param [in] value The literal value's type to check.
+ * \return True if th literal can be used in a numerical expression; false otherwise.
+ */
+bool Evaluator::is_numerical(literal_types type) {
+    return ((type == FALSE_VALUE) || (type == NUMBER_VALUE) || (type == TRUE_VALUE));
+}
+
+
+/**
+ * \brief Determines if a literal value is legal to use in a numerical operation.
+ * \param [in] value The literal value to convert.
+ * \return The integer representation of the literal.
+ */
+uint16_t Evaluator::numerify(literal_value value) {
+    switch (value.type) {
+        case FALSE_VALUE:
+            return 0;
+        case NUMBER_VALUE:
+            return value.data.number;
+        case TRUE_VALUE:
+            return 1;
+        default:
+            report_failure("numerical value expected for operation");
+            return -1;
+    }
 }
 
 
@@ -36,60 +67,60 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
     // perform corresponding operation
     switch (expr.opcode) {
         case B_AND:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number & right.data.number;
+                result.data.number = numerify(left) & numerify(right);
             } else {
                 // TODO: report error
             }
             break;
         case B_OR:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number | right.data.number;
+                result.data.number = numerify(left) | numerify(right);
             } else {
                 // TODO: report error
             }
             break;
         case B_SAR:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number >> right.data.number;
+                result.data.number = numerify(left) >> numerify(right);
             } else {
                 // TODO: report error
             }
             break;
         case B_SLL:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number << right.data.number;
+                result.data.number = numerify(left) << numerify(right);
             } else {
                 // TODO: report error
             }
             break;
         case B_XOR:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number ^ right.data.number;
+                result.data.number = numerify(left) ^ numerify(right);
             } else {
                 // TODO: report error
             }
             break;
         case D_SLASH:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number / right.data.number;
+                result.data.number = numerify(left) / numerify(right);
             } else {
                 // TODO: report error
             }
             break;
         case D_STAR:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number;
+                result.data.number = numerify(left);
                 // TODO: Make this cross-compilable
-                // for (uint16_t i = 1; i < right.data.number; i++) {
-                //     result.data.number = result.data.number * left.data.number;
+                // for (uint16_t i = 1; i < numerify(right); i++) {
+                //     result.data.number = result.data.number * numerify(left);
                 // }
             } else {
                 // TODO: report error
@@ -97,56 +128,55 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
         case MINUS:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number - right.data.number;
+                result.data.number = numerify(left) - numerify(right);
             } else {
                 // TODO: report error
             }
             break;
         case PERCENT:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number % right.data.number;
+                result.data.number = numerify(left) % numerify(right);
             } else {
                 // TODO: report error
                 // TODO: support string concatenation
             }
             break;
         case PLUS:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number + right.data.number;
+                result.data.number = numerify(left) + numerify(right);
             } else {
                 // TODO: report error
                 // TODO: support string concatenation
             }
             break;
         case SLASH:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = left.data.number / right.data.number;
+                result.data.number = numerify(left) / numerify(right);
             } else {
                 // TODO: report error
-                // TODO: support string concatenation
             }
             break;
         case STAR:
-            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+            if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 // TODO: make this cross-compilable
-                // result.data.number = left.data.number * right.data.number;
-                result.data.number = left.data.number;
-                // for (uint16_t i = 1; i < right.data.number; i++) {
-                //     result.data.number += left.data.number;
+                // result.data.number = numerify(left) * numerify(right);
+                result.data.number = numerify(left);
+                // for (uint16_t i = 1; i < numerify(right); i++) {
+                //     result.data.number += numerify(left);
                 // }
             } else {
                 // TODO: report error
-                // TODO: support string concatenation
             }
+            // TODO: support string concatenation
             break;
         default:
-            // TODO: report error
+            report_failure("no such binary operator exists");
             break;
     }
     return result;
@@ -187,14 +217,14 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
     switch (expr.opcode) {
         case B_NOT:
             if (right.type == NUMBER_VALUE) {
-                right.data.number = ~right.data.number;
+                right.data.number = ~numerify(right);
             } else {
                 // TODO: report error
             }
             break;
         case MINUS:
             if (right.type == NUMBER_VALUE) {
-                right.data.number = -right.data.number;
+                right.data.number = -numerify(right);
             } else {
                 // TODO: report error
             }
@@ -209,6 +239,9 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
             }
             break;
         case PLUS:
+            break;
+        default:
+            report_failure("no such binary operator exists");
             break;
     }
     return right;

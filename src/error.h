@@ -26,6 +26,8 @@ const char * const error_names[] = {
 
 // prints error information for the user
 void report_error(error_types type, const char * message);
+// prints information about an internal unexpected interpreter failure
+void report_failure(const char * message);
 
 
 #endif

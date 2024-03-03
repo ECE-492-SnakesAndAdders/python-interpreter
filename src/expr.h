@@ -30,6 +30,12 @@ enum literal_types {
 };
 
 
+// for ease of printing
+const char * const literal_names[] = {
+    "bool", "NoneType", "int", "str", "bool"
+};
+
+
 /**
  * \brief The internal representation of a binary operation.
  */
