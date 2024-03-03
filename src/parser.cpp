@@ -6,11 +6,12 @@
 *********************************************************************************/
 
 
-#include <XPD.h>
-#include <SystemClock.h>
-#include "parser.h"
 #include "lexer.h"
+#include <XPD.h>
+#include "error.h"
 #include "expr.h"
+#include "lexer.h"
+#include "parser.h"
 
 
 /** Much of this code is based on Crafting Interpreters by Robert Nystrom.
@@ -43,8 +44,9 @@
  * \brief Basic constructor for the parser.
  * \param [in] input Pointer to the token list returned by the lexer.
  */
-Parser::Parser(lexed_command input) {
+Parser::Parser(lexed_command input, node ** output) {
     command_info = input;
+    syntax_tree = output;
 }
 
 
@@ -348,8 +350,16 @@ node * Parser::primary() {
         node expr = make_new_grouping(expression());
         expr_ptr = write_new_node(&expr);
         if (!current_matches(R_PAREN)) {
-            // TODO: report error
+            // TODO: enable parentheses over multiple line
+            // error detected, must have closing parenthesis
+            report_error(SYNTAX, "invalid syntax");
+            error_occurred = true;
         }
+    }
+    // error detected, must have some operand
+    if (expr_ptr == NULL) {
+        report_error(SYNTAX, "invalid syntax");
+        error_occurred = true;
     }
     return expr_ptr;
 }
@@ -417,11 +427,23 @@ bool Parser::end_reached() {
 
 
 /**
+ * \brief Tells if an error has occurred while parsing a token sequence.
+ * \return True if an error has occurred; false otherwise.
+ */
+bool Parser::has_error() {
+    return error_occurred;
+}
+
+
+/**
  * \brief Parses the input tokens into an expression.
  * \return The internal representation of the expression.
  */
-node * Parser::parse_input() {
+uint16_t Parser::parse_input() {
     // TODO: handle more complex inputs (statements, blocks, ...)
-    // xpd_puts("HERE IN PARSE()\n");
-    return expression();
+    *syntax_tree = expression();
+    if (has_error()) {
+        return 1;
+    }
+    return 0;
 }

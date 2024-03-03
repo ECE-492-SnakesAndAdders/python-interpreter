@@ -37,6 +37,7 @@ class Parser {
         // output tree information and operations
         node tree_nodes[MAX_NUM_NODES];
         uint16_t current_node = 0;
+        node ** syntax_tree;
         node * write_new_node(node * value);
         // for parsing expressions recursively
         node * expression();
@@ -62,12 +63,15 @@ class Parser {
         void advance_current();
         // checks if there are any more characters to be read
         bool end_reached();
+        // for error handling
+        bool error_occurred = false;
+        bool has_error();
 
     public:
         // basic constructor for the class
-        Parser(lexed_command input);
+        Parser(lexed_command input, node ** output);
         // converts the input token list into a syntax tree
-        node * parse_input();
+        uint16_t parse_input();
 };
 
 

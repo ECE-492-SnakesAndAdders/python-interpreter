@@ -6,17 +6,17 @@
 *********************************************************************************/
 
 
-#include <SystemClock.h>
-#include <XPD.h>
 #include <GPIO.h>
+#include <SystemClock.h>
 #include <Thread.h>
-#include "main.h"
-#include "utility.h"
-#include "lexer.h"
-#include "parser.h"
-#include "expr.h"
-#include "evaluator.h"
+#include <XPD.h>
 #include "error.h"
+#include "evaluator.h"
+#include "expr.h"
+#include "lexer.h"
+#include "main.h"
+#include "parser.h"
+#include "utility.h"
 
 
 #ifndef MAX_INPUT_LEN
@@ -68,6 +68,7 @@ uint16_t read(char ** input_ptr) {
  */
 uint16_t eval(char ** input_ptr, char ** output_ptr) {
     uint16_t return_code = 0;
+
     // lex command, convert raw string into a sequence of tokens
     lexed_command token_sequence;
     Lexer lexer(input_ptr, &token_sequence);
@@ -110,10 +111,14 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
     // ------------------------------------------------------------------------
 
     // parse command, convert sequence of tokens into a syntax tree
-    Parser parser(token_sequence);
-    node * tree = parser.parse_input();
+    node * tree;
+    Parser parser(token_sequence, &tree);
+    if ((return_code = parser.parse_input())) {
+        return 1;
+    }
     // ------------------------------------------------------------------------
     // // FOR DEBUGGING; print tree to see that parser works
+    // xpd_puts("PARSED INFO:\n");
     // print_tree(*tree);
     // xpd_putc('\n');
     // ------------------------------------------------------------------------

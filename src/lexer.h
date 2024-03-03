@@ -10,6 +10,9 @@
 #define LEXER_H
 
 
+#include <XPD.h>
+
+
 #ifndef MAX_INPUT_LEN
 #define MAX_INPUT_LEN 64
 #endif

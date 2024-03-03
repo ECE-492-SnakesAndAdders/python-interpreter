@@ -30,7 +30,9 @@
  */
 void report_error(error_types type, const char * message) {
     // standard Python error reporting template, support details later
-    xpd_puts("Traceback (most recent call last):\n");
+    if (type != SYNTAX) {
+        xpd_puts("Traceback (most recent call last):\n");
+    }
     xpd_puts("  File \"<stdin>\", line 1, in <module>\n");
     // display error info shared from interpreter in useful format
     xpd_puts(error_names[type]);
