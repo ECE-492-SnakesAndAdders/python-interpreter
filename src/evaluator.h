@@ -12,15 +12,20 @@
 #include "expr.h"
 
 
+/**
+ * \brief The evaluator of the interpreter; it takes a syntax tree as input and executes it.
+ */
 class Evaluator {
     private:
-    public:
-        Evaluator(uint16_t nothing);
-        literal_value evaluate(node tree_node);
+        // for evaluating each type of syntax tree node
         literal_value evaluate_binary(binary_value expr);
         literal_value evaluate_grouping(grouping_value expr);
         literal_value evaluate_literal(literal_value expr);
         literal_value evaluate_unary(unary_value expr);
+
+    public:
+        Evaluator(uint16_t nothing);
+        literal_value evaluate(node tree_node);
 };
 
 #endif

@@ -10,36 +10,9 @@
 #include "evaluator.h"
 
 
-/**
- * \brief Placeholder.
- */
+// Placeholder
 Evaluator::Evaluator(uint16_t nothing) {
     // TODO: remove or make useful
-}
-
-
-/**
- * \brief General function to evaluate a portion of a syntax tree.
- * \param [in] tree_node The syntax tree node to evaluate.
- * \return The computed value of the syntax tree node.
- */
-literal_value Evaluator::evaluate(node tree_node) {
-    literal_value result;
-    switch (tree_node.type) {
-        case BINARY_NODE:
-            result = evaluate_binary(tree_node.entry.binary_val);
-            break;
-        case GROUPING_NODE:
-            result = evaluate_grouping(tree_node.entry.grouping_val);
-            break;
-        case LITERAL_NODE:
-            result = evaluate_literal(tree_node.entry.literal_val);
-            break;
-        case UNARY_NODE:
-            result = evaluate_unary(tree_node.entry.unary_val);
-            break;
-    }
-    return result;
 }
 
 
@@ -49,9 +22,12 @@ literal_value Evaluator::evaluate(node tree_node) {
  * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_binary(binary_value expr) {
+    // evaluate each operand before evaluating combination
+    // TODO: support short-circuit oerators and right-associative ones (not just left-to-right)
     literal_value left = evaluate(*(expr.left));
     literal_value right = evaluate(*(expr.right));
     literal_value result;
+    // perform corresponding operation
     switch (expr.opcode) {
         case PLUS:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
@@ -73,26 +49,36 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
 
 
 /**
- *
+ * \brief Evaluates a nested expression within parentheses on a syntax tree node.
+ * \param [in] expr The internal represententation of the nested expression.
+ * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_grouping(grouping_value expr) {
+    // just pass along result of nested expression
     return evaluate(*(expr.expression));
 }
 
 
 /**
- *
+ * \brief Evaluates a literal expression represented by a syntax tree node.
+ * \param [in] expr The internal representation of teh literal value.
+ * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_literal(literal_value expr) {
+    // no action required, just pass this value along
     return expr;
 }
 
 
 /**
- *
+ * \brief Evaluates a unary operation represented by a syntax tree node.
+ * \param [in] expr The internal representation of the unary operation.
+ * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_unary(unary_value expr) {
+    // evaluate the operand before evaluating result
     literal_value right = evaluate(*(expr.right));
+    // perform corresponding operatio
     switch (expr.opcode) {
         case NOT:
             if (right.type == FALSE_VALUE) {
@@ -108,13 +94,43 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
         case MINUS:
             if (right.type == NUMBER_VALUE) {
                 right.data.number = -right.data.number;
+            } else {
+                // TODO: report error
             }
             break;
         case B_NOT:
             if (right.type == NUMBER_VALUE) {
                 right.data.number = ~right.data.number;
+            } else {
+                // TODO: report error
             }
             break;
     }
     return right;
+}
+
+
+/**
+ * \brief General function to evaluate a portion of a syntax tree.
+ * \param [in] tree_node The syntax tree node to evaluate.
+ * \return The computed value of the syntax tree node.
+ */
+literal_value Evaluator::evaluate(node tree_node) {
+    literal_value result;
+    // call appropriate function based on the operation needed (polymorphism not possible)
+    switch (tree_node.type) {
+        case BINARY_NODE:
+            result = evaluate_binary(tree_node.entry.binary_val);
+            break;
+        case GROUPING_NODE:
+            result = evaluate_grouping(tree_node.entry.grouping_val);
+            break;
+        case LITERAL_NODE:
+            result = evaluate_literal(tree_node.entry.literal_val);
+            break;
+        case UNARY_NODE:
+            result = evaluate_unary(tree_node.entry.unary_val);
+            break;
+    }
+    return result;
 }
