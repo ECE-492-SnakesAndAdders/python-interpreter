@@ -85,3 +85,41 @@ node make_new_unary(lexemes opcode, node * right) {
     current.entry.unary_val.right = right;
     return current;
 }
+
+
+/**
+ * \brief Converts a literal value to a properly-formatted string.
+ * \param [in] value The literal value to be converted into a string.
+ * \param [in] output_ptr Pointer to the output string buffer.
+ */
+void stringify_value(literal_value value, char ** output_ptr) {
+    switch (value.type) {
+        case FALSE_VALUE:
+            *output_ptr = "False\n";
+            break;
+        case NONE_VALUE:
+            *output_ptr = "None\n";
+            break;
+        case NUMBER_VALUE:
+            xpd_echo_int(value.data.number, XPD_Flag_SignedDecimal);
+            xpd_putc('\n');
+            *output_ptr = "Oops\n";
+            break;
+        case STRING_VALUE:
+            for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
+                if (value.data.string[i]) {
+                    *(*output_ptr + i) = value.data.string[i];
+                } else {
+                    *(*output_ptr + i) = '\n';
+                    break;
+                }
+            }
+            break;
+        case TRUE_VALUE:
+            *output_ptr = "True\n";
+            break;
+        default:
+            *output_ptr = "";
+            break;
+    }
+}

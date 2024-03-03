@@ -106,6 +106,8 @@ node make_new_binary(node * left, lexemes opcode, node * right);
 node make_new_grouping(node * expression);
 node make_new_literal(literal_value value);
 node make_new_unary(lexemes opcode, node * right);
+// function to print output
+void stringify_value(literal_value value, char ** output_ptr);
 
 
 #endif
