@@ -44,7 +44,6 @@
  * \param [in] input Pointer to the token list returned by the lexer.
  */
 Parser::Parser(lexed_command input) {
-    xpd_puts("HERE IN PARSER()\n");
     command_info = input;
 }
 
@@ -83,7 +82,7 @@ node * Parser::write_new_node(node * value) {
             sys_clock_wait(10000);
         }
     }
-    return &tree_nodes[current_node++];
+    // return &tree_nodes[current_node++];
     switch (node_type) {
         case BINARY_NODE:
             for (int i = 0; i < 10000; ++i) {
@@ -149,6 +148,7 @@ node * Parser::write_new_node(node * value) {
 node * Parser::expression() {
     xpd_puts("HERE IN EXPRESSION()\n");
     return disjunction();
+    xpd_puts("HERE IN EXPRESSION()\n");
 }
 
 
@@ -166,10 +166,11 @@ node * Parser::disjunction() {
     xpd_puts("HERE IN DISJUNCTION()\n");
     // recurse to higher priority operators
     node * expr_ptr = conjunction();
+    xpd_puts("HERE IN DISJUNCTION()\n");
     // deal with any OR operators
     while (current_matches(OR)) {
         // find the operation to be completed
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         // recurse again to get the right operand
         node * right = conjunction();
         node * right_ptr = write_new_node(right);
@@ -189,8 +190,9 @@ node * Parser::disjunction() {
 node * Parser::conjunction() {
     xpd_puts("HERE IN CONJUNCTION()\n");
     node * expr_ptr = inversion();
+    xpd_puts("HERE IN CONJUNCTION()\n");
     while (current_matches(AND)) {
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = inversion();
         node * right_ptr = write_new_node(right);
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
@@ -207,8 +209,9 @@ node * Parser::conjunction() {
 node * Parser::inversion() {
     xpd_puts("HERE IN INVERSION()\n");
     node * expr_ptr = comparison();
+    xpd_puts("HERE IN INVERSION()\n");
     while (current_matches(NOT)) {
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = inversion();
         node * right_ptr = write_new_node(right);
         node expr = make_new_unary(opcode, right_ptr);
@@ -227,12 +230,13 @@ node * Parser::inversion() {
 node * Parser::comparison() {
     xpd_puts("HERE IN COMPARISON()\n");
     node * expr_ptr = bor();
+    xpd_puts("HERE IN COMPARISON()\n");
     // TODO: handle cascaded comaprison operators properly
     // TODO: handle "is not" and "not in" keywords
     while (current_matches(EQUAL) || current_matches(N_EQUAL) || current_matches(GREATER) ||
            current_matches(G_EQUAL) || current_matches(LESS) || current_matches(L_EQUAL) ||
            current_matches(IS) || current_matches(IN)) {
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = bor();
         node * right_ptr = write_new_node(right);
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
@@ -249,8 +253,9 @@ node * Parser::comparison() {
 node * Parser::bor() {
     xpd_puts("HERE IN BOR()\n");
     node * expr_ptr = bxor();
+    xpd_puts("HERE IN BOR()\n");
     while (current_matches(B_OR)) {
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = bxor();
         node * right_ptr = write_new_node(right);
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
@@ -267,8 +272,9 @@ node * Parser::bor() {
 node * Parser::bxor() {
     xpd_puts("HERE IN BXOR()\n");
     node * expr_ptr = band();
+    xpd_puts("HERE IN BXOR()\n");
     while (current_matches(B_XOR)) {
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = band();
         node * right_ptr = write_new_node(right);
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
@@ -285,8 +291,9 @@ node * Parser::bxor() {
 node * Parser::band() {
     xpd_puts("HERE IN BAND()\n");
     node * expr_ptr = shift();
+    xpd_puts("HERE IN BAND()\n");
     while (current_matches(B_AND)) {
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = shift();
         node * right_ptr = write_new_node(right);
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
@@ -303,8 +310,9 @@ node * Parser::band() {
 node * Parser::shift() {
     xpd_puts("HERE IN SHIFT()\n");
     node * expr_ptr = sum();
+    xpd_puts("HERE IN SHIFT()\n");
     while (current_matches(B_SLL) || current_matches(B_SAR)) {
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = sum();
         node * right_ptr = write_new_node(right);
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
@@ -319,14 +327,14 @@ node * Parser::shift() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::sum() {
-    // TODO: deal with unary versions
     xpd_puts("HERE IN SUM()\n");
     node * expr_ptr = term();
+    xpd_puts("HERE IN SUM()\n");
     while (current_matches(PLUS) || current_matches(MINUS)) {
         xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
         xpd_echo_int(previous_token(), XPD_Flag_UnsignedDecimal);
         xpd_puts("HERE in (+) BINARY\n");
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = term();
         node * right_ptr = write_new_node(right);
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
@@ -343,9 +351,10 @@ node * Parser::sum() {
 node * Parser::term() {
     xpd_puts("HERE IN TERM()\n");
     node * expr_ptr = factor();
+    xpd_puts("HERE IN TERM()\n");
     while (current_matches(STAR) || current_matches(SLASH) || current_matches(D_SLASH) ||
            current_matches(PERCENT) || current_matches(AT)) {
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = factor();
         node * right_ptr = write_new_node(right);
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
@@ -361,11 +370,11 @@ node * Parser::term() {
  */
 node * Parser::factor() {
     xpd_puts("HERE IN FACTOR()\n");
-    // TODO: deal with binary versions
     node * expr_ptr = power();
+    xpd_puts("HERE IN FACTOR()\n");
     while (current_matches(PLUS) || current_matches(MINUS) || current_matches(B_NOT)) {
         xpd_puts("HERE in (+) UNARY\n");
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = factor();
         node * right_ptr = write_new_node(right);
         node expr = make_new_unary(opcode, right_ptr);
@@ -382,8 +391,9 @@ node * Parser::factor() {
 node * Parser::power() {
     xpd_puts("HERE IN POWER()\n");
     node * expr_ptr = primary();
+    xpd_puts("HERE IN POWER()\n");
     while (current_matches(D_STAR)) {
-        lexemes opcode = current_token();
+        lexemes opcode = previous_token();
         node * right = primary();
         node * right_ptr = write_new_node(right);
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
@@ -430,7 +440,6 @@ node * Parser::primary() {
         xpd_echo_int(expr.entry.literal_val.data.number, XPD_Flag_UnsignedDecimal);
         xpd_putc('\n');
         expr_ptr = write_new_node(&expr);
-        xpd_puts("HERE IN PRIMARY() 3-6\n");
     } else if (current_matches(STRING)) {
         lit.type = STRING_VALUE;
         char * temp = command_info.str_lits[current_str_lit];
@@ -451,7 +460,7 @@ node * Parser::primary() {
             // TODO: report error
         }
     }
-    // theoretically unreachable
+    xpd_puts("HERE IN PRIMARY()\n");
     return expr_ptr;
 }
 

@@ -111,8 +111,31 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
 
     Parser parser(token_sequence);
     node * tree = parser.parse_input();
-    // Evaluator evaluator(0);
-    // evaluator.evaluate(tree);
+    // ------------------------------------------------------------------------
+    // FOR DEBUGGING; print tree to see that parser works
+    xpd_puts("PARSED INFO:\n");
+    xpd_echo_int(tree -> type, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    xpd_echo_int(tree -> entry.unary_val.opcode, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    xpd_echo_int(tree -> entry.unary_val.right -> type, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    xpd_echo_int(tree -> entry.unary_val.right -> entry.literal_val.type, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    xpd_echo_int(tree -> entry.unary_val.right -> entry.literal_val.data.number, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    // ------------------------------------------------------------------------
+
+    Evaluator evaluator(0);
+    literal_value x = evaluator.evaluate(*tree);
+    // ------------------------------------------------------------------------
+    // FOR DEBUGGING; print answer to see that evaluator works
+    xpd_puts("EVALUATED INFO:\n");
+    xpd_echo_int(x.type, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    xpd_echo_int(x.data.number, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    // ------------------------------------------------------------------------
 
     // temporary implementation; pass input to output for printing to test pipeline
     uint16_t LEN = MAX_INPUT_LEN;
