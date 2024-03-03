@@ -48,6 +48,7 @@ uint16_t Evaluator::numerify(literal_value value) {
             return 1;
         default:
             report_failure("numerical value expected for operation");
+            error_occurred = true;
             return -1;
     }
 }
@@ -71,7 +72,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) & numerify(right);
             } else {
-                // TODO: report error
+                report_error(TYPE, "unsupported operand type(s)");
             }
             break;
         case B_OR:
@@ -79,7 +80,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) | numerify(right);
             } else {
-                // TODO: report error
+                report_error(TYPE, "unsupported operand type(s)");
             }
             break;
         case B_SAR:
@@ -87,7 +88,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) >> numerify(right);
             } else {
-                // TODO: report error
+                report_error(TYPE, "unsupported operand type(s)");
             }
             break;
         case B_SLL:
@@ -95,7 +96,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) << numerify(right);
             } else {
-                // TODO: report error
+                report_error(TYPE, "unsupported operand type(s)");
             }
             break;
         case B_XOR:
@@ -103,7 +104,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) ^ numerify(right);
             } else {
-                // TODO: report error
+                report_error(TYPE, "unsupported operand type(s)");
             }
             break;
         case D_SLASH:
@@ -111,7 +112,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) / numerify(right);
             } else {
-                // TODO: report error
+                report_error(TYPE, "unsupported operand type(s)");
             }
             break;
         case D_STAR:
@@ -132,7 +133,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) - numerify(right);
             } else {
-                // TODO: report error
+                report_error(TYPE, "unsupported operand type(s)");
             }
             break;
         case PERCENT:
@@ -149,16 +150,16 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) + numerify(right);
             } else {
-                // TODO: report error
-                // TODO: support string concatenation
+                report_error(TYPE, "unsupported operand type(s)");
             }
+            // TODO: support string concatenation
             break;
         case SLASH:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) / numerify(right);
             } else {
-                // TODO: report error
+                report_error(TYPE, "unsupported operand type(s)");
             }
             break;
         case STAR:
@@ -171,12 +172,13 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 //     result.data.number += numerify(left);
                 // }
             } else {
-                // TODO: report error
+                report_error(TYPE, "unsupported operand type(s)");
             }
             // TODO: support string concatenation
             break;
         default:
             report_failure("no such binary operator exists");
+            error_occurred = true;
             break;
     }
     return result;
@@ -213,38 +215,60 @@ literal_value Evaluator::evaluate_literal(literal_value expr) {
 literal_value Evaluator::evaluate_unary(unary_value expr) {
     // evaluate the operand before evaluating result
     literal_value right = evaluate(*(expr.right));
+    literal_value result;
     // perform corresponding operatio
     switch (expr.opcode) {
         case B_NOT:
-            if (right.type == NUMBER_VALUE) {
-                right.data.number = ~numerify(right);
+            if (is_numerical(right.type)) {
+                result.type = NUMBER_VALUE;
+                result.data.number = ~numerify(right);
             } else {
-                // TODO: report error
+                report_error(TYPE, "bad operand type");
             }
             break;
         case MINUS:
-            if (right.type == NUMBER_VALUE) {
-                right.data.number = -numerify(right);
+            if (is_numerical(right.type)) {
+                result.type = NUMBER_VALUE;
+                result.data.number = -numerify(right);
             } else {
-                // TODO: report error
+                report_error(TYPE, "bad operand type");
             }
             break;
         case NOT:
             if (right.type == FALSE_VALUE) {
-                right.type = TRUE_VALUE;
+                result.type = TRUE_VALUE;
+            } else if (right.type == NONE_VALUE) {
+                result.type = TRUE_VALUE;
             } else if (right.type == TRUE_VALUE) {
-                right.type = FALSE_VALUE;
+                result.type = FALSE_VALUE;
             } else {
-                // TODO: report error
+                report_error(TYPE, "bad operand type");
             }
+            // TODO: suppport not operand for integers
             break;
         case PLUS:
+            if (is_numerical(right.type)) {
+                result.type = NUMBER_VALUE;
+                result.data.number = +numerify(right);
+            } else {
+                report_error(TYPE, "bad operand type");
+            }
             break;
         default:
-            report_failure("no such binary operator exists");
+            report_failure("no such unary operator exists");
+            error_occurred = true;
             break;
     }
-    return right;
+    return result;
+}
+
+
+/**
+ * \brief Tells if an error has occurred while parsing a token sequence.
+ * \return True if an error has occurred; false otherwise.
+ */
+bool Evaluator::has_error() {
+    return error_occurred;
 }
 
 

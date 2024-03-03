@@ -26,6 +26,9 @@ class Evaluator {
         literal_value evaluate_grouping(grouping_value expr);
         literal_value evaluate_literal(literal_value expr);
         literal_value evaluate_unary(unary_value expr);
+        // for error handling
+        bool error_occurred = false;
+        bool has_error();
 
     public:
         // basic constructor for the class

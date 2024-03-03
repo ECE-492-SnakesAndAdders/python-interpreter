@@ -49,5 +49,5 @@ void report_error(error_types type, const char * message) {
 void report_failure(const char * message) {
     xpd_puts("FATAL: unexpected error internal to interpreter\n  ");
     xpd_puts(message);
-    xpd_puts("\nreboot the interpreter for safety\n");
+    xpd_puts("\ndisregard outputs and reboot the interpreter for safety\n");
 }
