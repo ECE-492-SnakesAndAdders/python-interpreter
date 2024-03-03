@@ -103,7 +103,7 @@ void stringify_value(literal_value value, char ** output_ptr) {
         case NUMBER_VALUE:
             xpd_echo_int(value.data.number, XPD_Flag_SignedDecimal);
             xpd_putc('\n');
-            *output_ptr = "Oops\n";
+            // TODO: format less weirdly
             break;
         case STRING_VALUE:
             for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {

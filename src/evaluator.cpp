@@ -37,6 +37,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
     switch (expr.opcode) {
         case B_AND:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 result.data.number = left.data.number & right.data.number;
             } else {
                 // TODO: report error
@@ -44,6 +45,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             break;
         case B_OR:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 result.data.number = left.data.number | right.data.number;
             } else {
                 // TODO: report error
@@ -51,6 +53,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             break;
         case B_SAR:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 result.data.number = left.data.number >> right.data.number;
             } else {
                 // TODO: report error
@@ -58,6 +61,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             break;
         case B_SLL:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 result.data.number = left.data.number << right.data.number;
             } else {
                 // TODO: report error
@@ -65,6 +69,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             break;
         case B_XOR:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 result.data.number = left.data.number ^ right.data.number;
             } else {
                 // TODO: report error
@@ -72,6 +77,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             break;
         case D_SLASH:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 result.data.number = left.data.number / right.data.number;
             } else {
                 // TODO: report error
@@ -79,6 +85,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             break;
         case D_STAR:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 result.data.number = left.data.number;
                 // TODO: Make this cross-compilable
                 // for (uint16_t i = 1; i < right.data.number; i++) {
@@ -91,13 +98,24 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             break;
         case MINUS:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 result.data.number = left.data.number - right.data.number;
             } else {
                 // TODO: report error
             }
             break;
+        case PERCENT:
+            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
+                result.data.number = left.data.number % right.data.number;
+            } else {
+                // TODO: report error
+                // TODO: support string concatenation
+            }
+            break;
         case PLUS:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 result.data.number = left.data.number + right.data.number;
             } else {
                 // TODO: report error
@@ -106,6 +124,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             break;
         case SLASH:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 result.data.number = left.data.number / right.data.number;
             } else {
                 // TODO: report error
@@ -114,6 +133,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             break;
         case STAR:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.type = NUMBER_VALUE;
                 // TODO: make this cross-compilable
                 // result.data.number = left.data.number * right.data.number;
                 result.data.number = left.data.number;

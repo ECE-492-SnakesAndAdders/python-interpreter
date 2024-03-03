@@ -113,9 +113,9 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
     Parser parser(token_sequence);
     node * tree = parser.parse_input();
     // ------------------------------------------------------------------------
-    // FOR DEBUGGING; print tree to see that parser works
-    print_tree(*tree);
-    xpd_putc('\n');
+    // // FOR DEBUGGING; print tree to see that parser works
+    // print_tree(*tree);
+    // xpd_putc('\n');
     // ------------------------------------------------------------------------
 
     // evaluate command, convert syntax tree into a result
