@@ -15,7 +15,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "expr.h"
-// #include "evaluator.h"
+#include "evaluator.h"
 
 
 #ifndef MAX_INPUT_LEN

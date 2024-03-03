@@ -27,16 +27,16 @@ literal_value Evaluator::evaluate(node tree_node) {
     literal_value result;
     switch (tree_node.type) {
         case BINARY_NODE:
-            result = evaluate_binary(tree_node.extry.binary_val);
+            result = evaluate_binary(tree_node.entry.binary_val);
             break;
         case GROUPING_NODE:
-            result = evaluate_grouping(tree_node.extry.literal_val);
+            result = evaluate_grouping(tree_node.entry.grouping_val);
             break;
         case LITERAL_NODE:
-            result = evaluate_literal(tree_node.extry.grouping_val);
+            result = evaluate_literal(tree_node.entry.literal_val);
             break;
         case UNARY_NODE:
-            result = evaluate_unary(tree_node.extry.unary_val);
+            result = evaluate_unary(tree_node.entry.unary_val);
             break;
     }
     return result;

@@ -12,7 +12,7 @@
 #include "expr.h"
 
 
-class Evaluator : public Visitor {
+class Evaluator {
     private:
     public:
         Evaluator(uint16_t nothing);
