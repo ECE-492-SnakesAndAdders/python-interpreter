@@ -35,11 +35,58 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
     literal_value result;
     // perform corresponding operation
     switch (expr.opcode) {
-        case PLUS:
+        case B_AND:
             if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
-                result.data.number = left.data.number + right.data.number;
+                result.data.number = left.data.number & right.data.number;
             } else {
                 // TODO: report error
+            }
+            break;
+        case B_OR:
+            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.data.number = left.data.number | right.data.number;
+            } else {
+                // TODO: report error
+            }
+            break;
+        case B_SAR:
+            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.data.number = left.data.number >> right.data.number;
+            } else {
+                // TODO: report error
+            }
+            break;
+        case B_SLL:
+            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.data.number = left.data.number << right.data.number;
+            } else {
+                // TODO: report error
+            }
+            break;
+        case B_XOR:
+            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.data.number = left.data.number ^ right.data.number;
+            } else {
+                // TODO: report error
+            }
+            break;
+        case D_SLASH:
+            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.data.number = left.data.number / right.data.number;
+            } else {
+                // TODO: report error
+            }
+            break;
+        case D_STAR:
+            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.data.number = left.data.number;
+                // TODO: Make this cross-compilable
+                // for (uint16_t i = 1; i < right.data.number; i++) {
+                //     result.data.number = result.data.number * left.data.number;
+                // }
+            } else {
+                // TODO: report error
+                // TODO: handle negative case
             }
             break;
         case MINUS:
@@ -48,6 +95,38 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             } else {
                 // TODO: report error
             }
+            break;
+        case PLUS:
+            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.data.number = left.data.number + right.data.number;
+            } else {
+                // TODO: report error
+                // TODO: support string concatenation
+            }
+            break;
+        case SLASH:
+            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                result.data.number = left.data.number / right.data.number;
+            } else {
+                // TODO: report error
+                // TODO: support string concatenation
+            }
+            break;
+        case STAR:
+            if (left.type == NUMBER_VALUE && right.type == NUMBER_VALUE) {
+                // TODO: make this cross-compilable
+                // result.data.number = left.data.number * right.data.number;
+                result.data.number = left.data.number;
+                // for (uint16_t i = 1; i < right.data.number; i++) {
+                //     result.data.number += left.data.number;
+                // }
+            } else {
+                // TODO: report error
+                // TODO: support string concatenation
+            }
+            break;
+        default:
+            // TODO: report error
             break;
     }
     return result;
@@ -86,6 +165,20 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
     literal_value right = evaluate(*(expr.right));
     // perform corresponding operatio
     switch (expr.opcode) {
+        case B_NOT:
+            if (right.type == NUMBER_VALUE) {
+                right.data.number = ~right.data.number;
+            } else {
+                // TODO: report error
+            }
+            break;
+        case MINUS:
+            if (right.type == NUMBER_VALUE) {
+                right.data.number = -right.data.number;
+            } else {
+                // TODO: report error
+            }
+            break;
         case NOT:
             if (right.type == FALSE_VALUE) {
                 right.type = TRUE_VALUE;
@@ -96,20 +189,6 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
             }
             break;
         case PLUS:
-            break;
-        case MINUS:
-            if (right.type == NUMBER_VALUE) {
-                right.data.number = -right.data.number;
-            } else {
-                // TODO: report error
-            }
-            break;
-        case B_NOT:
-            if (right.type == NUMBER_VALUE) {
-                right.data.number = ~right.data.number;
-            } else {
-                // TODO: report error
-            }
             break;
     }
     return right;
