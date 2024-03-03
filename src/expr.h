@@ -14,6 +14,11 @@
 #include "lexer.h"
 
 
+#ifndef MAX_LIT_LEN
+#define MAX_LIT_LEN 32
+#endif
+
+
 struct node;    // forward declaration
 
 
@@ -101,5 +106,6 @@ node make_new_binary(node * left, lexemes opcode, node * right);
 node make_new_grouping(node * expression);
 node make_new_literal(literal_value value);
 node make_new_unary(lexemes opcode, node * right);
+
 
 #endif

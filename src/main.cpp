@@ -22,17 +22,19 @@
 #define MAX_INPUT_LEN 64
 #endif
 
+
 #ifndef MAX_INPUT_TOKENS
 #define MAX_INPUT_TOKENS 64
 #endif
+
 
 #ifndef MAX_OUTPUT_LEN
 #define MAX_OUTPUT_LEN 256
 #endif
 
 
-/** This project is a tree-walk interpreter that uses a recursive descent algorithm
-    Much of the code is based on Crafting Interpreters by Robert Nystrom (https://craftinginterpreters.com/)
+/** This project is a tree-walk interpreter that uses a recursive descent algorithm.
+    Much of the code is based on Crafting Interpreters by Robert Nystrom (https://craftinginterpreters.com/).
 */
 
 

@@ -12,6 +12,16 @@
 #include "parser.h"
 
 
+/** Much of this code is based on Crafting Interpreters by Robert Nystrom.
+    Specifically, this file takes inspiration mostly from these chapters:
+      * Chapter 5 (https://craftinginterpreters.com/representing-code.html)
+      * Chapter 18 (https://craftinginterpreters.com/types-of-values.html)
+      * Chapter 19 (https://craftinginterpreters.com/strings.html)
+    Some inspiration was also taken from another person's partial implementation:
+      * Loxy in C (https://github.com/gcatlin/loxy)
+*/
+
+
 /**
  * \brief Constructor for a binary operation's syntax tree node.
  * \param [in] left Pointer to the node representing the first operand.

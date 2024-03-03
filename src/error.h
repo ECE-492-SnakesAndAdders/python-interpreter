@@ -27,4 +27,5 @@ const char * const error_names[] = {
 // prints error information for the user
 void report_error(const char * type, const char * message);
 
+
 #endif

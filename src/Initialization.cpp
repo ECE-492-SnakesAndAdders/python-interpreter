@@ -1,3 +1,11 @@
+/*********************************************************************************
+* Description: Initialization file to set up the project.
+* Author(s): Isaac Joffe
+* Copyright: University of Alberta, 2024
+* License: CC-BY-4.0
+*********************************************************************************/
+
+
 #include <SystemClock.h>
 #include <IOConfig.h>
 #include "main.h"

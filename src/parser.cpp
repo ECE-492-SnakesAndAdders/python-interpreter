@@ -7,13 +7,17 @@
 
 
 #include <XPD.h>
+#include <SystemClock.h>
 #include "parser.h"
 #include "lexer.h"
 #include "expr.h"
 
 
-/** Much of this code is based on Crafting Interpreters by Robert Nystrom
-    https://craftinginterpreters.com/representing-code.html, https://craftinginterpreters.com/parsing-expressions.html
+/** Much of this code is based on Crafting Interpreters by Robert Nystrom.
+    Specifically, this file takes inspiration mostly from these chapters:
+      * Chapter 5 (https://craftinginterpreters.com/representing-code.html)
+      * Chapter 6 (https://craftinginterpreters.com/parsing-expressions.html)
+      * Chapter 17 (https://craftinginterpreters.com/compiling-expressions.html)
 */
 
 
@@ -46,7 +50,7 @@ Parser::Parser(lexed_command input) {
 
 
 /**
- *
+ * \brief Under construction.
  */
 node * Parser::write_new_node(node * value) {
     xpd_puts("HERE IN WRITE_NEW_NODE()\n");
@@ -62,18 +66,55 @@ node * Parser::write_new_node(node * value) {
     xpd_echo_int(value -> type, XPD_Flag_UnsignedDecimal);
     xpd_echo_int(node_type, XPD_Flag_UnsignedDecimal);
     xpd_echo_int(LITERAL_NODE, XPD_Flag_UnsignedDecimal);
+    for (int i = 0; i < 10000; ++i) {
+        sys_clock_wait(10000);
+    }
     xpd_puts("HERE IN WRITE_NEW_NODE() PLEASE\n");
+    for (int i = 0; i < 10000; ++i) {
+        sys_clock_wait(10000);
+    }
+    xpd_puts("HERE IN WRITE_NEW_NODE() PLEASE\n");
+    for (int i = 0; i < 10000; ++i) {
+        sys_clock_wait(10000);
+    }
+    if (!(node_type == LITERAL_NODE)) {
+        xpd_puts("FUN\n");
+        for (int i = 0; i < 10000; ++i) {
+            sys_clock_wait(10000);
+        }
+    }
+    return &tree_nodes[current_node++];
     switch (node_type) {
         case BINARY_NODE:
+            for (int i = 0; i < 10000; ++i) {
+                sys_clock_wait(10000);
+            }
+            xpd_puts("HERE IN WRITE_NEW_NODE()\n");
+            for (int i = 0; i < 10000; ++i) {
+                sys_clock_wait(10000);
+            }
             tree_nodes[current_node].entry.binary_val.left = value -> entry.binary_val.left;
             tree_nodes[current_node].entry.binary_val.opcode = value -> entry.binary_val.opcode;
             tree_nodes[current_node].entry.binary_val.right = value -> entry.binary_val.right;
             break;
         case GROUPING_NODE:
+            for (int i = 0; i < 10000; ++i) {
+                sys_clock_wait(10000);
+            }
+            xpd_puts("HERE IN WRITE_NEW_NODE()\n");
+            for (int i = 0; i < 10000; ++i) {
+                sys_clock_wait(10000);
+            }
             tree_nodes[current_node].entry.grouping_val.expression = value -> entry.grouping_val.expression;
             break;
         case LITERAL_NODE:
+            for (int i = 0; i < 10000; ++i) {
+                sys_clock_wait(10000);
+            }
             xpd_puts("HERE IN WRITE_NEW_NODE()\n");
+            for (int i = 0; i < 10000; ++i) {
+                sys_clock_wait(10000);
+            }
             tree_nodes[current_node].entry.literal_val.type = value -> entry.literal_val.type;
             if (tree_nodes[current_node].entry.literal_val.type == NUMBER_VALUE) {
                 tree_nodes[current_node].entry.literal_val.data.number = value -> entry.literal_val.data.number;
@@ -85,6 +126,13 @@ node * Parser::write_new_node(node * value) {
             xpd_puts("HERE IN WRITE_NEW_NODE()\n");
             break;
         case UNARY_NODE:
+            for (int i = 0; i < 10000; ++i) {
+                sys_clock_wait(10000);
+            }
+            xpd_puts("HERE IN WRITE_NEW_NODE()\n");
+            for (int i = 0; i < 10000; ++i) {
+                sys_clock_wait(10000);
+            }
             tree_nodes[current_node].entry.unary_val.opcode = value -> entry.unary_val.opcode;
             tree_nodes[current_node].entry.unary_val.right = value -> entry.unary_val.right;
             break;

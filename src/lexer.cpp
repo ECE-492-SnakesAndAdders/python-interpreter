@@ -11,8 +11,10 @@
 #include "utility.h"
 
 
-/** Much of this code is based on Crafting Interpreters by Robert Nystrom
-    https://craftinginterpreters.com/scanning.html, https://craftinginterpreters.com/scanning-on-demand.html
+/** Much of this code is based on Crafting Interpreters by Robert Nystrom.
+    Specifically, this file takes inspiration mostly from these chapters:
+      * Chapter 4 (https://craftinginterpreters.com/scanning.html)
+      * Chapter 16 (https://craftinginterpreters.com/scanning-on-demand.html)
 */
 
 
@@ -632,7 +634,6 @@ lexed_command Lexer::scan_input() {
     while (!(end_reached())) {
         scan_next_token();
     }
-
     // ------------------------------------------------------------------------
     // FOR DEBUGGING; print each token to see that lexer works
     xpd_puts("\nLEXED INFO:\n");
@@ -668,6 +669,5 @@ lexed_command Lexer::scan_input() {
     xpd_putc('\n');
     xpd_putc('\n');
     // ------------------------------------------------------------------------
-
     return command_info;
 }

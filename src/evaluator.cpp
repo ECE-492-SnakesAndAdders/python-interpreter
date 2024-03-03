@@ -10,6 +10,12 @@
 #include "evaluator.h"
 
 
+/** Much of this code is based on Crafting Interpreters by Robert Nystrom.
+    Specifically, this file takes inspiration mostly from these chapters:
+      * Chapter 7 (https://craftinginterpreters.com/evaluating-expressions.html)
+*/
+
+
 // Placeholder
 Evaluator::Evaluator(uint16_t nothing) {
     // TODO: remove or make useful
