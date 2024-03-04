@@ -95,30 +95,32 @@ node make_new_unary(lexemes opcode, node * right) {
 void stringify_value(literal_value value, char ** output_ptr) {
     switch (value.type) {
         case FALSE_VALUE:
-            *output_ptr = "False\n";
+            *output_ptr = "False";
             break;
         case NONE_VALUE:
-            *output_ptr = "None\n";
+            *output_ptr = "";
             break;
         case NUMBER_VALUE:
             xpd_echo_int(value.data.number, XPD_Flag_SignedDecimal);
             xpd_putc('\n');
-            // TODO: format less weirdly
+            // TODO: format less weirdly and make idiomatic
             break;
         case STRING_VALUE:
+            **output_ptr = '\'';
             for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
                 if (value.data.string[i]) {
-                    *(*output_ptr + i) = value.data.string[i];
+                    *(*output_ptr + i + 1) = value.data.string[i];
                 } else {
-                    *(*output_ptr + i) = '\n';
+                    *(*output_ptr + i + 1) = '\'';
                     break;
                 }
             }
             break;
         case TRUE_VALUE:
-            *output_ptr = "True\n";
+            *output_ptr = "True";
             break;
         default:
+            // TODO: verify that this is unreachable
             *output_ptr = "";
             break;
     }

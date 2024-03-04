@@ -14,6 +14,7 @@
  * \brief Zeroes out a particular region of memory for a variable.
  * \param [in] array Pointer to the array of memory to be erased.
  * \param [in] length Integer number of elements in the array to zero out.
+ * \deprecated
  */
 void memclear(char * array, uint16_t length) {
     for (uint16_t i = 0; i < length; i++) {

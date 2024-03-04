@@ -21,6 +21,8 @@ class Evaluator {
         // for determining if data types are compatible
         bool is_numerical(literal_types type);
         uint16_t numerify(literal_value value);
+        bool is_logical(literal_types type);
+        bool logify(literal_value value);
         // for evaluating each type of syntax tree node
         literal_value evaluate(node tree_node);
         literal_value evaluate_binary(binary_value expr);

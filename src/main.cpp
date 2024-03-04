@@ -141,7 +141,10 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
  */
 uint16_t print(char ** output_ptr) {
     // print the output string received
-    xpd_puts(*output_ptr);
+    if (**output_ptr) {
+        xpd_puts(*output_ptr);
+        xpd_putc('\n');
+    }
     return 0;
 }
 

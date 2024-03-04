@@ -315,6 +315,11 @@ void Lexer::match_string(char terminator, char ** output_ptr) {
         i++;
         current++;
     }
+    // if we never close the string, this is an error
+    if (line[current] != terminator) {
+        report_error(SYNTAX, "EOL while scanning string literal");
+        error_occurred = true;
+    }
 }
 
 
@@ -647,10 +652,11 @@ bool Lexer::has_error() {
 uint16_t Lexer::scan_input() {
     // keep on reading next character until command is over
     while (!(end_reached())) {
+        scan_next_token();
+        // a syntax error at any time should stop all operations
         if (has_error()) {
             return 1;
         }
-        scan_next_token();
     }
     return 0;
 }
