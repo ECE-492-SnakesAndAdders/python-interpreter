@@ -40,12 +40,15 @@ bool Evaluator::is_numerical(literal_types type) {
  */
 uint16_t Evaluator::numerify(literal_value value) {
     switch (value.type) {
+        // valid types map directly to integers
         case FALSE_VALUE:
             return 0;
         case NUMBER_VALUE:
             return value.data.number;
         case TRUE_VALUE:
             return 1;
+        // strings and None are not acceptable for arithmetic operators
+        // theoretically unreachable
         default:
             report_failure("numerical value expected for operation");
             error_occurred = true;
@@ -59,7 +62,7 @@ uint16_t Evaluator::numerify(literal_value value) {
  * \param [in] value The literal value's type to check.
  * \return True if the literal can be used directly in a logical expression; false otherwise.
  */
-bool Evaluator::is_logical(literal_types type) {
+bool Evaluator::is_boolean(literal_types type) {
     return ((type == FALSE_VALUE) || (type == TRUE_VALUE));
 }
 
@@ -69,22 +72,25 @@ bool Evaluator::is_logical(literal_types type) {
  * \param [in] value The literal value to convert.
  * \return The boolean representation of the literal.
  */
-bool Evaluator::logify(literal_value value) {
+bool Evaluator::boolify(literal_value value) {
     switch (value.type) {
         case FALSE_VALUE:
             return false;
         case NONE_VALUE:
             return false;
+        // number 0 is False and all others are true
         case NUMBER_VALUE:
             if (value.data.number == 0) {
                 return false;
             } else {
                 return true;
             }
+        // empty string is false and all others are true
         case STRING_VALUE:
             return (bool) value.data.string[0];
         case TRUE_VALUE:
             return true;
+        // theoretically unreachable
         default:
             report_failure("logical value expected for operation");
             error_occurred = true;
@@ -126,24 +132,21 @@ literal_value Evaluator::evaluate(node tree_node) {
  */
 literal_value Evaluator::evaluate_binary(binary_value expr) {
     // evaluate each operand before evaluating combination
-    // TODO: support short-circuit operators and right-associative ones (not just left-to-right)
+    // TODO: support real short-circuit operators and right-associative ones (not just left-to-right)
     literal_value left = evaluate(*(expr.left));
     literal_value right = evaluate(*(expr.right));
     literal_value result;
     // perform corresponding operation
     switch (expr.opcode) {
         case AND:
-            // case where left operand is "False" -- always must be False output
-            if (is_logical(left.type) && !logify(left)) {
+            // case where left operand is "False" -- always must be False output (short circuit)
+            if (is_boolean(left.type) && !boolify(left)) {
                 result.type = FALSE_VALUE;
-            // case where left operand is "True" -- short circuit and return the right operand
-            } else if (is_logical(left.type) && logify(left)) {
-                result = right;
-            // case where left operand is non-boolean but "False" -- short circuit but return the left operand
-            } else if (!is_logical(left.type) && !logify(left)) {
+            // case where left operand is non-boolean but "False" -- return the left operand
+            } else if (!is_boolean(left.type) && !boolify(left)) {
                 result = left;
-            // case where left operand is non-boolean but "True" -- still short circuit and return the right operand
-            } else if (!is_logical(left.type) && logify(left)) {
+            // case where left operand is "True" -- just return the right operand
+            } else if (boolify(left)) {
                 result = right;
             } else {
                 // TODO: determine if this is reachable in CPython
@@ -151,6 +154,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
         case B_AND:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -160,6 +164,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
         case B_OR:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -169,6 +174,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
         case B_SAR:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -178,6 +184,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
         case B_SLL:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -187,6 +194,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
         case B_XOR:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -196,6 +204,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
         case D_SLASH:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -205,6 +214,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
         case D_STAR:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -219,6 +229,41 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
+        case IS:
+            // if types are the same, the values must match to satusfy "is"
+            if (left.type == right.type) {
+                switch (left.type) {
+                    case FALSE_VALUE:
+                        result.type = TRUE_VALUE;
+                        break;
+                    case NONE_VALUE:
+                        result.type = TRUE_VALUE;
+                        break;
+                    case NUMBER_VALUE:
+                        if (left.data.number == right.data.number) {
+                            result.type = TRUE_VALUE;
+                        } else {
+                            result.type = FALSE_VALUE;
+                        }
+                        break;
+                    case STRING_VALUE:
+                        // TODO: compare strings by value
+                        result.type = FALSE_VALUE;
+                        break;
+                    case TRUE_VALUE:
+                        result.type = TRUE_VALUE;
+                        break;
+                    default:
+                        report_failure("unexpected error");
+                        error_occurred = true;
+                }
+            // if types don't match, we are guaranteed that the values do not match
+            } else {
+                result.type = FALSE_VALUE;
+            }
+            break;
+
         case MINUS:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -228,6 +273,24 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
+        case OR:
+            // case where left operand is "True" -- always must be True output (short circuit)
+            if (is_boolean(left.type) && boolify(left)) {
+                result.type = TRUE_VALUE;
+            // case where left operand is non-boolean but "True" -- return the left operand
+            } else if (!is_boolean(left.type) && boolify(left)) {
+                result = left;
+            // case where left operand is "False" -- just return the right operand
+            } else if (!boolify(left)) {
+                result = right;
+            } else {
+                // TODO: determine if this is reachable in CPython
+                report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
+            }
+            break;
+
         case PERCENT:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -238,6 +301,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             // TODO: support string concatenation
             break;
+
         case PLUS:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -248,6 +312,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             // TODO: support string concatenation
             break;
+
         case SLASH:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -257,6 +322,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
         case STAR:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -272,6 +338,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             // TODO: support string concatenation
             break;
+
         default:
             report_failure("no such binary operator exists");
             error_occurred = true;
@@ -323,6 +390,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
                 error_occurred = true;
             }
             break;
+
         case MINUS:
             if (is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -332,13 +400,15 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
                 error_occurred = true;
             }
             break;
+
         case NOT:
-            if (logify(right)) {
+            if (boolify(right)) {
                 result.type = FALSE_VALUE;
             } else {
                 result.type = TRUE_VALUE;
             }
             break;
+
         case PLUS:
             if (is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -348,6 +418,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
                 error_occurred = true;
             }
             break;
+            
         default:
             report_failure("no such unary operator exists");
             error_occurred = true;
