@@ -18,7 +18,7 @@ bool isdigit(char character);
 bool isalpha(char character);
 // for checking if a character is a number or letter
 bool isalphanumeric(char character);
-// for chceking if two strings matchs
+// for checking if two strings match
 bool strcmp(const char * s1, const char * s2);
 // for converting a numerical string to an integer value
 uint16_t stoi(char ** num_str, uint16_t str_len);
