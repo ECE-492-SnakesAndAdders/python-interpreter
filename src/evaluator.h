@@ -23,6 +23,7 @@ class Evaluator {
         uint16_t numerify(literal_value value);
         bool is_boolean(literal_types type);
         bool boolify(literal_value value);
+        bool equals(literal_value left, literal_value right);
         // for evaluating each type of syntax tree node
         literal_value evaluate(node tree_node);
         literal_value evaluate_binary(binary_value expr);

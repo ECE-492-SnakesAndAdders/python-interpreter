@@ -100,6 +100,39 @@ bool Evaluator::boolify(literal_value value) {
 
 
 /**
+ * \brief Compares two values and determines if they are equal.
+ * \param [in] left The first value to compare.
+ * \param [in] left The second value to compare.
+ * \return True if the two values are equal; false otherwise.
+ */
+bool Evaluator::equals(literal_value left, literal_value right) {
+    // if types are the same, the values must match to be equal
+    if (left.type == right.type) {
+        switch (left.type) {
+            case FALSE_VALUE:
+                return true;
+            case NONE_VALUE:
+                return true;
+            case NUMBER_VALUE:
+                return left.data.number == right.data.number;
+            case STRING_VALUE:
+                // TODO: compare strings by value
+                return false;
+            case TRUE_VALUE:
+                return true;
+            default:
+                report_failure("unexpected error");
+                error_occurred = true;
+                return false;
+        }
+    // if types don't match, we are guaranteed that the values do not match
+    } else {
+        return false;
+    }
+}
+
+
+/**
  * \brief General function to evaluate a portion of a syntax tree.
  * \param [in] tree_node The syntax tree node to evaluate.
  * \return The computed value of the syntax tree node.
@@ -136,6 +169,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
     literal_value left = evaluate(*(expr.left));
     literal_value right = evaluate(*(expr.right));
     literal_value result;
+
     // perform corresponding operation
     switch (expr.opcode) {
         case AND:
@@ -230,35 +264,18 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        case EQUAL:
+            if (equals(left, right)) {
+                result.type = TRUE_VALUE;
+            } else {
+                result.type = FALSE_VALUE;
+            }
+            break;
+            
         case IS:
-            // if types are the same, the values must match to satusfy "is"
-            if (left.type == right.type) {
-                switch (left.type) {
-                    case FALSE_VALUE:
-                        result.type = TRUE_VALUE;
-                        break;
-                    case NONE_VALUE:
-                        result.type = TRUE_VALUE;
-                        break;
-                    case NUMBER_VALUE:
-                        if (left.data.number == right.data.number) {
-                            result.type = TRUE_VALUE;
-                        } else {
-                            result.type = FALSE_VALUE;
-                        }
-                        break;
-                    case STRING_VALUE:
-                        // TODO: compare strings by value
-                        result.type = FALSE_VALUE;
-                        break;
-                    case TRUE_VALUE:
-                        result.type = TRUE_VALUE;
-                        break;
-                    default:
-                        report_failure("unexpected error");
-                        error_occurred = true;
-                }
-            // if types don't match, we are guaranteed that the values do not match
+            // TODO: make this different from "=="
+            if (equals(left, right)) {
+                result.type = TRUE_VALUE;
             } else {
                 result.type = FALSE_VALUE;
             }
@@ -271,6 +288,14 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
+            }
+            break;
+
+        case N_EQUAL:
+            if (!equals(left, right)) {
+                result.type = TRUE_VALUE;
+            } else {
+                result.type = FALSE_VALUE;
             }
             break;
 
@@ -379,7 +404,8 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
     // evaluate the operand before evaluating result
     literal_value right = evaluate(*(expr.right));
     literal_value result;
-    // perform corresponding operatio
+
+    // perform corresponding operation
     switch (expr.opcode) {
         case B_NOT:
             if (is_numerical(right.type)) {
@@ -418,7 +444,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
                 error_occurred = true;
             }
             break;
-            
+
         default:
             report_failure("no such unary operator exists");
             error_occurred = true;
