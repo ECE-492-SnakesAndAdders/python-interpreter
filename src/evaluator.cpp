@@ -189,6 +189,10 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        case AT:
+            report_failure("@ operator (matrix multiplication) not supported");
+            break;
+
         case B_AND:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
@@ -252,11 +256,15 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
         case D_STAR:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
+                // no access to standard library or multiplication operator, so manual computation
                 result.data.number = numerify(left);
-                // TODO: Make this cross-compilable
-                // for (uint16_t i = 1; i < numerify(right); i++) {
-                //     result.data.number = result.data.number * numerify(left);
-                // }
+                for (uint16_t i = 1; i < numerify(right); i++) {
+                    uint16_t temp = result.data.number;
+                    for (uint16_t j = 1; j < numerify(left); j++) {
+                        temp += result.data.number;
+                    }
+                    result.data.number = temp;
+                }
             } else {
                 // TODO: handle negative case
                 report_error(TYPE, "unsupported operand type(s)");
@@ -351,12 +359,11 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
         case STAR:
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                // TODO: make this cross-compilable
-                // result.data.number = numerify(left) * numerify(right);
+                // no access to standard library or multiplication operator, so manual computation
                 result.data.number = numerify(left);
-                // for (uint16_t i = 1; i < numerify(right); i++) {
-                //     result.data.number += numerify(left);
-                // }
+                for (uint16_t i = 1; i < numerify(right); i++) {
+                    result.data.number += numerify(left);
+                }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
