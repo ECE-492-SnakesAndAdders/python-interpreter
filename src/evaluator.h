@@ -22,6 +22,7 @@ class Evaluator {
         bool is_numerical(literal_types type);
         uint16_t numerify(literal_value value);
         // for evaluating each type of syntax tree node
+        literal_value evaluate(node tree_node);
         literal_value evaluate_binary(binary_value expr);
         literal_value evaluate_grouping(grouping_value expr);
         literal_value evaluate_literal(literal_value expr);
@@ -34,7 +35,7 @@ class Evaluator {
         // basic constructor for the class
         Evaluator(uint16_t nothing);
         // converts a tree (or subtree, or node) into a single value
-        literal_value evaluate(node tree_node);
+        uint16_t evaluate_input(node * input, literal_value * output);
 };
 
 

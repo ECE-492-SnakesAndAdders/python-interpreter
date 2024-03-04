@@ -642,6 +642,7 @@ bool Lexer::has_error() {
 
 /**
  * \brief Scans the input string and returns a list of its tokens.
+ * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
 uint16_t Lexer::scan_input() {
     // keep on reading next character until command is over

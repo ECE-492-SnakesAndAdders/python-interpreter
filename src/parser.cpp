@@ -438,7 +438,7 @@ bool Parser::has_error() {
 
 /**
  * \brief Parses the input tokens into an expression.
- * \return The internal representation of the expression.
+ * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
 uint16_t Parser::parse_input() {
     // TODO: handle more complex inputs (statements, blocks, ...)

@@ -55,6 +55,32 @@ uint16_t Evaluator::numerify(literal_value value) {
 
 
 /**
+ * \brief General function to evaluate a portion of a syntax tree.
+ * \param [in] tree_node The syntax tree node to evaluate.
+ * \return The computed value of the syntax tree node.
+ */
+literal_value Evaluator::evaluate(node tree_node) {
+    literal_value result;
+    // call appropriate function based on the operation needed (polymorphism not possible)
+    switch (tree_node.type) {
+        case BINARY_NODE:
+            result = evaluate_binary(tree_node.entry.binary_val);
+            break;
+        case GROUPING_NODE:
+            result = evaluate_grouping(tree_node.entry.grouping_val);
+            break;
+        case LITERAL_NODE:
+            result = evaluate_literal(tree_node.entry.literal_val);
+            break;
+        case UNARY_NODE:
+            result = evaluate_unary(tree_node.entry.unary_val);
+            break;
+    }
+    return result;
+}
+
+
+/**
  * \brief Evaluates a binary operation represented by a syntax tree node.
  * \param [in] expr The internal representation of the binary operation.
  * \return The computed value of the syntax tree node.
@@ -73,6 +99,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.data.number = numerify(left) & numerify(right);
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             break;
         case B_OR:
@@ -81,6 +108,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.data.number = numerify(left) | numerify(right);
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             break;
         case B_SAR:
@@ -89,6 +117,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.data.number = numerify(left) >> numerify(right);
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             break;
         case B_SLL:
@@ -97,6 +126,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.data.number = numerify(left) << numerify(right);
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             break;
         case B_XOR:
@@ -105,6 +135,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.data.number = numerify(left) ^ numerify(right);
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             break;
         case D_SLASH:
@@ -113,6 +144,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.data.number = numerify(left) / numerify(right);
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             break;
         case D_STAR:
@@ -124,8 +156,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 //     result.data.number = result.data.number * numerify(left);
                 // }
             } else {
-                // TODO: report error
                 // TODO: handle negative case
+                report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             break;
         case MINUS:
@@ -134,6 +167,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.data.number = numerify(left) - numerify(right);
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             break;
         case PERCENT:
@@ -141,9 +175,10 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) % numerify(right);
             } else {
-                // TODO: report error
-                // TODO: support string concatenation
+                report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
+            // TODO: support string concatenation
             break;
         case PLUS:
             if (is_numerical(left.type) && is_numerical(right.type)) {
@@ -151,6 +186,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.data.number = numerify(left) + numerify(right);
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             // TODO: support string concatenation
             break;
@@ -160,6 +196,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.data.number = numerify(left) / numerify(right);
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             break;
         case STAR:
@@ -173,6 +210,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 // }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
+                error_occurred = true;
             }
             // TODO: support string concatenation
             break;
@@ -224,6 +262,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
                 result.data.number = ~numerify(right);
             } else {
                 report_error(TYPE, "bad operand type");
+                error_occurred = true;
             }
             break;
         case MINUS:
@@ -232,6 +271,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
                 result.data.number = -numerify(right);
             } else {
                 report_error(TYPE, "bad operand type");
+                error_occurred = true;
             }
             break;
         case NOT:
@@ -243,6 +283,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
                 result.type = FALSE_VALUE;
             } else {
                 report_error(TYPE, "bad operand type");
+                error_occurred = true;
             }
             // TODO: suppport not operand for integers
             break;
@@ -252,6 +293,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
                 result.data.number = +numerify(right);
             } else {
                 report_error(TYPE, "bad operand type");
+                error_occurred = true;
             }
             break;
         default:
@@ -273,26 +315,16 @@ bool Evaluator::has_error() {
 
 
 /**
- * \brief General function to evaluate a portion of a syntax tree.
- * \param [in] tree_node The syntax tree node to evaluate.
- * \return The computed value of the syntax tree node.
+ * \brief Evaluates the input syntax tree and executes it.
+ * \param [in] input The syntax tree to evaluate.
+ * \param [in] output Pointer to where to store the output value.
+ * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
-literal_value Evaluator::evaluate(node tree_node) {
-    literal_value result;
-    // call appropriate function based on the operation needed (polymorphism not possible)
-    switch (tree_node.type) {
-        case BINARY_NODE:
-            result = evaluate_binary(tree_node.entry.binary_val);
-            break;
-        case GROUPING_NODE:
-            result = evaluate_grouping(tree_node.entry.grouping_val);
-            break;
-        case LITERAL_NODE:
-            result = evaluate_literal(tree_node.entry.literal_val);
-            break;
-        case UNARY_NODE:
-            result = evaluate_unary(tree_node.entry.unary_val);
-            break;
+uint16_t Evaluator::evaluate_input(node * input, literal_value * output) {
+    *output = evaluate(*input);
+    // report any errors that occurred during execution
+    if (has_error()) {
+        return 1;
     }
-    return result;
+    return 0;
 }

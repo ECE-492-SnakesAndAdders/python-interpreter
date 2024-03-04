@@ -124,8 +124,11 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
     // ------------------------------------------------------------------------
 
     // evaluate command, convert syntax tree into a result
+    literal_value result;
     Evaluator evaluator(0);
-    literal_value result = evaluator.evaluate(*tree);
+    if ((return_code = evaluator.evaluate_input(tree, &result))) {
+        return 1;
+    }
     stringify_value(result, output_ptr);
     return 0;
 }
