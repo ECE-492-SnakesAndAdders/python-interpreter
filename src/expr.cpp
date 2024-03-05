@@ -96,17 +96,19 @@ node make_new_unary(lexemes opcode, node * right) {
 void stringify_value(literal_value value, char ** output_ptr) {
     switch (value.type) {
         case FALSE_VALUE:
-            *output_ptr = "False\0";
+            *(*output_ptr + 0) = 'F';
+            *(*output_ptr + 1) = 'a';
+            *(*output_ptr + 2) = 'l';
+            *(*output_ptr + 3) = 's';
+            *(*output_ptr + 4) = 'e';
             break;
 
         case NONE_VALUE:
-            *output_ptr = "\0";
             break;
 
         case NUMBER_VALUE:
             xpd_echo_int(value.data.number, XPD_Flag_SignedDecimal);
             xpd_putc('\n');
-            *output_ptr = "\0";
             // TODO: format less weirdly and make idiomatic
             break;
 
@@ -124,12 +126,14 @@ void stringify_value(literal_value value, char ** output_ptr) {
             break;
 
         case TRUE_VALUE:
-            *output_ptr = "True\0";
+            *(*output_ptr + 0) = 'T';
+            *(*output_ptr + 1) = 'r';
+            *(*output_ptr + 2) = 'u';
+            *(*output_ptr + 3) = 'e';
             break;
 
         default:
             // TODO: verify that this is unreachable
-            *output_ptr = "\0";
             break;
     }
 }

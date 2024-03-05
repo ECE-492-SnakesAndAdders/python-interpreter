@@ -165,9 +165,11 @@ int main() {
         // stores the input command received
         char input[MAX_INPUT_LEN] = "";
         char * input_ptr = (char *) input;
+        memclear(input, MAX_INPUT_LEN);
         // stores the output to be printed
         char output[MAX_OUTPUT_LEN] = "";
         char * output_ptr = (char *) output;
+        memclear(output, MAX_OUTPUT_LEN);
 
         // read in user input (command / code), handle sytem error
         if ((return_code = read(&input_ptr))) {

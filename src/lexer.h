@@ -94,6 +94,24 @@ const char * const token_names[] = {
     "IMPORT", "FROM", "WITH", "AS",
     "GLOBAL", "NONLOCAL", "ASYNC", "AWAIT", "ASSERT", "DEL",
 };
+// for ease of printing
+const char * const token_symbols[] = {
+    "",
+    "(", ")", "{", "}", "[", "]",
+    ",", ".", ":", ";", "->",
+    "+", "-", "*", "/", "%", "@", "**", "//",
+    "&", "|", "^", "~", "<<", ">>",
+    "=", "+=", "-=", "*=", "@=", "/=", "%=", "**=", "//=", "&=", "|=", "^=", "<<=", ">>=", ":=",
+    "=", ">", "<", "!=", ">=", "<=",
+    "str", "int",
+    "name",
+    "True", "False", "None", "and", "or", "not", "is", "if", "elif", "else",
+    "for", "while", "continue", "break", "pass", "in",
+    "def", "return", "yield", "class", "lambda",
+    "try", "finally", "except", "raise",
+    "import", "from", "with", "as",
+    "global", "nonlocal", "async", "await", "assert", "del",
+};
 
 
 /**

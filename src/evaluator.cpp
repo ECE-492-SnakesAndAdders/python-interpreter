@@ -304,6 +304,38 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = FALSE_VALUE;
             }
             break;
+        
+        // greater than operation (>)
+        case GREATER:
+            // numeric-adjacent types directly translate to C operator
+            if (is_numerical(left.type) && is_numerical(right.type)) {
+                if (numerify(left) > numerify(right)) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
+            } else {
+                report_error(TYPE, "not supported between instances of");
+                error_occurred = true;
+            }
+            // TODO: support string comparison
+            break;
+
+        // greater than or equal to operation (>=)
+        case G_EQUAL:
+            // numeric-adjacent types directly translate to C operator
+            if (is_numerical(left.type) && is_numerical(right.type)) {
+                if (numerify(left) >= numerify(right)) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
+            } else {
+                report_error(TYPE, "not supported between instances of");
+                error_occurred = true;
+            }
+            // TODO: support string comparison
+            break;
             
         // identity operation (is)
         case IS:
@@ -314,6 +346,38 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = FALSE_VALUE;
             }
             // TODO: make this different from "=="
+            break;
+
+        // less than operation (<)
+        case LESS:
+            // numeric-adjacent types directly translate to C operator
+            if (is_numerical(left.type) && is_numerical(right.type)) {
+                if (numerify(left) < numerify(right)) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
+            } else {
+                report_error(TYPE, "not supported between instances of");
+                error_occurred = true;
+            }
+            // TODO: support string comparison
+            break;
+            
+        // less than or equal to operation (<=)
+        case L_EQUAL:
+            // numeric-adjacent types directly translate to C operator
+            if (is_numerical(left.type) && is_numerical(right.type)) {
+                if (numerify(left) <= numerify(right)) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
+            } else {
+                report_error(TYPE, "not supported between instances of");
+                error_occurred = true;
+            }
+            // TODO: support string comparison
             break;
 
         // subtraction operation (-)
