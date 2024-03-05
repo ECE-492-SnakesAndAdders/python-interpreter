@@ -19,30 +19,32 @@
 #include "utility.h"
 
 
+// the maximum number of characters in a line of input
 #ifndef MAX_INPUT_LEN
 #define MAX_INPUT_LEN 64
 #endif
 
-
+// the maximum number of tokens in a line of input
 #ifndef MAX_INPUT_TOKENS
 #define MAX_INPUT_TOKENS 64
 #endif
 
-
+// the maximum number of characters in a line of output
 #ifndef MAX_OUTPUT_LEN
 #define MAX_OUTPUT_LEN 256
 #endif
 
 
-/** This project is a tree-walk interpreter that uses a recursive descent algorithm.
-    Much of the code is based on Crafting Interpreters by Robert Nystrom (https://craftinginterpreters.com/).
+/** This project is a rough implementation of the Python language on Eleven Engineering's Credit Card Computer (C3).
+    This repository contains a collection of C and C++ code that forms tree-walk interpreter using a recursive descent algorithm.
+    Much of the code is based on the book Crafting Interpreters by Robert Nystrom (https://craftinginterpreters.com/).
 */
 
 
 /**
  * \brief Reads in a line (until a '\n' character) of input.
  * \param [in] input_ptr Pointer to where to store the input received.
- * \return 0 on success, an error number on failure.
+ * \return 0 on success; a non-zero error number on failure.
  */
 uint16_t read(char ** input_ptr) {
     // prompt user for command
@@ -64,7 +66,7 @@ uint16_t read(char ** input_ptr) {
  * \brief Parses, analyzes, and executes the Python code to produce output.
  * \param [in] input_ptr Pointer to where the input received is stored.
  * \param [in] output_ptr Pointer to where to store the text to be printed.
- * \return 0 on success, an error number on failure.
+ * \return 0 on success; a non-zero error number on failure.
  */
 uint16_t eval(char ** input_ptr, char ** output_ptr) {
     uint16_t return_code = 0;
@@ -129,6 +131,7 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
     if ((return_code = evaluator.evaluate_input(tree, &result))) {
         return 1;
     }
+
     stringify_value(result, output_ptr);
     return 0;
 }
@@ -137,7 +140,7 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
 /**
  * \brief Prints some code output.
  * \param [in] output_ptr Pointer to where the text to be printed is stored.
- * \return 0 on success, an error number on failure.
+ * \return 0 on success; a non-zero error number on failure.
  */
 uint16_t print(char ** output_ptr) {
     // print the output string received
@@ -151,7 +154,7 @@ uint16_t print(char ** output_ptr) {
 
 /**
  * \brief Produces the main REPL behavior of the interpreter.
- * \return 0 on success, another integer on failure.
+ * \return 0 on success; a non-zero integer on failure.
  */
 int main() {
     xpd_puts("\nWelcome to Python on the C3 board.\n");
@@ -176,6 +179,7 @@ int main() {
 
         // evaluate and execute input received
         if ((return_code = eval(&input_ptr, &output_ptr))) {
+            // if an error occurred, stop this command and prompt for a new one
             continue;
         }
         

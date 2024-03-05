@@ -15,7 +15,6 @@
         AssertionError (raised when assert fails)
         IndexError (raised when index is out of range)
         NameError (raised when variable name is not found)
-        NotImplementedError (raised when non-existent feature is used)
         SyntaxError (raised when lexer/parser finds a syntax problem)
         IndentationError (raised when some problem occurs with improper indentation)
         TypeError (raised when an operand of an invalid type is used)
@@ -49,5 +48,5 @@ void report_error(error_types type, const char * message) {
 void report_failure(const char * message) {
     xpd_puts("FATAL: unexpected error internal to interpreter\n  ");
     xpd_puts(message);
-    xpd_puts("\ndisregard outputs and reboot the interpreter for safety\n");
+    xpd_puts("\n  disregard outputs and reboot the interpreter for safety\n");
 }

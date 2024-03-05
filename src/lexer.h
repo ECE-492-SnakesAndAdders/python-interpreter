@@ -13,26 +13,32 @@
 #include <XPD.h>
 
 
+// the maximum number of characters in a line of input
 #ifndef MAX_INPUT_LEN
 #define MAX_INPUT_LEN 64
 #endif
 
+// the maximum number of tokens in a line of input
 #ifndef MAX_INPUT_TOKENS
 #define MAX_INPUT_TOKENS 64
 #endif
 
+// the maximum number of literals in a line of input
 #ifndef MAX_LITS
 #define MAX_LITS 16
 #endif
 
+// the maximum number of characters in a literal
 #ifndef MAX_LIT_LEN
 #define MAX_LIT_LEN 32
 #endif
 
+// the maximum number of identifiers in a line of input
 #ifndef MAX_IDENTIFIERS
 #define MAX_IDENTIFIERS 16
 #endif
 
+// the maximum number of characters in any identifier
 #ifndef MAX_IDENTIFIER_LEN
 #define MAX_IDENTIFIER_LEN 32
 #endif

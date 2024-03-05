@@ -14,26 +14,13 @@
 #include "lexer.h"
 
 
+// the maximum number of characters in a literal
 #ifndef MAX_LIT_LEN
 #define MAX_LIT_LEN 32
 #endif
 
 
 struct node;    // forward declaration
-
-
-/**
- * \brief The list of all possible literal types in Python.
- */
-enum literal_types {
-    FALSE_VALUE, NONE_VALUE, NUMBER_VALUE, STRING_VALUE, TRUE_VALUE
-};
-
-
-// for ease of printing
-const char * const literal_names[] = {
-    "bool", "NoneType", "int", "str", "bool"
-};
 
 
 /**
@@ -55,6 +42,20 @@ struct binary_value {
 struct grouping_value {
     // the expression inside the parentheses
     node * expression;
+};
+
+
+/**
+ * \brief The list of all possible literal types in Python.
+ */
+enum literal_types {
+    FALSE_VALUE, NONE_VALUE, NUMBER_VALUE, STRING_VALUE, TRUE_VALUE
+};
+
+
+// for ease of printing
+const char * const literal_names[] = {
+    "bool", "NoneType", "int", "str", "bool"
 };
 
 
@@ -88,6 +89,12 @@ struct unary_value {
  */
 enum node_types {
     BINARY_NODE, GROUPING_NODE, LITERAL_NODE, UNARY_NODE
+};
+
+
+// for ease of printing
+const char * const node_names[] = {
+    "binary", "grouping", "literal", "unary"
 };
 
 

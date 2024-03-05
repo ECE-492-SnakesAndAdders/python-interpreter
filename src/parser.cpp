@@ -43,6 +43,7 @@
 /**
  * \brief Basic constructor for the parser.
  * \param [in] input Pointer to the token list returned by the lexer.
+ * \param [in] output Pointer to pointer to where to store the produced syntax tree.
  */
 Parser::Parser(lexed_command input, node ** output) {
     command_info = input;
@@ -51,11 +52,14 @@ Parser::Parser(lexed_command input, node ** output) {
 
 
 /**
- * \brief Under construction.
+ * \brief Allocates and transcribes a syntax tree node for storage.
+ * \param [in] value Pointer to the node to save.
+ * \return Pointer to where the node has been safely stored.
  */
 node * Parser::write_new_node(node * value) {
     // determine the type of node needed to be created
     tree_nodes[current_node].type = value -> type;
+
     // transfer the data correctly into this safe memory location
     switch (tree_nodes[current_node].type) {
         case BINARY_NODE:
@@ -63,11 +67,14 @@ node * Parser::write_new_node(node * value) {
             tree_nodes[current_node].entry.binary_val.opcode = value -> entry.binary_val.opcode;
             tree_nodes[current_node].entry.binary_val.right = value -> entry.binary_val.right;
             break;
+
         case GROUPING_NODE:
             tree_nodes[current_node].entry.grouping_val.expression = value -> entry.grouping_val.expression;
             break;
+
         case LITERAL_NODE:
             tree_nodes[current_node].entry.literal_val.type = value -> entry.literal_val.type;
+            // additional processing to transfer actual stored data
             if (tree_nodes[current_node].entry.literal_val.type == NUMBER_VALUE) {
                 tree_nodes[current_node].entry.literal_val.data.number = value -> entry.literal_val.data.number;
             } else if (tree_nodes[current_node].entry.literal_val.type == STRING_VALUE) {
@@ -76,11 +83,13 @@ node * Parser::write_new_node(node * value) {
                 }
             }
             break;
+
         case UNARY_NODE:
             tree_nodes[current_node].entry.unary_val.opcode = value -> entry.unary_val.opcode;
             tree_nodes[current_node].entry.unary_val.right = value -> entry.unary_val.right;
             break;
     }
+
     // return the address of this current node while moving along counter to new node location
     return &tree_nodes[current_node++];
 }
@@ -144,8 +153,10 @@ node * Parser::conjunction() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::inversion() {
+    // unary operator handled differently, no left operand to handle first
     while (current_matches(NOT)) {
         lexemes opcode = previous_token();
+        // recursively call itself to allow stacked unary operators
         node * right_ptr = write_new_node(inversion());
         node expr = make_new_unary(opcode, right_ptr);
         return write_new_node(&expr);
@@ -161,9 +172,9 @@ node * Parser::inversion() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::comparison() {
-    node * expr_ptr = bor();
     // TODO: handle cascaded comaprison operators properly
     // TODO: handle "is not" and "not in" keywords
+    node * expr_ptr = bor();
     while (current_matches(EQUAL) || current_matches(N_EQUAL) || current_matches(GREATER) ||
            current_matches(G_EQUAL) || current_matches(LESS) || current_matches(L_EQUAL) ||
            current_matches(IS) || current_matches(IN)) {
@@ -293,6 +304,7 @@ node * Parser::factor() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::power() {
+    // TODO: support right-associativity
     node * expr_ptr = primary();
     while (current_matches(D_STAR)) {
         lexemes opcode = previous_token();
@@ -309,11 +321,11 @@ node * Parser::power() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::primary() {
-    // TODO: set up data types so that any value can be used
     // base case deals with literal values and parentheses
-    // sentinel literal values
     node * expr_ptr = NULL;
     literal_value lit;
+
+    // sentinel literal values
     if (current_matches(FALSE)) {
         lit.type = FALSE_VALUE;
         node expr = make_new_literal(lit);
@@ -327,6 +339,7 @@ node * Parser::primary() {
         node expr = make_new_literal(lit);
         expr_ptr = write_new_node(&expr);
     }
+
     // number and string literal values that need to be fetched
     if (current_matches(NUMBER)) {
         lit.type = NUMBER_VALUE;
@@ -344,7 +357,8 @@ node * Parser::primary() {
         node expr = make_new_literal(lit);
         expr_ptr = write_new_node(&expr);
     }
-    // deal with parentheses
+
+    // deal with parentheses (nested expressions)
     if (current_matches(L_PAREN)) {
         // any general expression can be nested in parentheses
         node expr = make_new_grouping(expression());
@@ -356,17 +370,20 @@ node * Parser::primary() {
             error_occurred = true;
         }
     }
-    // deal with parentheses
+
+    // TODO: deal with identifiers
     if (current_matches(IDENTIFIER)) {
         xpd_puts("NOT IMPLEMENETED YET\n");
         error_occurred = true;
     }
+
     // TODO: reconcile this with future additions
     // error detected, must have some operand
     if (expr_ptr == NULL) {
         report_error(SYNTAX, "invalid syntax");
         error_occurred = true;
     }
+    
     return expr_ptr;
 }
 

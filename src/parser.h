@@ -14,10 +14,12 @@
 #include "lexer.h"
 
 
+// the maximum number of characters in a literal
 #ifndef MAX_LIT_LEN
 #define MAX_LIT_LEN 32
 #endif
 
+// the maximum number of nodes in a syntax tree
 #ifndef MAX_NUM_NODES
 #define MAX_NUM_NODES 64
 #endif

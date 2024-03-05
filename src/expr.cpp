@@ -61,6 +61,7 @@ node make_new_literal(literal_value value) {
     node current;
     current.type = LITERAL_NODE;
     current.entry.literal_val.type = value.type;
+    // need to copy over actualdata contained
     if (current.entry.literal_val.type == NUMBER_VALUE) {
         current.entry.literal_val.data.number = value.data.number;
     } else if (current.entry.literal_val.type == STRING_VALUE) {
@@ -97,15 +98,18 @@ void stringify_value(literal_value value, char ** output_ptr) {
         case FALSE_VALUE:
             *output_ptr = "False\0";
             break;
+
         case NONE_VALUE:
             *output_ptr = "\0";
             break;
+
         case NUMBER_VALUE:
             xpd_echo_int(value.data.number, XPD_Flag_SignedDecimal);
             xpd_putc('\n');
             *output_ptr = "\0";
             // TODO: format less weirdly and make idiomatic
             break;
+
         case STRING_VALUE:
             **output_ptr = '\'';
             for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
@@ -118,9 +122,11 @@ void stringify_value(literal_value value, char ** output_ptr) {
                 }
             }
             break;
+
         case TRUE_VALUE:
             *output_ptr = "True\0";
             break;
+
         default:
             // TODO: verify that this is unreachable
             *output_ptr = "\0";
@@ -142,11 +148,13 @@ void print_tree(node tree) {
             print_tree(*(tree.entry.binary_val.right));
             xpd_puts(" ) ");
             break;
+
         case GROUPING_NODE:
             xpd_puts(" ( ");
             print_tree(*(tree.entry.grouping_val.expression));
             xpd_puts(" ) ");
             break;
+
         case LITERAL_NODE:
             if (tree.entry.literal_val.type == FALSE_VALUE) {
                 xpd_puts(" False ");
@@ -164,6 +172,7 @@ void print_tree(node tree) {
                 xpd_puts(" True ");
             }
             break;
+            
         case UNARY_NODE:
             xpd_puts(" ( ");
             xpd_puts(token_names[tree.entry.unary_val.opcode]);

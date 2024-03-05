@@ -17,9 +17,12 @@
 */
 
 
-// Placeholder
+/**
+ * \brief Constructor for evaluator class.
+ * \param [in] nothing Unused value required to be passed in for syntax.
+ */
 Evaluator::Evaluator(uint16_t nothing) {
-    // TODO: remove or make useful
+    // TODO: make useful
 }
 
 
@@ -113,13 +116,16 @@ bool Evaluator::equals(literal_value left, literal_value right) {
                 return true;
             case NONE_VALUE:
                 return true;
+            // numerical values must be numerically equal
             case NUMBER_VALUE:
                 return left.data.number == right.data.number;
+            // string values must have each and every character match
             case STRING_VALUE:
                 // TODO: compare strings by value
                 return false;
             case TRUE_VALUE:
                 return true;
+            // theoretically unreachable
             default:
                 report_failure("unexpected error");
                 error_occurred = true;
@@ -172,6 +178,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
 
     // perform corresponding operation
     switch (expr.opcode) {
+        // logical and operation (and)
         case AND:
             // case where left operand is "False" -- always must be False output (short circuit)
             if (is_boolean(left.type) && !boolify(left)) {
@@ -189,11 +196,15 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // matrix multiplication operation (@)
         case AT:
+            // TODO: support?
             report_failure("@ operator (matrix multiplication) not supported");
             break;
 
+        // bitwise and operation (&)
         case B_AND:
+            // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) & numerify(right);
@@ -203,7 +214,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // bitwise or operation (|)
         case B_OR:
+            // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) | numerify(right);
@@ -213,7 +226,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // bitwise arithmetic shift right operation (>>)
         case B_SAR:
+            // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) >> numerify(right);
@@ -223,7 +238,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // bitwise logical shift left operation (<<)
         case B_SLL:
+            // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) << numerify(right);
@@ -233,7 +250,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // bitwise exclusive or operation (^)
         case B_XOR:
+            // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) ^ numerify(right);
@@ -243,7 +262,10 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // floor division operation (//)
         case D_SLASH:
+            // directly translates to C operator for numerical values only
+            // identical to regular divison because only integers are allowed
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) / numerify(right);
@@ -253,10 +275,11 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // exponentiation operation (**)
         case D_STAR:
+            // no access to standard library or multiplication operator, so manual computation for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                // no access to standard library or multiplication operator, so manual computation
                 result.data.number = numerify(left);
                 for (uint16_t i = 1; i < numerify(right); i++) {
                     uint16_t temp = result.data.number;
@@ -266,13 +289,15 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.data.number = temp;
                 }
             } else {
-                // TODO: handle negative case
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
             }
+            // TODO: handle negative case
             break;
 
+        // equality operation (==)
         case EQUAL:
+            // check that types and contained values match
             if (equals(left, right)) {
                 result.type = TRUE_VALUE;
             } else {
@@ -280,16 +305,20 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
             
+        // identity operation (is)
         case IS:
-            // TODO: make this different from "=="
+            // check that types and contained values match
             if (equals(left, right)) {
                 result.type = TRUE_VALUE;
             } else {
                 result.type = FALSE_VALUE;
             }
+            // TODO: make this different from "=="
             break;
 
+        // subtraction operation (-)
         case MINUS:
+            // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) - numerify(right);
@@ -299,7 +328,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // not equals operation (!=)
         case N_EQUAL:
+            // simple negation of the equality logic
             if (!equals(left, right)) {
                 result.type = TRUE_VALUE;
             } else {
@@ -307,6 +338,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // logical or operation (or)
         case OR:
             // case where left operand is "True" -- always must be True output (short circuit)
             if (is_boolean(left.type) && boolify(left)) {
@@ -324,7 +356,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // modulus operation (%)
         case PERCENT:
+            // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) % numerify(right);
@@ -335,7 +369,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // TODO: support string concatenation
             break;
 
+        // addition and string concatenation operation (+)
         case PLUS:
+            // directly translates to C operator for numerical values, concatenates two strings
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) + numerify(right);
@@ -346,7 +382,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // TODO: support string concatenation
             break;
 
+        // division operator (/)
         case SLASH:
+            // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) / numerify(right);
@@ -356,10 +394,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // multiplication and string repitition operation (+)
         case STAR:
+            // no access to standard library or multiplication operator, so manual computation for numerical values
+            // repeats a string
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                // no access to standard library or multiplication operator, so manual computation
                 result.data.number = numerify(left);
                 for (uint16_t i = 1; i < numerify(right); i++) {
                     result.data.number += numerify(left);
@@ -371,6 +411,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // TODO: support string concatenation
             break;
 
+        // theoretically unreachable
         default:
             report_failure("no such binary operator exists");
             error_occurred = true;
@@ -414,7 +455,9 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
 
     // perform corresponding operation
     switch (expr.opcode) {
+        // bitwise not operation (~)
         case B_NOT:
+            // directly translates to C operator for numerical values only
             if (is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = ~numerify(right);
@@ -424,7 +467,9 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
             }
             break;
 
+        // unary negation operation (-)
         case MINUS:
+            // directly translates to C operator for numerical values only
             if (is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = -numerify(right);
@@ -434,7 +479,9 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
             }
             break;
 
+        // logical negation operator (not)
         case NOT:
+            // simply negates logical value of input
             if (boolify(right)) {
                 result.type = FALSE_VALUE;
             } else {
@@ -442,7 +489,9 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
             }
             break;
 
+        // unary positive operation (+)
         case PLUS:
+            // directly translates to C operator for numerical values only
             if (is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = +numerify(right);
@@ -452,6 +501,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
             }
             break;
 
+        // theoretically unreachable
         default:
             report_failure("no such unary operator exists");
             error_occurred = true;

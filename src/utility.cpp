@@ -29,7 +29,7 @@ void memclear(char * array, uint16_t length) {
  * \return True if the character is a digit; false otherwise.
  */
 bool isdigit(char character) {
-    return (character >= '0') && (character <= '9');
+    return ((character >= '0') && (character <= '9'));
 }
 
 
@@ -39,9 +39,9 @@ bool isdigit(char character) {
  * \return True if the character is a letter or underscore; false otherwise.
  */
 bool isalpha(char character) {
-    return ((character >= 'a') && (character <= 'z')) ||
-           ((character >= 'A') && (character <= 'Z')) ||
-           (character == '_');
+    return (((character >= 'a') && (character <= 'z')) ||
+            ((character >= 'A') && (character <= 'Z')) ||
+            (character == '_'));
 }
 
 
