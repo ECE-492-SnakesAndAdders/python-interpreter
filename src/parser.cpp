@@ -304,11 +304,10 @@ node * Parser::factor() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::power() {
-    // TODO: support right-associativity
     node * expr_ptr = primary();
-    while (current_matches(D_STAR)) {
+    if (current_matches(D_STAR)) {
         lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(primary());
+        node * right_ptr = write_new_node(power());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }

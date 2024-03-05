@@ -170,8 +170,8 @@ literal_value Evaluator::evaluate(node tree_node) {
  * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_binary(binary_value expr) {
-    // evaluate each operand before evaluating combination
-    // TODO: support real short-circuit operators and right-associative ones (not just left-to-right)
+    // evaluate each operand left-to-right before evaluating combination
+    // this prevents short-circuiting and is slightly slower, but required by system constraint
     literal_value left = evaluate(*(expr.left));
     literal_value right = evaluate(*(expr.right));
     literal_value result;
