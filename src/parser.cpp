@@ -378,11 +378,11 @@ node * Parser::primary() {
     }
 
     // TODO: reconcile this with future additions
-    // error detected, must have some operand
-    if (expr_ptr == NULL) {
-        report_error(SYNTAX, "invalid syntax");
-        error_occurred = true;
-    }
+    // // error detected, must have some operand
+    // if (expr_ptr == NULL) {
+    //     report_error(SYNTAX, "invalid syntax");
+    //     error_occurred = true;
+    // }
     
     return expr_ptr;
 }

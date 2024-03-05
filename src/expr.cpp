@@ -10,6 +10,7 @@
 #include "expr.h"
 #include "lexer.h"
 #include "parser.h"
+#include "utility.h"
 
 
 /** Much of this code is based on Crafting Interpreters by Robert Nystrom.
@@ -107,9 +108,7 @@ void stringify_value(literal_value value, char ** output_ptr) {
             break;
 
         case NUMBER_VALUE:
-            xpd_echo_int(value.data.number, XPD_Flag_SignedDecimal);
-            xpd_putc('\n');
-            // TODO: format less weirdly and make idiomatic
+            itos(output_ptr, value.data.number);
             break;
 
         case STRING_VALUE:
