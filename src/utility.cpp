@@ -138,3 +138,29 @@ void itos(char ** num_str, uint16_t num_value) {
         **num_str = '0';
     }
 }
+
+
+/**
+ * \brief Reliably prints an output string.
+ * \param [in] str Pointer to the string to print.
+ */
+void print_string(char ** str) {
+    // iteratively print each character in the string until NULL terminator encountered
+    while (**str) {
+        xpd_putc(**str);
+        (*str)++;
+    }
+}
+
+
+/**
+ * \brief Reliably prints a string literal.
+ * \param [in] str The string literal to print.
+ */
+void print_string(const char * str) {
+    // iteratively print each character in the string until NULL terminator encountered
+    while (*str) {
+        xpd_putc(*str);
+        str++;
+    }
+}

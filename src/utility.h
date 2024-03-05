@@ -23,6 +23,9 @@ bool strcmp(const char * s1, const char * s2);
 // for converting between numerical strings and integer values
 uint16_t stoi(char ** num_str, uint16_t str_len);
 void itos(char ** num_str, uint16_t num_value);
+// for printing output reliably
+void print_string(char ** str);
+void print_string(const char * str);
 
 
 #endif

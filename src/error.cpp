@@ -8,6 +8,7 @@
 
 #include <XPD.h>
 #include "error.h"
+#include "utility.h"
 
 
 /** The main error types are the following:
@@ -30,14 +31,14 @@
 void report_error(error_types type, const char * message) {
     // standard Python error reporting template, support details later
     if (type != SYNTAX) {
-        xpd_puts("Traceback (most recent call last):\n");
+        print_string("Traceback (most recent call last):\n");
     }
-    xpd_puts("  File \"<stdin>\", line 1, in <module>\n");
+    print_string("  File \"<stdin>\", line 1, in <module>\n");
     // display error info shared from interpreter in useful format
-    xpd_puts(error_names[type]);
-    xpd_puts(": ");
-    xpd_puts(message);
-    xpd_putc('\n');
+    print_string(error_names[type]);
+    print_string(": ");
+    print_string(message);
+    print_string("\n");
 }
 
 
@@ -46,7 +47,7 @@ void report_error(error_types type, const char * message) {
  * \param [in] message The specific information to share.
  */
 void report_failure(const char * message) {
-    xpd_puts("FATAL: unexpected error internal to interpreter\n  ");
-    xpd_puts(message);
-    xpd_puts("\n  disregard outputs and reboot the interpreter for safety\n");
+    print_string("FATAL: unexpected error internal to interpreter\n  ");
+    print_string(message);
+    print_string("\n  disregard outputs and reboot the interpreter for safety\n");
 }

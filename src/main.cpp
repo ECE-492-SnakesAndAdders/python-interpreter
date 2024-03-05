@@ -48,7 +48,10 @@
  */
 uint16_t read(char ** input_ptr) {
     // prompt user for command
-    xpd_puts(">>> ");
+    xpd_putc('>');
+    xpd_putc('>');
+    xpd_putc('>');
+    xpd_putc(' ');
     // read characters until 'enter' key is hit or buffer is full
     for (uint16_t i = 0; i < MAX_INPUT_LEN - 1; i++) {
         *(*input_ptr + i) = (char) xpd_getchar();
@@ -145,7 +148,7 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
 uint16_t print(char ** output_ptr) {
     // print the output string received
     if (**output_ptr) {
-        xpd_puts(*output_ptr);
+        print_string(output_ptr);
         xpd_putc('\n');
     }
     return 0;
@@ -157,7 +160,7 @@ uint16_t print(char ** output_ptr) {
  * \return 0 on success; a non-zero integer on failure.
  */
 int main() {
-    xpd_puts("\nWelcome to Python on the C3 board.\n");
+    print_string("\nWelcome to Python on the C3 board.\n");
 
     uint16_t return_code = 0;
     // REPL: Read-Eval-Print-Loop
@@ -173,9 +176,7 @@ int main() {
 
         // read in user input (command / code), handle sytem error
         if ((return_code = read(&input_ptr))) {
-            xpd_puts("FATAL: error ");
-            xpd_echo_int(return_code, XPD_Flag_UnsignedDecimal);
-            xpd_puts(" in read()\n");
+            report_failure("error in read()");
             break;
         }
 
@@ -187,9 +188,7 @@ int main() {
         
         // display the correct output from this input, handle sytem error
         if ((return_code = print(&output_ptr))) {
-            xpd_puts("FATAL: error ");
-            xpd_echo_int(return_code, XPD_Flag_UnsignedDecimal);
-            xpd_puts(" in print()\n");
+            report_failure("error in print()");
             break;
         }
 
