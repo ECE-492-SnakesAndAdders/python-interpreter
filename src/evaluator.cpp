@@ -591,7 +591,11 @@ bool Evaluator::has_error() {
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
 uint16_t Evaluator::evaluate_input(node * input, literal_value * output) {
-    *output = evaluate(*input);
+    if (input) {
+        *output = evaluate(*input);
+    } else {
+        output -> type = NONE_VALUE;
+    }
     // report any errors that occurred during execution
     if (has_error()) {
         return 1;
