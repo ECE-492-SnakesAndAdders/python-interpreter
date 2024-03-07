@@ -319,12 +319,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
                 uint16_t i = 0;
-                // if one string is shorter than the other then i is NULL; which is the smallest ascii character
+                // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
                 while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
                     i++;
                 }
-                // whichever character is smaller at this point is the smaller string
-                // by smaller we mean smaller value in ASCII table
+                // whichever character is bigger at this point is the bigger string
+                // by bigger we mean bigger value in ASCII table
                 if (left.data.string[i] > right.data.string[i]) {
                     result.type = TRUE_VALUE;
                 } else {
@@ -350,12 +350,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.type = TRUE_VALUE;
                 }
                 uint16_t i = 0;
-                // if one string is shorter than the other then i is NULL; which is the smallest ascii character
+                // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
                 while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
                     i++;
                 }
-                // whichever character is smaller at this point is the smaller string
-                // by smaller we mean smaller value in ASCII table
+                // whichever character is bigger at this point is the bigger string
+                // by bigger we mean bigger value in ASCII table
                 if (left.data.string[i] >= right.data.string[i]) {
                     result.type = TRUE_VALUE;
                 } else {
@@ -388,7 +388,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
                 uint16_t i = 0;
-                // if one string is shorter than the other then i is NULL; which is the smallest ascii character
+                // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
                 while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
                     i++;
                 }
@@ -417,7 +417,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.type = TRUE_VALUE;
                 }
                 uint16_t i = 0;
-                // if one string is shorter than the other then i is NULL; which is the smallest ascii character
+                // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
                 while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
                     i++;
                 }
