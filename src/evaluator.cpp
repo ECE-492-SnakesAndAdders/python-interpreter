@@ -199,7 +199,8 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
         // matrix multiplication operation (@)
         case AT:
             // TODO: support?
-            report_failure("@ operator (matrix multiplication) not supported");
+            report_error(TYPE, "unsupported operand type(s)");
+            error_occurred = true;
             break;
 
         // bitwise and operation (&)
@@ -268,7 +269,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // identical to regular divison because only integers are allowed
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = numerify(left) / numerify(right);
+                if (numerify(right)) {
+                    result.data.number = numerify(left) / numerify(right);
+                } else {
+                    report_error(ZERODIVISION, "integer division or modulo by zero");
+                    error_occurred = true;
+                }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
@@ -280,13 +286,27 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // no access to standard library or multiplication operator, so manual computation for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = numerify(left);
-                for (uint16_t i = 1; i < numerify(right); i++) {
-                    uint16_t temp = result.data.number;
-                    for (uint16_t j = 1; j < numerify(left); j++) {
-                        temp += result.data.number;
+                // zero exponent always produces 1 as answer
+                if (numerify(right) == 0) {
+                    result.data.number = 1;
+                // compute number directly for positive exponents
+                } else if (numerify(right) < 32768) {
+                    result.data.number = numerify(left);
+                    for (uint16_t i = 1; i < numerify(right); i++) {
+                        uint16_t temp = result.data.number;
+                        for (uint16_t j = 1; j < numerify(left); j++) {
+                            temp += result.data.number;
+                        }
+                        result.data.number = temp;
                     }
-                    result.data.number = temp;
+                // negatve exponents produce fractions, which round to 0 here (no floating point numbers)
+                } else {
+                    if (numerify(left)) {
+                        result.data.number = 0;
+                    } else {
+                        report_error(ZERODIVISION, "0 cannot be raised to a negative power");
+                        error_occurred = true;
+                    }
                 }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
@@ -515,7 +535,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = numerify(left) % numerify(right);
+                if (numerify(right)) {
+                    result.data.number = numerify(left) % numerify(right);
+                } else {
+                    report_error(ZERODIVISION, "integer division or modulo by zero");
+                    error_occurred = true;
+                }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
@@ -557,7 +582,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = numerify(left) / numerify(right);
+                if (numerify(right)) {
+                    result.data.number = numerify(left) / numerify(right);
+                } else {
+                    report_error(ZERODIVISION, "division by zero");
+                    error_occurred = true;
+                }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
