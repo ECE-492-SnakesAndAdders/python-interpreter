@@ -317,11 +317,23 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 } else {
                     result.type = FALSE_VALUE;
                 }
+            } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                uint16_t i = 0;
+                // if one string is shorter than the other then i is NULL; which is the smallest ascii character
+                while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
+                    i++;
+                }
+                // whichever character is smaller at this point is the smaller string
+                // by smaller we mean smaller value in ASCII table
+                if (left.data.string[i] > right.data.string[i]) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
             } else {
                 report_error(TYPE, "not supported between instances of");
                 error_occurred = true;
             }
-            // TODO: support string comparison
             break;
 
         // greater than or equal to operation (>=)
@@ -333,11 +345,26 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 } else {
                     result.type = FALSE_VALUE;
                 }
+            } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                if (strcmp(left.data.string, right.data.string)){
+                    result.type = TRUE_VALUE;
+                }
+                uint16_t i = 0;
+                // if one string is shorter than the other then i is NULL; which is the smallest ascii character
+                while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
+                    i++;
+                }
+                // whichever character is smaller at this point is the smaller string
+                // by smaller we mean smaller value in ASCII table
+                if (left.data.string[i] >= right.data.string[i]) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
             } else {
                 report_error(TYPE, "not supported between instances of");
                 error_occurred = true;
             }
-            // TODO: support string comparison
             break;
             
         // identity operation (is)
@@ -348,7 +375,6 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             } else {
                 result.type = FALSE_VALUE;
             }
-            // TODO: make this different from "=="
             break;
 
         // less than operation (<)
@@ -360,18 +386,15 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 } else {
                     result.type = FALSE_VALUE;
                 }
-            } else {
-                report_error(TYPE, "not supported between instances of");
-                error_occurred = true;
-            }
-            // TODO: support string comparison
-            break;
-            
-        // less than or equal to operation (<=)
-        case L_EQUAL:
-            // numeric-adjacent types directly translate to C operator
-            if (is_numerical(left.type) && is_numerical(right.type)) {
-                if (numerify(left) <= numerify(right)) {
+            } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                uint16_t i = 0;
+                // if one string is shorter than the other then i is NULL; which is the smallest ascii character
+                while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
+                    i++;
+                }
+                // whichever character is smaller at this point is the smaller string
+                // by smaller we mean smaller value in ASCII table
+                if (left.data.string[i] < right.data.string[i]) {
                     result.type = TRUE_VALUE;
                 } else {
                     result.type = FALSE_VALUE;
@@ -380,7 +403,35 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 report_error(TYPE, "not supported between instances of");
                 error_occurred = true;
             }
-            // TODO: support string comparison
+            break;
+            
+        // less than or equal to operation (<=)
+        case L_EQUAL:
+            // numeric-adjacent types directly translate to C operator
+            if (is_numerical(left.type) && is_numerical(right.type)) {
+                if (numerify(left) <= numerify(right)) {
+                    result.type = TRUE_VALUE;
+                }
+            } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                if (strcmp(left.data.string, right.data.string)){
+                    result.type = TRUE_VALUE;
+                }
+                uint16_t i = 0;
+                // if one string is shorter than the other then i is NULL; which is the smallest ascii character
+                while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
+                    i++;
+                }
+                // whichever character is smaller at this point is the smaller string
+                // by smaller we mean smaller value in ASCII table
+                if (left.data.string[i] <= right.data.string[i]) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
+            } else {
+                report_error(TYPE, "not supported between instances of");
+                error_occurred = true;
+            }
             break;
 
         // subtraction operation (-)
