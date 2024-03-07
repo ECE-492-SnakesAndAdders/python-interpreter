@@ -77,67 +77,11 @@ bool isalphanumeric(char * str) {
 }
 
 
-// void strcat(char s1[], char s2[], char ** s3) {
-//     uint16_t index = 0;
-//     while (s1[index] && (index < MAX_LIT_LEN)) {
-//         xpd_echo_int(index, XPD_Flag_UnsignedDecimal);
-//         *(*s3 + index) = s1[index];
-//         xpd_putc(s1[index]);
-//         xpd_putc(*(*s3 + index));
-//         xpd_putc('\n');
-//         index++;
-//     }
-//     // print_string(s1);
-//     // print_string("\n");
-//     // print_string(s2);
-//     // print_string("\n");
-//     // print_string(*s3);
-//     // print_string("\n");
-//     uint16_t length = index;
-//     while (s2[index-length] && (index < MAX_LIT_LEN)) {
-//         xpd_echo_int(index, XPD_Flag_UnsignedDecimal);
-//         *(*s3 + index) = s2[index-length];
-//         xpd_putc(s2[index - length]);
-//         xpd_putc(*(*s3 + index));
-//         index++;
-//     }
-//     // *(*s3 + index) = '\0';
-//     // // Calculate the length of each string
-//     // int len1 = 0, len2 = 0;
-//     // while (s1[len1]) {
-//     //     len1++;
-//     // }
-//     // while (s2[len2] != '\0') {
-//     //     len2++;
-//     // }
-
-//     // char concat[len1 + len2 + 1];
-
-//     // // Copy characters from the first string to the concatenated string
-//     // for (int i = 0; i < len1; i++) {
-//     //     concat[i] = s1[i];
-//     // }
-
-//     // // Copy characters from the second string to the concatenated string
-//     // for (int i = 0; i < len2; i++) {
-//     //     concat[len1 + i] = s2[i];
-//     // }
-
-//     // // Add null terminator at the end of the concatenated string
-//     // concat[len1 + len2] = '\0';
-
-//     // print_string(*s3);
-
-//     // return concat;
-// }
-
-
 /**
  * \brief Determines if two strings are equal (look the same).
  * \param [in] s1 The first string to be compared for equality.
  * \param [in] s2 The second string to be compared for equality.
  * \return True if the two strings are equal; false otherwise.
- * \deprecated
  */
 bool strcmp(const char * s1, const char * s2) {
     // traverse down string, ensuring it exists and checking for equality

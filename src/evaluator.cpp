@@ -122,10 +122,7 @@ bool Evaluator::equals(literal_value left, literal_value right) {
                 return left.data.number == right.data.number;
             // string values must have each and every character match
             case STRING_VALUE:
-                if (strcmp(left.data.string , right.data.string)){
-                    return true;
-                }
-                return false;
+                return strcmp(left.data.string, right.data.string);
             case TRUE_VALUE:
                 return true;
             // theoretically unreachable
@@ -320,7 +317,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
                 uint16_t i = 0;
                 // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
-                while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
+                while ((left.data.string[i]) && (right.data.string[i]) && (left.data.string[i] == right.data.string[i])) {
                     i++;
                 }
                 // whichever character is bigger at this point is the bigger string
@@ -366,6 +363,45 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 error_occurred = true;
             }
             break;
+
+        // membership operator (in)
+        case IN:
+            // only valid for strings, just check if substring is present
+            if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                // edge case where left operand is the null string, always a substring then
+                if (!left.data.string[0]) {
+                    result.type = TRUE_VALUE;
+                // edge case where right operand is the null string, no substrings then
+                } else if (!right.data.string[0]) {
+                    result.type = FALSE_VALUE;
+                // normal case
+                } else {
+                    // initially assume that the substring is not present, update if assumption wrong
+                    result.type = FALSE_VALUE;
+                    uint16_t sub_index = 0;
+                    uint16_t full_index = 0;
+                    while (right.data.string[full_index] && (full_index < MAX_LIT_LEN)) {
+                        if (left.data.string[sub_index] && (left.data.string[sub_index] == right.data.string[full_index])) {
+                            // another substring character must be consumed
+                            sub_index++;
+                            // if this is the end of the substring, it has been successfully found
+                            if (!left.data.string[sub_index]) {
+                                result.type = TRUE_VALUE;
+                                break;
+                            }
+                        // no match, so try to match substring again from the start
+                        } else {
+                            sub_index = 0;
+                        }
+                        // one more character consumed
+                        full_index++;
+                    }
+                }
+            } else {
+                report_error(TYPE, "argument is not iterable");
+                error_occurred = true;
+            }
+            break;
             
         // identity operation (is)
         case IS:
@@ -389,7 +425,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
                 uint16_t i = 0;
                 // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
-                while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
+                while ((left.data.string[i]) && (right.data.string[i]) && (left.data.string[i] == right.data.string[i])) {
                     i++;
                 }
                 // whichever character is smaller at this point is the smaller string
@@ -484,7 +520,6 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
             }
-            // TODO: support string concatenation
             break;
 
         // addition and string concatenation operation (+)
@@ -540,22 +575,32 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.data.number += numerify(left);
                 }
             // repeatedly concatenates a string to itself (right) number of times
-            } else if ((left.type == STRING_VALUE) && is_numerical(right.type)) {
+            } else if (((left.type == STRING_VALUE) && is_numerical(right.type)) || ((right.type == STRING_VALUE) && is_numerical(left.type))) {
+                // fetch the multiplier and string from the correct operands
+                uint16_t multiplier = 0;
+                char * initial;
+                if (is_numerical(left.type)) {
+                    multiplier = numerify(left);
+                    initial = (char *) &(right.data.string);
+                } else {
+                    multiplier = numerify(right);
+                    initial = (char *) &(left.data.string);
+                }
                 result.type = STRING_VALUE;
                 // edge case: user does string * (nonpositive number)
-                if (right.data.number <= 0){
+                if (multiplier <= 0){
                     result.data.string[0] = '\0';
                 } else {
-                    uint16_t left_length = 0;
-                    while ( (left.data.string[left_length] != '\0') && (left_length < MAX_LIT_LEN - 1) ) {
-                        left_length++;
+                    uint16_t initial_length = 0;
+                    while ((initial[initial_length]) && (initial_length < MAX_LIT_LEN - 1)) {
+                        initial_length++;
                     }
                     uint16_t end_index = 0; // keep track of the end of the resultant string
                     // append the string to itself (right) number of times
-                    for (uint16_t i = 0; i < right.data.number; i++) {
-                        for (uint16_t j = 0; j < left_length; j++) {
+                    for (uint16_t i = 0; i < multiplier; i++) {
+                        for (uint16_t j = 0; j < initial_length; j++) {
                             if (end_index < MAX_LIT_LEN - 1){
-                                result.data.string[end_index++] = left.data.string[j];
+                                result.data.string[end_index++] = initial[j];
                             }
                         }
                     }
