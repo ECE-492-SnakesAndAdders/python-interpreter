@@ -189,9 +189,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // case where left operand is "True" -- just return the right operand
             } else if (boolify(left)) {
                 result = right;
+            // theoretically unreachable
             } else {
-                // TODO: determine if this is reachable in CPython
-                report_error(TYPE, "unsupported operand type(s)");
+                report_failure("unexpected error");
                 error_occurred = true;
             }
             break;
@@ -312,7 +312,6 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
             }
-            // TODO: handle negative case
             break;
 
         // equality operation (==)
@@ -523,9 +522,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // case where left operand is "False" -- just return the right operand
             } else if (!boolify(left)) {
                 result = right;
+            // theoretically unreachable
             } else {
-                // TODO: determine if this is reachable in CPython
-                report_error(TYPE, "unsupported operand type(s)");
+                report_failure("unexpected error");
                 error_occurred = true;
             }
             break;
