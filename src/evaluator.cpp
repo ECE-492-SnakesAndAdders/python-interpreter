@@ -486,11 +486,32 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 for (uint16_t i = 1; i < numerify(right); i++) {
                     result.data.number += numerify(left);
                 }
+            // repeatedly concatenates a string to itself (right) number of times
+            } else if ((left.type == STRING_VALUE) && is_numerical(right.type)) {
+                result.type = STRING_VALUE;
+                // edge case: user does string * (nonpositive number)
+                if (right.data.number <= 0){
+                    result.data.string[0] = '\0';
+                } else {
+                    uint16_t left_length = 0;
+                    while ( (left.data.string[left_length] != '\0') && (left_length < MAX_LIT_LEN - 1) ) {
+                        left_length++;
+                    }
+                    uint16_t end_index = 0; // keep track of the end of the resultant string
+                    // append the string to itself (right) number of times
+                    for (uint16_t i = 0; i < right.data.number; i++) {
+                        for (uint16_t j = 0; j < left_length; j++) {
+                            if (end_index < MAX_LIT_LEN - 1){
+                                result.data.string[end_index++] = left.data.string[j];
+                            }
+                        }
+                    }
+                    result.data.string[end_index] = '\0';
+                }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
             }
-            // TODO: support string concatenation
             break;
 
         // theoretically unreachable
