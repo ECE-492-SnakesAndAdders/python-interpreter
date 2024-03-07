@@ -122,7 +122,9 @@ bool Evaluator::equals(literal_value left, literal_value right) {
                 return left.data.number == right.data.number;
             // string values must have each and every character match
             case STRING_VALUE:
-                // TODO: compare strings by value
+                if (strcmp(left.data.string , right.data.string)){
+                    return true;
+                }
                 return false;
             case TRUE_VALUE:
                 return true;
