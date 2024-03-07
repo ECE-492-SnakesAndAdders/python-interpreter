@@ -10,6 +10,12 @@
 #include "utility.h"
 
 
+// the maximum number of characters in a literal
+#ifndef MAX_LIT_LEN
+#define MAX_LIT_LEN 32
+#endif
+
+
 /**
  * \brief Zeroes out a particular region of memory for a variable.
  * \param [in] array Pointer to the array of memory to be erased.
@@ -52,6 +58,78 @@ bool isalpha(char character) {
 bool isalphanumeric(char character) {
     return (isalpha(character) || isdigit(character));
 }
+
+
+/**
+ * \brief Determines if a given string is made of only letters and numbers
+ * \param [in] str The string to validate
+ * \return True if the string only contains letters and/or numbers, False otherwise
+ */
+bool isalphanumeric(char * str) {
+    // check if each character is either a character or number
+    while (*str) {
+        if (!isalphanumeric(*str)){
+            return false;
+        }
+        (str)++;
+    }
+    return true;
+}
+
+
+// void strcat(char s1[], char s2[], char ** s3) {
+//     uint16_t index = 0;
+//     while (s1[index] && (index < MAX_LIT_LEN)) {
+//         xpd_echo_int(index, XPD_Flag_UnsignedDecimal);
+//         *(*s3 + index) = s1[index];
+//         xpd_putc(s1[index]);
+//         xpd_putc(*(*s3 + index));
+//         xpd_putc('\n');
+//         index++;
+//     }
+//     // print_string(s1);
+//     // print_string("\n");
+//     // print_string(s2);
+//     // print_string("\n");
+//     // print_string(*s3);
+//     // print_string("\n");
+//     uint16_t length = index;
+//     while (s2[index-length] && (index < MAX_LIT_LEN)) {
+//         xpd_echo_int(index, XPD_Flag_UnsignedDecimal);
+//         *(*s3 + index) = s2[index-length];
+//         xpd_putc(s2[index - length]);
+//         xpd_putc(*(*s3 + index));
+//         index++;
+//     }
+//     // *(*s3 + index) = '\0';
+//     // // Calculate the length of each string
+//     // int len1 = 0, len2 = 0;
+//     // while (s1[len1]) {
+//     //     len1++;
+//     // }
+//     // while (s2[len2] != '\0') {
+//     //     len2++;
+//     // }
+
+//     // char concat[len1 + len2 + 1];
+
+//     // // Copy characters from the first string to the concatenated string
+//     // for (int i = 0; i < len1; i++) {
+//     //     concat[i] = s1[i];
+//     // }
+
+//     // // Copy characters from the second string to the concatenated string
+//     // for (int i = 0; i < len2; i++) {
+//     //     concat[len1 + i] = s2[i];
+//     // }
+
+//     // // Add null terminator at the end of the concatenated string
+//     // concat[len1 + len2] = '\0';
+
+//     // print_string(*s3);
+
+//     // return concat;
+// }
 
 
 /**

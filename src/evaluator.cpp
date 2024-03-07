@@ -9,6 +9,7 @@
 #include <XPD.h>
 #include "error.h"
 #include "evaluator.h"
+#include "utility.h"
 
 
 /** Much of this code is based on Crafting Interpreters by Robert Nystrom.
@@ -439,11 +440,28 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) + numerify(right);
+            } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                result.type = STRING_VALUE;
+                // track how many characters consumed from the left string
+                uint16_t left_count = 0;
+                for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
+                    // always start by simply transcribing left string
+                    if (left.data.string[i]) {
+                        result.data.string[i] = left.data.string[i];
+                        left_count++;
+                    // once left string is done, insert the right string from the start (hence the offset)
+                    } else if (right.data.string[i - left_count]) {
+                        result.data.string[i] = right.data.string[i - left_count];
+                    // add null terminator once both strings are done
+                    } else {
+                        result.data.string[i] = '\0';
+                        break;
+                    }
+                }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
             }
-            // TODO: support string concatenation
             break;
 
         // division operator (/)
