@@ -7,73 +7,34 @@
 
 
 #include <XPD.h>
+#include "error.h"
 #include "lexer.h"
 #include "utility.h"
+
+
+/** Much of this code is based on Crafting Interpreters by Robert Nystrom.
+    Specifically, this file takes inspiration mostly from these chapters:
+      * Chapter 4 (https://craftinginterpreters.com/scanning.html)
+      * Chapter 16 (https://craftinginterpreters.com/scanning-on-demand.html)
+*/
 
 
 /**
  * \brief Basic constructor for the lexer.
  * \param [in] input Pointer to the input string entered by the user.
+ * \param [in] output Pointer to the location to store information about the lexed command.
  */
-Lexer::Lexer(char ** input) {
+Lexer::Lexer(char ** input, lexed_command * output) {
     // transfer input string into object
     for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
         line[i] = *(*input + i);
     }
-    // ensure no remnants of previous command in memory
-    // TODO: fix, still broken
-    // memclear((void *) &command_info, sizeof(command_info));
     // get the number of non-null characters in the command
     while (*(*input + length) != '\0') {
         length++;
     }
-}
-
-
-/**
- * \brief scans the input string and returns a list of its tokens.
- */
-void Lexer::scan_input() {
-    // keep on reading next character until command is over
-    while (!(end_reached())) {
-        scan_next_token();
-    }
-
-    // ------------------------------------------------------------------------
-    // FOR DEBUGGING; print each token to see that lexer works
-    xpd_puts("\nPARSED INFO:\n");
-    xpd_puts("Tokens: ");
-    for (uint16_t i = 0; i < command_info.token_count; i++) {
-        xpd_echo_int(command_info.tokens[i], XPD_Flag_UnsignedDecimal);
-        xpd_putc(' ');
-        xpd_puts(names[command_info.tokens[i]]);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_puts("Strings: ");
-    for (uint16_t i = 0; i < command_info.str_lit_count; i++) {
-        xpd_puts(command_info.str_lits[i]);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_puts("Numbers: ");
-    for (uint16_t i = 0; i < command_info.num_lit_count; i++) {
-        xpd_echo_int(command_info.num_lits[i], XPD_Flag_UnsignedDecimal);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_puts("Identifiers: ");
-    for (uint16_t i = 0; i < command_info.identifier_count; i++) {
-        xpd_puts(command_info.identifiers[i]);
-        xpd_putc(',');
-        xpd_putc(' ');
-    }
-    xpd_putc('\n');
-    xpd_putc('\n');
-    // ------------------------------------------------------------------------
+    // store where to save the final output to
+    command_info = output;
 }
 
 
@@ -94,6 +55,7 @@ void Lexer::scan_next_token() {
     switch (current_char) {
         // unconditionally single-character tokens
         case '(':
+            // approach: just add token no matter what
             add_token(L_PAREN);
             break;
         case ')':
@@ -125,12 +87,14 @@ void Lexer::scan_next_token() {
             break;
         // possible single- or double-character tokens
         case ':':
+            // approach: add two-character version if second character matches, single-character version otherwise
             add_token(next_matches('=') ? W_ASSIGN : COLON);
             break;
         case '+':
             add_token(next_matches('=') ? A_ASSIGN : PLUS);
             break;
         case '-':
+            // consider both possible second characters, only add single if next is neither desired character
             add_token(next_matches('=') ? S_ASSIGN : (next_matches('>') ? ARROW : MINUS));
             break;
         case '%':
@@ -156,6 +120,7 @@ void Lexer::scan_next_token() {
             break;
         // possible one-, two-, or three-character tokens
         case '*':
+            // approach: attempt to add longest one possible (maximal munch)
             if (next_matches('=')) {
                 add_token(M_ASSIGN);
             } else if (next_matches('*')) {
@@ -227,13 +192,16 @@ void Lexer::scan_next_token() {
             return;
         // illegal characters that can never occur in a program
         case '$':
-            // TODO: add error reporting architecture
+            report_error(SYNTAX, "invalid syntax");
+            error_occurred = true;
             return;
         case '?':
-            // TODO: add error reporting architecture
+            report_error(SYNTAX, "invalid syntax");
+            error_occurred = true;
             return;
         case '`':
-            // TODO: add error reporting architecture
+            report_error(SYNTAX, "invalid syntax");
+            error_occurred = true;
             return;
         // default case handles the rest (number literals, identifiers, keywords, whitespace)
         default:
@@ -268,8 +236,8 @@ void Lexer::scan_next_token() {
  * \param [in] token The lexeme to be added to the list.
  */
 void Lexer::add_token(lexemes token) {
-    command_info.tokens[command_info.token_count] = token;
-    command_info.token_count++;
+    command_info -> tokens[command_info -> token_count] = token;
+    command_info -> token_count++;
 }
 
 
@@ -279,9 +247,9 @@ void Lexer::add_token(lexemes token) {
  */
 void Lexer::add_str_lit(char * str_lit) {
     for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-        command_info.str_lits[command_info.str_lit_count][i] = *(str_lit + i);
+        command_info -> str_lits[command_info -> str_lit_count][i] = *(str_lit + i);
     }
-    command_info.str_lit_count++;
+    command_info -> str_lit_count++;
 }
 
 
@@ -290,8 +258,8 @@ void Lexer::add_str_lit(char * str_lit) {
  * \param [in] num_lit The number literal to be added to the list.
  */
 void Lexer::add_num_lit(uint16_t num_lit) {
-    command_info.num_lits[command_info.num_lit_count] = num_lit;
-    command_info.num_lit_count++;
+    command_info -> num_lits[command_info -> num_lit_count] = num_lit;
+    command_info -> num_lit_count++;
 }
 
 
@@ -301,9 +269,9 @@ void Lexer::add_num_lit(uint16_t num_lit) {
  */
 void Lexer::add_identifier(char * identifier) {
     for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-        command_info.identifiers[command_info.identifier_count][i] = *(identifier + i);
+        command_info -> identifiers[command_info -> identifier_count][i] = *(identifier + i);
     }
-    command_info.identifier_count++;
+    command_info -> identifier_count++;
 }
 
 
@@ -349,6 +317,11 @@ void Lexer::match_string(char terminator, char ** output_ptr) {
         // consider next character
         i++;
         current++;
+    }
+    // if we never close the string, this is an error
+    if (line[current] != terminator) {
+        report_error(SYNTAX, "EOL while scanning string literal");
+        error_occurred = true;
     }
 }
 
@@ -400,10 +373,11 @@ void Lexer::match_identifier(char ** output_ptr) {
  */
 lexemes Lexer::iskeyword(char ** input_ptr) {
     // attempt to map the identifier to a reserved keyword
-    // initial switch statement offers considerable speedup
+    // initial switch statement offers considerable speedup (trie structure)
     if (**input_ptr) {
         switch (**input_ptr) {
             case 'a':
+                // approach: check character-by-character for a match, ensuring the value has no extra characters
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'n') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'd') &&
                            !(*(*input_ptr + 3))) {
@@ -431,6 +405,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 6))) {
                     return ASSERT;
                 }
+                break;
+
             case 'b':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'r') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'e') &&
@@ -439,6 +415,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 5))) {
                     return BREAK;
                 }
+                break;
+
             case 'c':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'n') &&
@@ -456,6 +434,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 5))) {
                     return CLASS;
                 }
+                break;
+
             case 'd':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'e') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'f') &&
@@ -466,6 +446,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 3))) {
                     return DEL;
                 }
+                break;
+
             case 'e':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'l') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'i') &&
@@ -485,6 +467,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 6))) {
                     return EXCEPT;
                 }
+                break;
+
             case 'f':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'r') &&
@@ -504,6 +488,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 4))) {
                     return FROM;
                 }
+                break;
+
             case 'g':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'l') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'o') &&
@@ -513,6 +499,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 6))) {
                     return GLOBAL;
                 }
+                break;
+
             case 'i':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 's') &&
                            !(*(*input_ptr + 2))) {
@@ -531,6 +519,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 6))) {
                     return IMPORT;
                 }
+                break;
+
             case 'l':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'a') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'm') &&
@@ -540,6 +530,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 6))) {
                     return LAMBDA;
                 }
+                break;
+
             case 'n':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 't') &&
@@ -555,11 +547,15 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 8))) {
                     return NONLOCAL;
                 }
+                break;
+
             case 'o':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'r') &&
                            !(*(*input_ptr + 2))) {
                     return OR;
                 }
+                break;
+
             case 'p':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'a') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 's') &&
@@ -567,6 +563,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 4))) {
                     return PASS;
                 }
+                break;
+
             case 'r':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'e') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 't') &&
@@ -582,12 +580,16 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 5))) {
                     return RAISE;
                 }
+                break;
+
             case 't':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'r') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'y') &&
                            !(*(*input_ptr + 3))) {
                     return TRY;
                 }
+                break;
+
             case 'w':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'h') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'i') &&
@@ -601,6 +603,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 4))) {
                     return WITH;
                 }
+                break;
+
             case 'y':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'i') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'e') &&
@@ -609,6 +613,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 5))) {
                     return YIELD;
                 }
+                break;
+
             case 'F':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'a') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'l') &&
@@ -617,6 +623,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 5))) {
                     return FALSE;
                 }
+                break;
+
             case 'N':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'n') &&
@@ -624,6 +632,8 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 4))) {
                     return NONE;
                 }
+                break;
+                
             case 'T':
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'r') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'u') &&
@@ -631,6 +641,7 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                            !(*(*input_ptr + 4))) {
                     return TRUE;
                 }
+                break;
         }
     }
     // not a keyword, like returning false
@@ -644,4 +655,30 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
  */
 bool Lexer::end_reached() {
     return current >= length;
+}
+
+
+/**
+ * \brief Tells if an error has occurred while lexing a token.
+ * \return True if an error has occurred; false otherwise.
+ */
+bool Lexer::has_error() {
+    return error_occurred;
+}
+
+
+/**
+ * \brief Scans the input string and returns a list of its tokens.
+ * \return 0 if execution succeeded; non-zero value if an error occurred.
+ */
+uint16_t Lexer::scan_input() {
+    // keep on reading next character until command is over
+    while (!(end_reached())) {
+        scan_next_token();
+        // a syntax error at any time should stop all operations
+        if (has_error()) {
+            return 1;
+        }
+    }
+    return 0;
 }

@@ -9,26 +9,36 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+
+#include <XPD.h>
+
+
+// the maximum number of characters in a line of input
 #ifndef MAX_INPUT_LEN
 #define MAX_INPUT_LEN 64
 #endif
 
+// the maximum number of tokens in a line of input
 #ifndef MAX_INPUT_TOKENS
 #define MAX_INPUT_TOKENS 64
 #endif
 
+// the maximum number of literals in a line of input
 #ifndef MAX_LITS
 #define MAX_LITS 16
 #endif
 
+// the maximum number of characters in a literal
 #ifndef MAX_LIT_LEN
 #define MAX_LIT_LEN 32
 #endif
 
+// the maximum number of identifiers in a line of input
 #ifndef MAX_IDENTIFIERS
 #define MAX_IDENTIFIERS 16
 #endif
 
+// the maximum number of characters in any identifier
 #ifndef MAX_IDENTIFIER_LEN
 #define MAX_IDENTIFIER_LEN 32
 #endif
@@ -67,7 +77,7 @@ enum lexemes {
 
 
 // for ease of printing
-const char * const names[] = {
+const char * const token_names[] = {
     "NULL",
     "L_PAREN", "R_PAREN", "L_BRACE", "R_BRACE", "L_BRACKET", "R_BRACKET",
     "COMMA", "DOT", "COLON", "SEMICOLON", "ARROW",
@@ -83,6 +93,24 @@ const char * const names[] = {
     "TRY", "FINALLY", "EXCEPT", "RAISE",
     "IMPORT", "FROM", "WITH", "AS",
     "GLOBAL", "NONLOCAL", "ASYNC", "AWAIT", "ASSERT", "DEL",
+};
+// for ease of printing
+const char * const token_symbols[] = {
+    "",
+    "(", ")", "{", "}", "[", "]",
+    ",", ".", ":", ";", "->",
+    "+", "-", "*", "/", "%", "@", "**", "//",
+    "&", "|", "^", "~", "<<", ">>",
+    "=", "+=", "-=", "*=", "@=", "/=", "%=", "**=", "//=", "&=", "|=", "^=", "<<=", ">>=", ":=",
+    "=", ">", "<", "!=", ">=", "<=",
+    "str", "int",
+    "name",
+    "True", "False", "None", "and", "or", "not", "is", "if", "elif", "else",
+    "for", "while", "continue", "break", "pass", "in",
+    "def", "return", "yield", "class", "lambda",
+    "try", "finally", "except", "raise",
+    "import", "from", "with", "as",
+    "global", "nonlocal", "async", "await", "assert", "del",
 };
 
 
@@ -111,17 +139,11 @@ class Lexer {
         // stores the input line to be lexed
         char line[MAX_INPUT_LEN] = "";
         // information extracted about the input
-        lexed_command command_info;
+        lexed_command * command_info;
         // the current character index being read
         uint16_t current = 0;
         // the number of non-null input characters to decode
         uint16_t length = 0;
-
-    public:
-        // basic constructor for the class
-        Lexer(char ** input);
-        // converts the input line into a list of tokens
-        void scan_input();
         // main logic of the lexer; maps charcters to tokens
         void scan_next_token();
         // adds a value to the end of that value's list
@@ -138,6 +160,16 @@ class Lexer {
         lexemes iskeyword(char ** input_ptr);
         // checks if there are any more characters to be read
         bool end_reached();
+        // for error handling
+        bool error_occurred = false;
+        bool has_error();
+
+    public:
+        // basic constructor for the class
+        Lexer(char ** input, lexed_command * output);
+        // converts the input line into a list of tokens
+        uint16_t scan_input();
 };
+
 
 #endif
