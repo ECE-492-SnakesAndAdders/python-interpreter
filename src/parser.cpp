@@ -62,6 +62,14 @@ node * Parser::write_new_node(node * value) {
 
     // transfer the data correctly into this safe memory location
     switch (tree_nodes[current_node].type) {
+        case ASSIGN_NODE:
+            for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+                tree_nodes[current_node].entry.assign_val.name[i] = value -> entry.assign_val.name[i];
+            }
+            tree_nodes[current_node].entry.assign_val.opcode = value -> entry.assign_val.opcode;
+            tree_nodes[current_node].entry.assign_val.value = value -> entry.assign_val.value;
+            break;
+
         case BINARY_NODE:
             tree_nodes[current_node].entry.binary_val.left = value -> entry.binary_val.left;
             tree_nodes[current_node].entry.binary_val.opcode = value -> entry.binary_val.opcode;
@@ -87,6 +95,12 @@ node * Parser::write_new_node(node * value) {
         case UNARY_NODE:
             tree_nodes[current_node].entry.unary_val.opcode = value -> entry.unary_val.opcode;
             tree_nodes[current_node].entry.unary_val.right = value -> entry.unary_val.right;
+            break;
+        
+        case VARIABLE_NODE:
+            for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+                tree_nodes[current_node].entry.variable_val.name[i] = value -> entry.variable_val.name[i];
+            }
             break;
     }
 
@@ -117,6 +131,14 @@ node * Parser::statement() {
  *
  */
 node * Parser::assign_statement() {
+    // node * expr_ptr = primary();
+    // if (current_matches(D_STAR)) {
+    //     lexemes opcode = previous_token();
+    //     node * right_ptr = write_new_node(power());
+    //     node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+    //     expr_ptr = write_new_node(&expr);
+    // }
+    // return expr_ptr;
     // variable_value var;
     //     char * temp = command_info.identifiers[current_identifier];
     //     for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
@@ -418,13 +440,14 @@ node * Parser::primary() {
 
     // deal with identifiers (meaning variables)
     if (current_matches(IDENTIFIER)) {
-        variable_value var;
-        char * temp = command_info.identifiers[current_identifier];
-        for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
-            var.name[i] = *(temp + i);
-        }
+        // variable_value var;
+        // char * temp = command_info.identifiers[current_identifier];
+        // for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+        //     var.name[i] = *(temp + i);
+        // }
+        // node expr = make_new_variable(var);
+        node expr = make_new_variable(command_info.identifiers[current_identifier]);
         current_identifier++;
-        node expr = make_new_variable(var);
         expr_ptr = write_new_node(&expr);
     }
 

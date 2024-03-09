@@ -19,15 +19,6 @@
 
 
 /**
- * \brief Constructor for evaluator class.
- * \param [in] nothing Unused value required to be passed in for syntax.
- */
-Evaluator::Evaluator(uint16_t nothing) {
-    // TODO: make useful
-}
-
-
-/**
  * \brief Determines if a literal value is legal to use in a numerical operation.
  * \param [in] value The literal value's type to check.
  * \return True if the literal can be used in a numerical expression; false otherwise.

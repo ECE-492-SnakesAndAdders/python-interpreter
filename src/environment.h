@@ -10,4 +10,34 @@
 #define ENVIRONMENT_H
 
 
+#include <XPD.h>
+#include "expr.h"
+
+
+// the maximum number of variables that may exist in a given scope
+#ifndef MAX_NUM_VAR
+#define MAX_NUM_VAR 64
+#endif
+
+// the maximum number of characters in any identifier
+#ifndef MAX_IDENTIFIER_LEN
+#define MAX_IDENTIFIER_LEN 32
+#endif
+
+
+/** 
+ * \brief The internal representation of the set of variables in existence.
+ */
+struct env {
+    // stores the names of each variable
+    char names[MAX_NUM_VAR][MAX_IDENTIFIER_LEN];
+    // stores the actual corresponding values of these variables
+    literal_value values[MAX_NUM_VAR];
+    // tracks the number of variables being used (where to insert a new one)
+    uint16_t num_used = 0;
+    // points to the parent scope for nested variable scopes
+    env * parent = NULL;
+};
+
+
 #endif

@@ -37,8 +37,6 @@ class Evaluator {
         bool has_error();
 
     public:
-        // basic constructor for the class
-        Evaluator(uint16_t nothing);
         // converts a tree (or subtree, or node) into a single value
         uint16_t evaluate_input(node * input, literal_value * output);
 };
