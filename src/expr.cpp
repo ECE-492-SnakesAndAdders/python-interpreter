@@ -24,6 +24,25 @@
 
 
 /**
+ * \brief Constructor for an assignment operation's syntax tree node.
+ * \param [in] name The name of identifier to write into.
+ * \param [in] opcode The token representing the augmentation to make first.
+ * \param [in] right Pointer to the node representing the expression to assign.
+ * \return A structure representing the syntax tree node.
+ */
+node make_new_assign(char name[], lexemes opcode, node * value) {
+    node current;
+    current.type = ASSIGN_NODE;
+    for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+        current.entry.assign_val.name[i] = name[i];
+    }
+    current.entry.assign_val.opcode = opcode;
+    current.entry.assign_val.value = value;
+    return current;
+}
+
+
+/**
  * \brief Constructor for a binary operation's syntax tree node.
  * \param [in] left Pointer to the node representing the first operand.
  * \param [in] opcode The token representing the operation to complete.
@@ -85,6 +104,21 @@ node make_new_unary(lexemes opcode, node * right) {
     current.type = UNARY_NODE;
     current.entry.unary_val.opcode = opcode;
     current.entry.unary_val.right = right;
+    return current;
+}
+
+
+/**
+ * \brief Constructor for an variable-fetching operation's syntax tree node.
+ * \param [in] name The name of identifier to read from.
+ * \return A structure representing the syntax tree node.
+ */
+node make_new_variable(char name[]) {
+    node current;
+    current.type = VARIABLE_NODE;
+    for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+        current.entry.variable_val.name[i] = name[i];
+    }
     return current;
 }
 

@@ -96,6 +96,40 @@ node * Parser::write_new_node(node * value) {
 
 
 /**
+ *
+ */
+node * Parser::statement() {
+    if (current_matches(IDENTIFIER) && (current_matches(ASSIGN) || current_matches(A_ASSIGN) ||
+                                        current_matches(S_ASSIGN) || current_matches(M_ASSIGN) ||
+                                        current_matches(I_ASSIGN) || current_matches(D_ASSIGN) ||
+                                        current_matches(R_ASSIGN) || current_matches(E_ASSIGN) ||
+                                        current_matches(F_ASSIGN) || current_matches(BA_ASSIGN) ||
+                                        current_matches(BO_ASSIGN) || current_matches(BX_ASSIGN) ||
+                                        current_matches(BL_ASSIGN) || current_matches(BR_ASSIGN) ||
+                                        current_matches(W_ASSIGN))) {
+        return assign_statement();
+    }
+    return expr_statement();
+}
+
+
+/**
+ *
+ */
+node * Parser::assign_statement() {
+
+}
+
+
+/**
+ *
+ */
+node * Parser::expr_statement() {
+    return expression();
+}
+
+
+/**
  * \brief Starts the chain of parsing a Python expression.
  * \return The internal representation of the expression.
  */

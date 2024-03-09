@@ -41,6 +41,10 @@ class Parser {
         uint16_t current_node = 0;
         node ** syntax_tree;
         node * write_new_node(node * value);
+        // for parsing statements
+        node * statement();
+        node * assign_statement();
+        node * expr_statement();
         // for parsing expressions recursively
         node * expression();
         node * disjunction();

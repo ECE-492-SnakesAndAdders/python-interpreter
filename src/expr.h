@@ -19,8 +19,26 @@
 #define MAX_LIT_LEN 32
 #endif
 
+// the maximum number of characters in any identifier
+#ifndef MAX_IDENTIFIER_LEN
+#define MAX_IDENTIFIER_LEN 32
+#endif
+
 
 struct node;    // forward declaration
+
+
+/**
+ * \brief The internal representation of an assignment operation.
+ */
+struct assign_value {
+    // the identifier to assign into
+    char name[MAX_IDENTIFIER_LEN];
+    // the type of augmentation to make during assignment
+    lexemes opcode;
+    // the expression to assign the identifier to
+    node * value;
+};
 
 
 /**
@@ -85,16 +103,25 @@ struct unary_value {
 
 
 /**
+ * \brief The internal representation of the operation of fetching a variable's value.
+ */
+struct variable_value {
+    // the identifier to read from
+    char name[MAX_IDENTIFIER_LEN];
+};
+
+
+/**
  * \brief The list of all possible nodes in the syntax tree.
  */
 enum node_types {
-    BINARY_NODE, GROUPING_NODE, LITERAL_NODE, UNARY_NODE
+    ASSIGN_NODE, BINARY_NODE, GROUPING_NODE, LITERAL_NODE, UNARY_NODE, VARIABLE_NODE
 };
 
 
 // for ease of printing
 const char * const node_names[] = {
-    "binary", "grouping", "literal", "unary"
+    "assign", "binary", "grouping", "literal", "unary", "variable"
 };
 
 
@@ -106,19 +133,23 @@ struct node {
     node_types type;
     // the internal representation of that type of node, conserving memory
     union {
+        assign_value assign_val;
         binary_value binary_val;
         grouping_value grouping_val;
         literal_value literal_val;
         unary_value unary_val;
+        variable_value variable_val;
     } entry;
 };
 
 
 // constructor functions for these node structs
+node make_new_assign(char name[], lexemes opcode, node * value);
 node make_new_binary(node * left, lexemes opcode, node * right);
 node make_new_grouping(node * expression);
 node make_new_literal(literal_value value);
 node make_new_unary(lexemes opcode, node * right);
+node make_new_variable(char name[]);
 // to convert a literal value into a well-formatted string
 void stringify_value(literal_value value, char ** output_ptr);
 // to print a representation of the syntax tree for debugging
