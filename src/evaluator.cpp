@@ -1,6 +1,6 @@
 /*********************************************************************************
 * Description: The evaluator (the third and final stage of the interpreter)
-* Author(s): Isaac Joffe
+* Author(s): Isaac Joffe and David Onchuru
 * Copyright: University of Alberta", "2024
 * License: CC-BY-4.0
 *********************************************************************************/
@@ -147,6 +147,9 @@ literal_value Evaluator::evaluate(node tree_node) {
     literal_value result;
     // call appropriate function based on the operation needed (polymorphism not possible)
     switch (tree_node.type) {
+        case ASSIGN_NODE:
+            result = evaluate_assign(tree_node.entry.assign_val);
+            break;
         case BINARY_NODE:
             result = evaluate_binary(tree_node.entry.binary_val);
             break;
@@ -159,8 +162,19 @@ literal_value Evaluator::evaluate(node tree_node) {
         case UNARY_NODE:
             result = evaluate_unary(tree_node.entry.unary_val);
             break;
+        case VARIABLE_NODE:
+            result = evaluate_variable(tree_node.entry.variable_val);
+            break;
     }
     return result;
+}
+
+
+/**
+ *
+ */
+literal_value Evaluator::evaluate_assign(assign_value expr) {
+
 }
 
 
@@ -738,6 +752,14 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
             break;
     }
     return result;
+}
+
+
+/**
+ *
+ */
+literal_value Evaluator::evaluate_variable(variable_value expr) {
+
 }
 
 

@@ -1,5 +1,5 @@
 /*********************************************************************************
-* Description:
+* Description: Defines the various syntax tree nodes and associated functionality
 * Author(s): Isaac Joffe
 * Copyright: University of Alberta", "2024
 * License: CC-BY-4.0

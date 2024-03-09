@@ -117,6 +117,14 @@ node * Parser::statement() {
  *
  */
 node * Parser::assign_statement() {
+    // variable_value var;
+    //     char * temp = command_info.identifiers[current_identifier];
+    //     for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+    //         var.name[i] = *(temp + i);
+    //     }
+    //     current_identifier++;
+    //     node expr = make_new_variable(var);
+    //     expr_ptr = write_new_node(&expr);
 
 }
 
@@ -356,18 +364,20 @@ node * Parser::power() {
 node * Parser::primary() {
     // base case deals with literal values and parentheses
     node * expr_ptr = NULL;
-    literal_value lit;
 
     // sentinel literal values
     if (current_matches(FALSE)) {
+        literal_value lit;
         lit.type = FALSE_VALUE;
         node expr = make_new_literal(lit);
         expr_ptr = write_new_node(&expr);
     } else if (current_matches(NONE)) {
+        literal_value lit;
         lit.type = NONE_VALUE;
         node expr = make_new_literal(lit);
         expr_ptr = write_new_node(&expr);
     } else if (current_matches(TRUE)) {
+        literal_value lit;
         lit.type = TRUE_VALUE;
         node expr = make_new_literal(lit);
         expr_ptr = write_new_node(&expr);
@@ -375,12 +385,14 @@ node * Parser::primary() {
 
     // number and string literal values that need to be fetched
     if (current_matches(NUMBER)) {
+        literal_value lit;
         lit.type = NUMBER_VALUE;
         lit.data.number = command_info.num_lits[current_num_lit];
         current_num_lit++;
         node expr = make_new_literal(lit);
         expr_ptr = write_new_node(&expr);
     } else if (current_matches(STRING)) {
+        literal_value lit;
         lit.type = STRING_VALUE;
         char * temp = command_info.str_lits[current_str_lit];
         for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
@@ -404,10 +416,16 @@ node * Parser::primary() {
         }
     }
 
-    // TODO: deal with identifiers
+    // deal with identifiers (meaning variables)
     if (current_matches(IDENTIFIER)) {
-        xpd_puts("NOT IMPLEMENETED YET\n");
-        error_occurred = true;
+        variable_value var;
+        char * temp = command_info.identifiers[current_identifier];
+        for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+            var.name[i] = *(temp + i);
+        }
+        current_identifier++;
+        node expr = make_new_variable(var);
+        expr_ptr = write_new_node(&expr);
     }
 
     // TODO: reconcile this with future additions

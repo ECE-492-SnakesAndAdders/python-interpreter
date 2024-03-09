@@ -36,6 +36,7 @@ class Parser {
         uint16_t current = 0;
         uint16_t current_str_lit = 0;
         uint16_t current_num_lit = 0;
+        uint16_t current_identifier = 0;
         // output tree information and operations
         node tree_nodes[MAX_NUM_NODES];
         uint16_t current_node = 0;
