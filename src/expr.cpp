@@ -178,6 +178,14 @@ void stringify_value(literal_value value, char ** output_ptr) {
  */
 void print_tree(node tree) {
     switch (tree.type) {
+        case ASSIGN_NODE:
+            xpd_puts(" ( ");
+            xpd_puts(tree.entry.assign_val.name);
+            xpd_puts(token_names[tree.entry.assign_val.opcode]);
+            print_tree(*(tree.entry.assign_val.value));
+            xpd_puts(" ) ");
+            break;
+
         case BINARY_NODE:
             xpd_puts(" ( ");
             print_tree(*(tree.entry.binary_val.left));
@@ -214,6 +222,12 @@ void print_tree(node tree) {
             xpd_puts(" ( ");
             xpd_puts(token_names[tree.entry.unary_val.opcode]);
             print_tree(*(tree.entry.unary_val.right));
+            xpd_puts(" ) ");
+            break;
+
+        case VARIABLE_NODE:
+            xpd_puts(" ( ");
+            xpd_puts(tree.entry.variable_val.name);
             xpd_puts(" ) ");
             break;
     }

@@ -165,7 +165,7 @@ literal_value Evaluator::evaluate(node tree_node) {
  *
  */
 literal_value Evaluator::evaluate_assign(assign_value expr) {
-    env.write_variable(expr.name, evaluate(*(expr.value)));
+    write_variable(env, expr.name, evaluate(*(expr.value)));
     literal_value result;
     result.type = NONE_VALUE;
     return result;
@@ -754,7 +754,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
  */
 literal_value Evaluator::evaluate_variable(variable_value expr) {
     literal_value result;
-    if (env.read_variable(expr.name, &result)) {
+    if (read_variable(env, expr.name, &result)) {
         report_error(NAME, "name is not defined");
         error_occurred = true;
     }
