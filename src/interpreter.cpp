@@ -39,25 +39,25 @@ uint16_t Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
     //     print_string(token_names[token_sequence.tokens[i]]);
     //     print_string(", ");
     // }
-    // xpd_putc('\n');
+    // print_string("\n");
     // print_string("Strings: ");
     // for (uint16_t i = 0; i < token_sequence.str_lit_count; i++) {
     //     print_string(token_sequence.str_lits[i]);
     //     print_string(", ");
     // }
-    // xpd_putc('\n');
+    // print_string("\n");
     // print_string("Numbers: ");
     // for (uint16_t i = 0; i < token_sequence.num_lit_count; i++) {
     //     xpd_echo_int(token_sequence.num_lits[i], XPD_Flag_UnsignedDecimal);
     //     print_string(", ");
     // }
-    // xpd_putc('\n');
+    // print_string("\n");
     // print_string("Identifiers: ");
     // for (uint16_t i = 0; i < token_sequence.identifier_count; i++) {
     //     print_string(token_sequence.identifiers[i]);
     //     print_string(", ");
     // }
-    // xpd_putc('\n');
+    // print_string("\n");
     // ------------------------------------------------------------------------
 
     // parse command, convert sequence of tokens into a syntax tree
@@ -70,7 +70,7 @@ uint16_t Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
     // // FOR DEBUGGING; print tree to see that parser works
     // print_string("PARSED INFO:\n");
     // print_tree(*tree);
-    // xpd_putc('\n');
+    // print_string("\n");
     // ------------------------------------------------------------------------
 
     // evaluate command, convert syntax tree into a result

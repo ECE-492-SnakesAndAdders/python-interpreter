@@ -119,6 +119,7 @@ node * Parser::write_new_node(node * value) {
  * \return The internal representation of the statement.
  */
 node * Parser::statement() {
+    // start recursively looking for statement operators
     return assign_statement();
 }
 
@@ -128,27 +129,83 @@ node * Parser::statement() {
  * \return The internal representation of the statement parsed so far.
  */
 node * Parser::assign_statement() {
+    // TODO: support more complex variables to be written to (necessary?)
+    // assignment must begin with variable on the left-hand side
     if (current_matches(IDENTIFIER)) {
+        // normal assignment is handled differently, no variable reading needed
         if (current_matches(ASSIGN)) {
+            // assignments can be chained, but the value being assigned is an expression
             node * value_ptr = write_new_node(assign_statement());
+            // make a tree node for this assignment with the correct variable name
             node expr = make_new_assign(command_info.identifiers[current_identifier], value_ptr);
+            // one more identifier name has been read
             current_identifier++;
+            // save this node to build up the syntax tree
             node * expr_ptr = write_new_node(&expr);
             return expr_ptr;
-        } else if (current_matches(A_ASSIGN)) {
-        } else if (current_matches(S_ASSIGN)) {
-        } else if (current_matches(M_ASSIGN)) {
-        } else if (current_matches(I_ASSIGN)) {
-        } else if (current_matches(D_ASSIGN)) {
-        } else if (current_matches(R_ASSIGN)) {
-        } else if (current_matches(E_ASSIGN)) {
-        } else if (current_matches(F_ASSIGN)) {
-        } else if (current_matches(BA_ASSIGN)) {
-        } else if (current_matches(BO_ASSIGN)) {
-        } else if (current_matches(BX_ASSIGN)) {
-        } else if (current_matches(BL_ASSIGN)) {
-        } else if (current_matches(BR_ASSIGN)) {
-        } else if (current_matches(W_ASSIGN)) {
+
+        // augmented assignment involves an additional binary operation on the data, but no chaining
+        } else {
+            // make a tree node for reading the original variable
+            node var = make_new_variable(command_info.identifiers[current_identifier]);
+            node * var_ptr = write_new_node(&var);
+            // value that variable is augmented with must be an expression
+            node * value_ptr = write_new_node(expr_statement());
+            // make a tree node for the augmentation operation
+            node aug;
+
+            // addition-augmented assignment (+=)
+            if (current_matches(A_ASSIGN)) {
+                aug = make_new_binary(var_ptr, PLUS, value_ptr);
+            // subtraction-augmented assignment (-=)
+            } else if (current_matches(S_ASSIGN)) {
+                aug = make_new_binary(var_ptr, MINUS, value_ptr);
+            // multiplication-augmented assignment (*=)
+            } else if (current_matches(M_ASSIGN)) {
+                aug = make_new_binary(var_ptr, STAR, value_ptr);
+            // matrix-multiplication-augmented assignment (@=)
+            } else if (current_matches(I_ASSIGN)) {
+                aug = make_new_binary(var_ptr, AT, value_ptr);
+            // division-augmented assignment (/=)
+            } else if (current_matches(D_ASSIGN)) {
+                aug = make_new_binary(var_ptr, SLASH, value_ptr);
+            // subtraction-augmented assignment (-=)
+            } else if (current_matches(R_ASSIGN)) {
+                aug = make_new_binary(var_ptr, PLUS, value_ptr);
+            // exponentiation-augmented assignment (**=)
+            } else if (current_matches(E_ASSIGN)) {
+                aug = make_new_binary(var_ptr, D_STAR, value_ptr);
+            // floor-division-augmented assignment (//=)
+            } else if (current_matches(F_ASSIGN)) {
+                aug = make_new_binary(var_ptr, D_SLASH, value_ptr);
+            // bitwise-and-augmented assignment (&=)
+            } else if (current_matches(BA_ASSIGN)) {
+                aug = make_new_binary(var_ptr, B_AND, value_ptr);
+            // bitwise-or-augmented assignment (|=)
+            } else if (current_matches(BO_ASSIGN)) {
+                aug = make_new_binary(var_ptr, B_OR, value_ptr);
+            // bitwise-xor-augmented assignment (^=)
+            } else if (current_matches(BX_ASSIGN)) {
+                aug = make_new_binary(var_ptr, B_XOR, value_ptr);
+            // bitwise-shift-left-augmented assignment (<<=)
+            } else if (current_matches(BL_ASSIGN)) {
+                aug = make_new_binary(var_ptr, B_SLL, value_ptr);
+            // bitwise-shift-right-augmented assignment (>>=)
+            } else if (current_matches(BR_ASSIGN)) {
+                aug = make_new_binary(var_ptr, B_SAR, value_ptr);
+            // walrus-augmented assignment (:=)
+            } else if (current_matches(W_ASSIGN)) {
+                aug = make_new_binary(var_ptr, COLON, value_ptr);
+            }
+
+            node * aug_ptr = write_new_node(&aug);
+            // make a tree node for this assignment with the correct variable name
+            node expr = make_new_assign(command_info.identifiers[current_identifier], aug_ptr);
+            // one more identifier name has been read
+            current_identifier++;
+            // save this node to build up the syntax tree
+            node * expr_ptr = write_new_node(&expr);
+            return expr_ptr;
         }
     }
     return expr_statement();
@@ -169,6 +226,7 @@ node * Parser::expr_statement() {
  * \return The internal representation of the expression.
  */
 node * Parser::expression() {
+    // start recursively looking for expression operators
     return disjunction();
 }
 
@@ -178,7 +236,7 @@ node * Parser::expression() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::disjunction() {
-    /** general strategy for all levels is as follows:
+    /** general strategy for all levels of expression operators is as follows:
      *    recurse down, allowing higher priority operators to start, then
      *    deal with current operator as it arises, then
      *    recurse down for subsequent operand, then
