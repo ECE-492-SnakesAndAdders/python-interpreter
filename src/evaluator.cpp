@@ -162,7 +162,9 @@ literal_value Evaluator::evaluate(node tree_node) {
 
 
 /**
- *
+ * \brief Evaluates an assignment operation represented by a syntax tree node.
+ * \param [in] expr The internal representation of the assignment operation.
+ * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_assign(assign_value expr) {
     write_variable(env, expr.name, evaluate(*(expr.value)));
@@ -750,7 +752,9 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
 
 
 /**
- *
+ * \brief Evaluates an the value of a variable represented by a syntax tree node.
+ * \param [in] expr The internal representation of the variable.
+ * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_variable(variable_value expr) {
     literal_value result;

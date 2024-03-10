@@ -34,8 +34,6 @@ struct node;    // forward declaration
 struct assign_value {
     // the identifier to assign into
     char name[MAX_IDENTIFIER_LEN];
-    // the type of augmentation to make during assignment
-    lexemes opcode;
     // the expression to assign the identifier to
     node * value;
 };
@@ -144,7 +142,7 @@ struct node {
 
 
 // constructor functions for these node structs
-node make_new_assign(char name[], lexemes opcode, node * value);
+node make_new_assign(char name[], node * value);
 node make_new_binary(node * left, lexemes opcode, node * right);
 node make_new_grouping(node * expression);
 node make_new_literal(literal_value value);

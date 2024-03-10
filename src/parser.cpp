@@ -67,7 +67,6 @@ node * Parser::write_new_node(node * value) {
             for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
                 tree_nodes[current_node].entry.assign_val.name[i] = value -> entry.assign_val.name[i];
             }
-            tree_nodes[current_node].entry.assign_val.opcode = value -> entry.assign_val.opcode;
             tree_nodes[current_node].entry.assign_val.value = value -> entry.assign_val.value;
             break;
 
@@ -111,7 +110,8 @@ node * Parser::write_new_node(node * value) {
 
 
 /**
- *
+ * \brief Starts the chain of parsing a Python statement.
+ * \return The internal representation of the statement.
  */
 node * Parser::statement() {
     return assign_statement();
@@ -119,9 +119,11 @@ node * Parser::statement() {
 
 
 /**
- *
+ * \brief Handles assignment statements (both normal and augmented).
+ * \return The internal representation of the statement parsed so far.
  */
 node * Parser::assign_statement() {
+    // TODO: split up assignment and augmented versions
     if (current_matches(IDENTIFIER) && (current_matches(ASSIGN) || current_matches(A_ASSIGN) ||
                                         current_matches(S_ASSIGN) || current_matches(M_ASSIGN) ||
                                         current_matches(I_ASSIGN) || current_matches(D_ASSIGN) ||
@@ -142,7 +144,8 @@ node * Parser::assign_statement() {
 
 
 /**
- *
+ * \brief Handles expression statements (just an expression).
+ * \return The internal representation of the statement parsed so far.
  */
 node * Parser::expr_statement() {
     return expression();
@@ -430,12 +433,6 @@ node * Parser::primary() {
 
     // deal with identifiers (meaning variables)
     if (current_matches(IDENTIFIER)) {
-        // variable_value var;
-        // char * temp = command_info.identifiers[current_identifier];
-        // for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
-        //     var.name[i] = *(temp + i);
-        // }
-        // node expr = make_new_variable(var);
         node expr = make_new_variable(command_info.identifiers[current_identifier]);
         current_identifier++;
         expr_ptr = write_new_node(&expr);

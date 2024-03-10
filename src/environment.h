@@ -40,9 +40,9 @@ struct environment {
 };
 
 
-//
+// assigns a value to a variable (either existing or new)
 void write_variable(environment * env, char name[], literal_value value);
-//
+// fetches the associated value from a variable
 uint16_t read_variable(environment * env, char name[], literal_value * value);
 
 

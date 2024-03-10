@@ -26,17 +26,18 @@
 /**
  * \brief Constructor for an assignment operation's syntax tree node.
  * \param [in] name The name of identifier to write into.
- * \param [in] opcode The token representing the augmentation to make first.
  * \param [in] right Pointer to the node representing the expression to assign.
  * \return A structure representing the syntax tree node.
  */
-node make_new_assign(char name[], lexemes opcode, node * value) {
+node make_new_assign(char name[], node * value) {
     node current;
     current.type = ASSIGN_NODE;
     for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
         current.entry.assign_val.name[i] = name[i];
     }
-    current.entry.assign_val.opcode = opcode;
+    // ---------------------------------------------------------
+    print_string(current.entry.assign_val.name)
+    // ---------------------------------------------------------
     current.entry.assign_val.value = value;
     return current;
 }
@@ -119,6 +120,9 @@ node make_new_variable(char name[]) {
     for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
         current.entry.variable_val.name[i] = name[i];
     }
+    // ---------------------------------------------------------
+    print_string(current.entry.variable_val.name)
+    // ---------------------------------------------------------
     return current;
 }
 
@@ -181,7 +185,7 @@ void print_tree(node tree) {
         case ASSIGN_NODE:
             print_string(" ( ");
             print_string(tree.entry.assign_val.name);
-            print_string(token_names[tree.entry.assign_val.opcode]);
+            print_string(" GETS ");
             print_tree(*(tree.entry.assign_val.value));
             print_string(" ) ");
             break;

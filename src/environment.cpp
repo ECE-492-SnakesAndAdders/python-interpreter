@@ -11,7 +11,10 @@
 
 
 /**
- *
+ * \brief Assigns a particular value to a variable (old or new) in the environment.
+ * \param [in] env Pointer to the environment to store the variable in.
+ * \param [in] name The name of the variable to save into.
+ * \param [in] value The value to store in this variable.
  */
 void write_variable(environment * env, char name[], literal_value value) {
     // check if that variable is already in use
@@ -34,7 +37,11 @@ void write_variable(environment * env, char name[], literal_value value) {
 
 
 /**
- *
+ * \brief Fetches the value of a particular variable in an environment.
+ * \param [in] env Pointer to the environment to read the variable from.
+ * \param [in] name The name of the variable to read from.
+ * \param [in] value Pointer to where to store the value held by this variable.
+ * \return 0 if the operation was successful (the variable existed); 1 otherwise.
  */
 uint16_t read_variable(environment * env, char name[], literal_value * value) {
     for (uint16_t i = 0; i < env -> num_used; i++) {
