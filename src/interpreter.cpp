@@ -13,16 +13,6 @@
 #include "parser.h"
 
 
-// /**
-//  *
-//  */
-// Interpreter::Interpreter() {
-//     // this -> evaluator = evaluator;
-//     // Evaluator evaluator(nothing);
-//     // evaluator = evaluator2;
-// }
-
-
 /**
  *
  */

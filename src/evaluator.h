@@ -10,6 +10,7 @@
 #define EVALUATOR_H
 
 
+#include "environment.h"
 #include "expr.h"
 
 
@@ -18,6 +19,8 @@
  */
 class Evaluator {
     private:
+        // for storing variables
+        Environment env;
         // for determining if data types are compatible
         bool is_numerical(literal_types type);
         uint16_t numerify(literal_value value);
