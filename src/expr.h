@@ -40,7 +40,7 @@ struct assign_value {
 
 
 /**
- * \brief The internal representation of a binary operation.
+ * \brief The internal representation of a binary arithmetic operation.
  */
 struct binary_value {
     // the first operand of this operation
@@ -90,6 +90,19 @@ struct literal_value {
 
 
 /**
+ * \brief The internal representation of a binary logical operation.
+ */
+struct logical_value {
+    // the first operand of this operation
+    node * left;
+    // the actual operation to complete
+    lexemes opcode;
+    // the second operand of this operation
+    node * right;
+};
+
+
+/**
  * \brief The internal representation of a unary operation.
  */
 struct unary_value {
@@ -113,13 +126,13 @@ struct variable_value {
  * \brief The list of all possible nodes in the syntax tree.
  */
 enum node_types {
-    ASSIGN_NODE, BINARY_NODE, GROUPING_NODE, LITERAL_NODE, UNARY_NODE, VARIABLE_NODE
+    ASSIGN_NODE, BINARY_NODE, GROUPING_NODE, LITERAL_NODE, LOGICAL_NODE, UNARY_NODE, VARIABLE_NODE
 };
 
 
 // for ease of printing
 const char * const node_names[] = {
-    "assign", "binary", "grouping", "literal", "unary", "variable"
+    "assign", "binary", "grouping", "literal", "logical", "unary", "variable"
 };
 
 
@@ -135,6 +148,7 @@ struct node {
         binary_value binary_val;
         grouping_value grouping_val;
         literal_value literal_val;
+        logical_value logical_val;
         unary_value unary_val;
         variable_value variable_val;
     } entry;
@@ -146,6 +160,7 @@ node make_new_assign(char name[], node * value);
 node make_new_binary(node * left, lexemes opcode, node * right);
 node make_new_grouping(node * expression);
 node make_new_literal(literal_value value);
+node make_new_logical(node * left, lexemes opcode, node * right);
 node make_new_unary(lexemes opcode, node * right);
 node make_new_variable(char name[]);
 // to convert a literal value into a well-formatted string

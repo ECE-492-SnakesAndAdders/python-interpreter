@@ -36,7 +36,7 @@ node make_new_assign(char name[], node * value) {
         current.entry.assign_val.name[i] = name[i];
     }
     // ---------------------------------------------------------
-    print_string(current.entry.assign_val.name)
+    print_string(current.entry.assign_val.name);
     // ---------------------------------------------------------
     current.entry.assign_val.value = value;
     return current;
@@ -44,7 +44,7 @@ node make_new_assign(char name[], node * value) {
 
 
 /**
- * \brief Constructor for a binary operation's syntax tree node.
+ * \brief Constructor for a binary arithmetic operation's syntax tree node.
  * \param [in] left Pointer to the node representing the first operand.
  * \param [in] opcode The token representing the operation to complete.
  * \param [in] right Pointer to the node representing the second operand.
@@ -95,6 +95,23 @@ node make_new_literal(literal_value value) {
 
 
 /**
+ * \brief Constructor for a binary logical operation's syntax tree node.
+ * \param [in] left Pointer to the node representing the first operand.
+ * \param [in] opcode The token representing the operation to complete.
+ * \param [in] right Pointer to the node representing the second operand.
+ * \return A structure representing the syntax tree node.
+ */
+node make_new_logical(node * left, lexemes opcode, node * right) {
+    node current;
+    current.type = LOGICAL_NODE;
+    current.entry.logical_val.left = left;
+    current.entry.logical_val.opcode = opcode;
+    current.entry.logical_val.right = right;
+    return current;
+}
+
+
+/**
  * \brief Constructor for a unary operation's syntax tree node.
  * \param [in] opcode The token representing the operation to complete.
  * \param [in] right Pointer to the node representing the operand.
@@ -121,7 +138,7 @@ node make_new_variable(char name[]) {
         current.entry.variable_val.name[i] = name[i];
     }
     // ---------------------------------------------------------
-    print_string(current.entry.variable_val.name)
+    print_string(current.entry.variable_val.name);
     // ---------------------------------------------------------
     return current;
 }
@@ -220,6 +237,14 @@ void print_tree(node tree) {
             } else if (tree.entry.literal_val.type == TRUE_VALUE) {
                 print_string(" True ");
             }
+            break;
+
+        case LOGICAL_NODE:
+            print_string(" ( ");
+            print_tree(*(tree.entry.logical_val.left));
+            print_string(token_names[tree.entry.logical_val.opcode]);
+            print_tree(*(tree.entry.logical_val.right));
+            print_string(" ) ");
             break;
             
         case UNARY_NODE:

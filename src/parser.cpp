@@ -92,6 +92,12 @@ node * Parser::write_new_node(node * value) {
             }
             break;
 
+        case LOGICAL_NODE:
+            tree_nodes[current_node].entry.logical_val.left = value -> entry.logical_val.left;
+            tree_nodes[current_node].entry.logical_val.opcode = value -> entry.logical_val.opcode;
+            tree_nodes[current_node].entry.logical_val.right = value -> entry.logical_val.right;
+            break;
+
         case UNARY_NODE:
             tree_nodes[current_node].entry.unary_val.opcode = value -> entry.unary_val.opcode;
             tree_nodes[current_node].entry.unary_val.right = value -> entry.unary_val.right;
@@ -123,21 +129,28 @@ node * Parser::statement() {
  * \return The internal representation of the statement parsed so far.
  */
 node * Parser::assign_statement() {
-    // TODO: split up assignment and augmented versions
-    if (current_matches(IDENTIFIER) && (current_matches(ASSIGN) || current_matches(A_ASSIGN) ||
-                                        current_matches(S_ASSIGN) || current_matches(M_ASSIGN) ||
-                                        current_matches(I_ASSIGN) || current_matches(D_ASSIGN) ||
-                                        current_matches(R_ASSIGN) || current_matches(E_ASSIGN) ||
-                                        current_matches(F_ASSIGN) || current_matches(BA_ASSIGN) ||
-                                        current_matches(BO_ASSIGN) || current_matches(BX_ASSIGN) ||
-                                        current_matches(BL_ASSIGN) || current_matches(BR_ASSIGN) ||
-                                        current_matches(W_ASSIGN))) {
-        lexemes opcode = previous_token();
-        node * value_ptr = write_new_node(assign_statement());
-        node expr = make_new_assign(command_info.identifiers[current_identifier], opcode, value_ptr);
-        current_identifier++;
-        node * expr_ptr = write_new_node(&expr);
-        return expr_ptr;
+    if (current_matches(IDENTIFIER)) {
+        if (current_matches(ASSIGN)) {
+            node * value_ptr = write_new_node(assign_statement());
+            node expr = make_new_assign(command_info.identifiers[current_identifier], value_ptr);
+            current_identifier++;
+            node * expr_ptr = write_new_node(&expr);
+            return expr_ptr;
+        } else if (current_matches(A_ASSIGN)) {
+        } else if (current_matches(S_ASSIGN)) {
+        } else if (current_matches(M_ASSIGN)) {
+        } else if (current_matches(I_ASSIGN)) {
+        } else if (current_matches(D_ASSIGN)) {
+        } else if (current_matches(R_ASSIGN)) {
+        } else if (current_matches(E_ASSIGN)) {
+        } else if (current_matches(F_ASSIGN)) {
+        } else if (current_matches(BA_ASSIGN)) {
+        } else if (current_matches(BO_ASSIGN)) {
+        } else if (current_matches(BX_ASSIGN)) {
+        } else if (current_matches(BL_ASSIGN)) {
+        } else if (current_matches(BR_ASSIGN)) {
+        } else if (current_matches(W_ASSIGN)) {
+        }
     }
     return expr_statement();
 }
@@ -181,7 +194,7 @@ node * Parser::disjunction() {
         // recurse again to get the right operand
         node * right_ptr = write_new_node(conjunction());
         // combine the operands, building up the syntax tree
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        node expr = make_new_logical(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
     // combined nested expressions is the new expression
@@ -198,7 +211,7 @@ node * Parser::conjunction() {
     while (current_matches(AND)) {
         lexemes opcode = previous_token();
         node * right_ptr = write_new_node(inversion());
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        node expr = make_new_logical(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
     return expr_ptr;

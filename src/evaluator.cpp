@@ -150,6 +150,9 @@ literal_value Evaluator::evaluate(node tree_node) {
         case LITERAL_NODE:
             result = evaluate_literal(tree_node.entry.literal_val);
             break;
+        case LOGICAL_NODE:
+            result = evaluate_logical(tree_node.entry.logical_val);
+            break;
         case UNARY_NODE:
             result = evaluate_unary(tree_node.entry.unary_val);
             break;
@@ -175,37 +178,18 @@ literal_value Evaluator::evaluate_assign(assign_value expr) {
 
 
 /**
- * \brief Evaluates a binary operation represented by a syntax tree node.
- * \param [in] expr The internal representation of the binary operation.
+ * \brief Evaluates a binary arithmetic operation represented by a syntax tree node.
+ * \param [in] expr The internal representation of the binary arithmetic operation.
  * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_binary(binary_value expr) {
     // evaluate each operand left-to-right before evaluating combination
-    // this prevents short-circuiting and is slightly slower, but required by system constraint
     literal_value left = evaluate(*(expr.left));
     literal_value right = evaluate(*(expr.right));
     literal_value result;
 
     // perform corresponding operation
     switch (expr.opcode) {
-        // logical and operation (and)
-        case AND:
-            // case where left operand is "False" -- always must be False output (short circuit)
-            if (is_boolean(left.type) && !boolify(left)) {
-                result.type = FALSE_VALUE;
-            // case where left operand is non-boolean but "False" -- return the left operand
-            } else if (!is_boolean(left.type) && !boolify(left)) {
-                result = left;
-            // case where left operand is "True" -- just return the right operand
-            } else if (boolify(left)) {
-                result = right;
-            // theoretically unreachable
-            } else {
-                report_failure("unexpected error");
-                error_occurred = true;
-            }
-            break;
-
         // matrix multiplication operation (@)
         case AT:
             // TODO: support?
@@ -521,24 +505,6 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
-        // logical or operation (or)
-        case OR:
-            // case where left operand is "True" -- always must be True output (short circuit)
-            if (is_boolean(left.type) && boolify(left)) {
-                result.type = TRUE_VALUE;
-            // case where left operand is non-boolean but "True" -- return the left operand
-            } else if (!is_boolean(left.type) && boolify(left)) {
-                result = left;
-            // case where left operand is "False" -- just return the right operand
-            } else if (!boolify(left)) {
-                result = right;
-            // theoretically unreachable
-            } else {
-                report_failure("unexpected error");
-                error_occurred = true;
-            }
-            break;
-
         // modulus operation (%)
         case PERCENT:
             // directly translates to C operator for numerical values only
@@ -680,6 +646,67 @@ literal_value Evaluator::evaluate_grouping(grouping_value expr) {
 literal_value Evaluator::evaluate_literal(literal_value expr) {
     // no action required, just pass this value along
     return expr;
+}
+
+
+
+/**
+ * \brief Evaluates a binary logical operation represented by a syntax tree node.
+ * \param [in] expr The internal representation of the binary logical operation.
+ * \return The computed value of the syntax tree node.
+ */
+literal_value Evaluator::evaluate_logical(logical_value expr) {
+    // evaluate only left operand to begin with (short-circuiting)
+    literal_value left = evaluate(*(expr.left));
+    literal_value result;
+
+    // perform corresponding operation
+    switch (expr.opcode) {
+        // logical and operation (and)
+        case AND:
+            // case where left operand is "False" -- always must be False output (short circuit)
+            if (is_boolean(left.type) && !boolify(left)) {
+                result.type = FALSE_VALUE;
+            // case where left operand is non-boolean but "False" -- return the left operand (short circuit)
+            } else if (!is_boolean(left.type) && !boolify(left)) {
+                result = left;
+            // case where left operand is "True" -- just return the right operand
+            } else if (boolify(left)) {
+                literal_value right = evaluate(*(expr.right));
+                result = right;
+            // theoretically unreachable
+            } else {
+                report_failure("unexpected error");
+                error_occurred = true;
+            }
+            break;
+
+        // logical or operation (or)
+        case OR:
+            // case where left operand is "True" -- always must be True output (short circuit)
+            if (is_boolean(left.type) && boolify(left)) {
+                result.type = TRUE_VALUE;
+            // case where left operand is non-boolean but "True" -- return the left operand (short circuit)
+            } else if (!is_boolean(left.type) && boolify(left)) {
+                result = left;
+            // case where left operand is "False" -- just return the right operand
+            } else if (!boolify(left)) {
+                literal_value right = evaluate(*(expr.right));
+                result = right;
+            // theoretically unreachable
+            } else {
+                report_failure("unexpected error");
+                error_occurred = true;
+            }
+            break;
+        
+        // theoretically unreachable
+        default:
+            report_failure("no such binary logical operator exists");
+            error_occurred = true;
+            break;
+    }
+    return result;
 }
 
 
