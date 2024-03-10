@@ -6,7 +6,6 @@
 *********************************************************************************/
 
 
-#include "lexer.h"
 #include <XPD.h>
 #include "error.h"
 #include "expr.h"

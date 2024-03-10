@@ -40,6 +40,8 @@ struct environment {
 };
 
 
+// returns the index where the variable being searched for is stored
+uint16_t find_variable(environment * env, char name[]);
 // assigns a value to a variable (either existing or new)
 void write_variable(environment * env, char name[], literal_value value);
 // fetches the associated value from a variable
