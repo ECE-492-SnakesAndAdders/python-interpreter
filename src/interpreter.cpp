@@ -11,6 +11,7 @@
 #include "interpreter.h"
 #include "lexer.h"
 #include "parser.h"
+#include "utility.h"
 
 
 /**
@@ -27,35 +28,31 @@ uint16_t Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
     }
     // ------------------------------------------------------------------------
     // // FOR DEBUGGING; print each token to see that lexer works
-    // xpd_puts("LEXED INFO:\n");
-    // xpd_puts("Tokens: ");
+    // print_string("LEXED INFO:\n");
+    // print_string("Tokens: ");
     // for (uint16_t i = 0; i < token_sequence.token_count; i++) {
     //     xpd_echo_int(token_sequence.tokens[i], XPD_Flag_UnsignedDecimal);
-    //     xpd_putc(' ');
-    //     xpd_puts(token_names[token_sequence.tokens[i]]);
-    //     xpd_putc(',');
-    //     xpd_putc(' ');
+    //     print_string(" ");
+    //     print_string(token_names[token_sequence.tokens[i]]);
+    //     print_string(", ");
     // }
     // xpd_putc('\n');
-    // xpd_puts("Strings: ");
+    // print_string("Strings: ");
     // for (uint16_t i = 0; i < token_sequence.str_lit_count; i++) {
-    //     xpd_puts(token_sequence.str_lits[i]);
-    //     xpd_putc(',');
-    //     xpd_putc(' ');
+    //     print_string(token_sequence.str_lits[i]);
+    //     print_string(", ");
     // }
     // xpd_putc('\n');
-    // xpd_puts("Numbers: ");
+    // print_string("Numbers: ");
     // for (uint16_t i = 0; i < token_sequence.num_lit_count; i++) {
     //     xpd_echo_int(token_sequence.num_lits[i], XPD_Flag_UnsignedDecimal);
-    //     xpd_putc(',');
-    //     xpd_putc(' ');
+    //     print_string(", ");
     // }
     // xpd_putc('\n');
-    // xpd_puts("Identifiers: ");
+    // print_string("Identifiers: ");
     // for (uint16_t i = 0; i < token_sequence.identifier_count; i++) {
-    //     xpd_puts(token_sequence.identifiers[i]);
-    //     xpd_putc(',');
-    //     xpd_putc(' ');
+    //     print_string(token_sequence.identifiers[i]);
+    //     print_string(", ");
     // }
     // xpd_putc('\n');
     // ------------------------------------------------------------------------
@@ -68,7 +65,7 @@ uint16_t Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
     }
     // ------------------------------------------------------------------------
     // // FOR DEBUGGING; print tree to see that parser works
-    // xpd_puts("PARSED INFO:\n");
+    // print_string("PARSED INFO:\n");
     // print_tree(*tree);
     // xpd_putc('\n');
     // ------------------------------------------------------------------------

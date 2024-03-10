@@ -12,6 +12,7 @@
 #include "expr.h"
 #include "lexer.h"
 #include "parser.h"
+#include "utility.h"
 
 
 /** Much of this code is based on Crafting Interpreters by Robert Nystrom.
@@ -113,6 +114,14 @@ node * Parser::write_new_node(node * value) {
  *
  */
 node * Parser::statement() {
+    return assign_statement();
+}
+
+
+/**
+ *
+ */
+node * Parser::assign_statement() {
     if (current_matches(IDENTIFIER) && (current_matches(ASSIGN) || current_matches(A_ASSIGN) ||
                                         current_matches(S_ASSIGN) || current_matches(M_ASSIGN) ||
                                         current_matches(I_ASSIGN) || current_matches(D_ASSIGN) ||
@@ -121,33 +130,14 @@ node * Parser::statement() {
                                         current_matches(BO_ASSIGN) || current_matches(BX_ASSIGN) ||
                                         current_matches(BL_ASSIGN) || current_matches(BR_ASSIGN) ||
                                         current_matches(W_ASSIGN))) {
-        return assign_statement();
+        lexemes opcode = previous_token();
+        node * value_ptr = write_new_node(assign_statement());
+        node expr = make_new_assign(command_info.identifiers[current_identifier], opcode, value_ptr);
+        current_identifier++;
+        node * expr_ptr = write_new_node(&expr);
+        return expr_ptr;
     }
     return expr_statement();
-}
-
-
-/**
- *
- */
-node * Parser::assign_statement() {
-    // node * expr_ptr = primary();
-    // if (current_matches(D_STAR)) {
-    //     lexemes opcode = previous_token();
-    //     node * right_ptr = write_new_node(power());
-    //     node expr = make_new_binary(expr_ptr, opcode, right_ptr);
-    //     expr_ptr = write_new_node(&expr);
-    // }
-    // return expr_ptr;
-    // variable_value var;
-    //     char * temp = command_info.identifiers[current_identifier];
-    //     for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
-    //         var.name[i] = *(temp + i);
-    //     }
-    //     current_identifier++;
-    //     node expr = make_new_variable(var);
-    //     expr_ptr = write_new_node(&expr);
-
 }
 
 
@@ -537,8 +527,7 @@ bool Parser::has_error() {
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
 uint16_t Parser::parse_input() {
-    // TODO: handle more complex inputs (statements, blocks, ...)
-    *syntax_tree = expression();
+    *syntax_tree = statement();
     if (has_error()) {
         return 1;
     }

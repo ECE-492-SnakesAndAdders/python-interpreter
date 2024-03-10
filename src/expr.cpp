@@ -179,56 +179,56 @@ void stringify_value(literal_value value, char ** output_ptr) {
 void print_tree(node tree) {
     switch (tree.type) {
         case ASSIGN_NODE:
-            xpd_puts(" ( ");
-            xpd_puts(tree.entry.assign_val.name);
-            xpd_puts(token_names[tree.entry.assign_val.opcode]);
+            print_string(" ( ");
+            print_string(tree.entry.assign_val.name);
+            print_string(token_names[tree.entry.assign_val.opcode]);
             print_tree(*(tree.entry.assign_val.value));
-            xpd_puts(" ) ");
+            print_string(" ) ");
             break;
 
         case BINARY_NODE:
-            xpd_puts(" ( ");
+            print_string(" ( ");
             print_tree(*(tree.entry.binary_val.left));
-            xpd_puts(token_names[tree.entry.binary_val.opcode]);
+            print_string(token_names[tree.entry.binary_val.opcode]);
             print_tree(*(tree.entry.binary_val.right));
-            xpd_puts(" ) ");
+            print_string(" ) ");
             break;
 
         case GROUPING_NODE:
-            xpd_puts(" ( ");
+            print_string(" ( ");
             print_tree(*(tree.entry.grouping_val.expression));
-            xpd_puts(" ) ");
+            print_string(" ) ");
             break;
 
         case LITERAL_NODE:
             if (tree.entry.literal_val.type == FALSE_VALUE) {
-                xpd_puts(" False ");
+                print_string(" False ");
             } else if (tree.entry.literal_val.type == NONE_VALUE) {
-                xpd_puts(" None ");
+                print_string(" None ");
             } else if (tree.entry.literal_val.type == NUMBER_VALUE) {
-                xpd_putc(' ');
+                print_string(" ");
                 xpd_echo_int(tree.entry.literal_val.data.number, XPD_Flag_SignedDecimal);
-                xpd_putc(' ');
+                print_string(" ");
             } else if (tree.entry.literal_val.type == STRING_VALUE) {
-                xpd_putc(' ');
-                xpd_puts(tree.entry.literal_val.data.string);
-                xpd_putc(' ');
+                print_string(" ");
+                print_string(tree.entry.literal_val.data.string);
+                print_string(" ");
             } else if (tree.entry.literal_val.type == TRUE_VALUE) {
-                xpd_puts(" True ");
+                print_string(" True ");
             }
             break;
             
         case UNARY_NODE:
-            xpd_puts(" ( ");
-            xpd_puts(token_names[tree.entry.unary_val.opcode]);
+            print_string(" ( ");
+            print_string(token_names[tree.entry.unary_val.opcode]);
             print_tree(*(tree.entry.unary_val.right));
-            xpd_puts(" ) ");
+            print_string(" ) ");
             break;
 
         case VARIABLE_NODE:
-            xpd_puts(" ( ");
-            xpd_puts(tree.entry.variable_val.name);
-            xpd_puts(" ) ");
+            print_string(" ( ");
+            print_string(tree.entry.variable_val.name);
+            print_string(" ) ");
             break;
     }
 }
