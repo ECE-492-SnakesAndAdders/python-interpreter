@@ -59,63 +59,7 @@ Parser::Parser(lexed_command input, node ** output) {
 node * Parser::write_new_node(node * value) {
     // determine the type of node needed to be created
     tree_nodes[current_node].type = value -> type;
-
-    xpd_echo_int(current_node, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
-    xpd_echo_int(tree_nodes[current_node].type, XPD_Flag_UnsignedDecimal);
-    xpd_putc('=');
-    xpd_echo_int(LITERAL_NODE, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
-
-    // transfer the data correctly into this safe memory location
-    switch (tree_nodes[current_node].type) {
-        case ASSIGN_NODE:
-            for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
-                tree_nodes[current_node].entry.assign_val.name[i] = value -> entry.assign_val.name[i];
-            }
-            tree_nodes[current_node].entry.assign_val.value = value -> entry.assign_val.value;
-            break;
-
-        case BINARY_NODE:
-            tree_nodes[current_node].entry.binary_val.left = value -> entry.binary_val.left;
-            tree_nodes[current_node].entry.binary_val.opcode = value -> entry.binary_val.opcode;
-            tree_nodes[current_node].entry.binary_val.right = value -> entry.binary_val.right;
-            break;
-
-        case GROUPING_NODE:
-            tree_nodes[current_node].entry.grouping_val.expression = value -> entry.grouping_val.expression;
-            break;
-
-        case LITERAL_NODE:
-            tree_nodes[current_node].entry.literal_val.type = value -> entry.literal_val.type;
-            // additional processing to transfer actual stored data
-            if (tree_nodes[current_node].entry.literal_val.type == NUMBER_VALUE) {
-                tree_nodes[current_node].entry.literal_val.data.number = value -> entry.literal_val.data.number;
-            } else if (tree_nodes[current_node].entry.literal_val.type == STRING_VALUE) {
-                for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
-                    tree_nodes[current_node].entry.literal_val.data.string[i] = value -> entry.literal_val.data.string[i];
-                }
-            }
-            break;
-
-        case LOGICAL_NODE:
-            tree_nodes[current_node].entry.logical_val.left = value -> entry.logical_val.left;
-            tree_nodes[current_node].entry.logical_val.opcode = value -> entry.logical_val.opcode;
-            tree_nodes[current_node].entry.logical_val.right = value -> entry.logical_val.right;
-            break;
-
-        case UNARY_NODE:
-            tree_nodes[current_node].entry.unary_val.opcode = value -> entry.unary_val.opcode;
-            tree_nodes[current_node].entry.unary_val.right = value -> entry.unary_val.right;
-            break;
-        
-        case VARIABLE_NODE:
-            for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
-                tree_nodes[current_node].entry.variable_val.name[i] = value -> entry.variable_val.name[i];
-            }
-            break;
-    }
-
+    tree_nodes[current_node].entry = value -> entry;
     // return the address of this current node while moving along counter to new node location
     return &tree_nodes[current_node++];
 }
@@ -466,15 +410,7 @@ node * Parser::primary() {
         literal_value lit;
         lit.type = TRUE_VALUE;
         node expr = make_new_literal(lit);
-        xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
-        xpd_echo_int(expr.type, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
-        xpd_echo_int(expr.entry.literal_val.type, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
         expr_ptr = write_new_node(&expr);
-        xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
 
     // number and string literal values that need to be fetched
     } else if (current_matches(NUMBER)) {
@@ -483,17 +419,7 @@ node * Parser::primary() {
         lit.data.number = command_info.num_lits[current_num_lit];
         current_num_lit++;
         node expr = make_new_literal(lit);
-        xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
-        xpd_echo_int(expr.type, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
-        xpd_echo_int(expr.entry.literal_val.type, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
-        xpd_echo_int(expr.entry.literal_val.data.number, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
         expr_ptr = write_new_node(&expr);
-        xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
     } else if (current_matches(STRING)) {
         literal_value lit;
         lit.type = STRING_VALUE;
