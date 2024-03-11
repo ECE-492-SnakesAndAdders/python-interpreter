@@ -44,8 +44,7 @@ class Parser {
         node * write_new_node(node * value);
         // for parsing statements
         node * statement();
-        node * assign_statement();
-        node * expr_statement();
+        node * assign();
         // for parsing expressions recursively
         node * expression();
         node * disjunction();

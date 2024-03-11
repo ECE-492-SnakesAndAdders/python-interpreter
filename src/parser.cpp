@@ -60,6 +60,13 @@ node * Parser::write_new_node(node * value) {
     // determine the type of node needed to be created
     tree_nodes[current_node].type = value -> type;
 
+    xpd_echo_int(current_node, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    xpd_echo_int(tree_nodes[current_node].type, XPD_Flag_UnsignedDecimal);
+    xpd_putc('=');
+    xpd_echo_int(LITERAL_NODE, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+
     // transfer the data correctly into this safe memory location
     switch (tree_nodes[current_node].type) {
         case ASSIGN_NODE:
@@ -120,7 +127,7 @@ node * Parser::write_new_node(node * value) {
  */
 node * Parser::statement() {
     // start recursively looking for statement operators
-    return assign_statement();
+    return assign();
 }
 
 
@@ -128,14 +135,14 @@ node * Parser::statement() {
  * \brief Handles assignment statements (both normal and augmented).
  * \return The internal representation of the statement parsed so far.
  */
-node * Parser::assign_statement() {
+node * Parser::assign() {
     // TODO: support more complex variables to be written to (necessary?)
     // assignment must begin with variable on the left-hand side
     if (current_matches(IDENTIFIER)) {
         // normal assignment is handled differently, no variable reading needed
         if (current_matches(ASSIGN)) {
             // assignments can be chained, but the value being assigned is an expression
-            node * value_ptr = write_new_node(assign_statement());
+            node * value_ptr = assign();
             // make a tree node for this assignment with the correct variable name
             node expr = make_new_assign(command_info.identifiers[current_identifier], value_ptr);
             // one more identifier name has been read
@@ -155,7 +162,7 @@ node * Parser::assign_statement() {
             node var = make_new_variable(command_info.identifiers[current_identifier]);
             node * var_ptr = write_new_node(&var);
             // value that variable is augmented with must be an expression
-            node * value_ptr = write_new_node(expr_statement());
+            node * value_ptr = expression();
             // make a tree node for the augmentation operation
             node aug;
 
@@ -226,19 +233,12 @@ node * Parser::assign_statement() {
             // save this node to build up the syntax tree
             node * expr_ptr = write_new_node(&expr);
             return expr_ptr;
+
+        // unconsume the identifier token since no assignment followed
         } else {
             current--;
         }
     }
-    return expr_statement();
-}
-
-
-/**
- * \brief Handles expression statements (just an expression).
- * \return The internal representation of the statement parsed so far.
- */
-node * Parser::expr_statement() {
     return expression();
 }
 
@@ -271,7 +271,7 @@ node * Parser::disjunction() {
         // find the operation to be completed
         lexemes opcode = previous_token();
         // recurse again to get the right operand
-        node * right_ptr = write_new_node(conjunction());
+        node * right_ptr = conjunction();
         // combine the operands, building up the syntax tree
         node expr = make_new_logical(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
@@ -288,9 +288,7 @@ node * Parser::disjunction() {
 node * Parser::conjunction() {
     node * expr_ptr = inversion();
     while (current_matches(AND)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(inversion());
-        node expr = make_new_logical(expr_ptr, opcode, right_ptr);
+        node expr = make_new_logical(expr_ptr, previous_token(), inversion());
         expr_ptr = write_new_node(&expr);
     }
     return expr_ptr;
@@ -304,10 +302,9 @@ node * Parser::conjunction() {
 node * Parser::inversion() {
     // unary operator handled differently, no left operand to handle first
     while (current_matches(NOT)) {
-        lexemes opcode = previous_token();
         // recursively call itself to allow stacked unary operators
-        node * right_ptr = write_new_node(inversion());
-        node expr = make_new_unary(opcode, right_ptr);
+        node * right_ptr = inversion();
+        node expr = make_new_unary(previous_token(), right_ptr);
         return write_new_node(&expr);
     }
     return comparison();
@@ -327,9 +324,7 @@ node * Parser::comparison() {
     while (current_matches(EQUAL) || current_matches(N_EQUAL) || current_matches(GREATER) ||
            current_matches(G_EQUAL) || current_matches(LESS) || current_matches(L_EQUAL) ||
            current_matches(IS) || current_matches(IN)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(bor());
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        node expr = make_new_binary(expr_ptr, previous_token(), bor());
         expr_ptr = write_new_node(&expr);
     }
     return expr_ptr;
@@ -343,9 +338,7 @@ node * Parser::comparison() {
 node * Parser::bor() {
     node * expr_ptr = bxor();
     while (current_matches(B_OR)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(bxor());
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        node expr = make_new_binary(expr_ptr, previous_token(), bxor());
         expr_ptr = write_new_node(&expr);
     }
     return expr_ptr;
@@ -359,9 +352,7 @@ node * Parser::bor() {
 node * Parser::bxor() {
     node * expr_ptr = band();
     while (current_matches(B_XOR)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(band());
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        node expr = make_new_binary(expr_ptr, previous_token(), band());
         expr_ptr = write_new_node(&expr);
     }
     return expr_ptr;
@@ -375,9 +366,7 @@ node * Parser::bxor() {
 node * Parser::band() {
     node * expr_ptr = shift();
     while (current_matches(B_AND)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(shift());
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        node expr = make_new_binary(expr_ptr, previous_token(), shift());
         expr_ptr = write_new_node(&expr);
     }
     return expr_ptr;
@@ -391,9 +380,7 @@ node * Parser::band() {
 node * Parser::shift() {
     node * expr_ptr = sum();
     while (current_matches(B_SLL) || current_matches(B_SAR)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(sum());
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        node expr = make_new_binary(expr_ptr, previous_token(), sum());
         expr_ptr = write_new_node(&expr);
     }
     return expr_ptr;
@@ -407,9 +394,7 @@ node * Parser::shift() {
 node * Parser::sum() {
     node * expr_ptr = term();
     while (current_matches(PLUS) || current_matches(MINUS)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(term());
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        node expr = make_new_binary(expr_ptr, previous_token(), term());
         expr_ptr = write_new_node(&expr);
     }
     return expr_ptr;
@@ -424,9 +409,7 @@ node * Parser::term() {
     node * expr_ptr = factor();
     while (current_matches(STAR) || current_matches(SLASH) || current_matches(D_SLASH) ||
            current_matches(PERCENT) || current_matches(AT)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(factor());
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        node expr = make_new_binary(expr_ptr, previous_token(), factor());
         expr_ptr = write_new_node(&expr);
     }
     return expr_ptr;
@@ -439,9 +422,7 @@ node * Parser::term() {
  */
 node * Parser::factor() {
     while (current_matches(PLUS) || current_matches(MINUS) || current_matches(B_NOT)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(factor());
-        node expr = make_new_unary(opcode, right_ptr);
+        node expr = make_new_unary(previous_token(), factor());
         return write_new_node(&expr);
     }
     return power();
@@ -455,9 +436,7 @@ node * Parser::factor() {
 node * Parser::power() {
     node * expr_ptr = primary();
     if (current_matches(D_STAR)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(power());
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+        node expr = make_new_binary(expr_ptr, previous_token(), power());
         expr_ptr = write_new_node(&expr);
     }
     return expr_ptr;
@@ -487,7 +466,15 @@ node * Parser::primary() {
         literal_value lit;
         lit.type = TRUE_VALUE;
         node expr = make_new_literal(lit);
+        xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
+        xpd_echo_int(expr.type, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
+        xpd_echo_int(expr.entry.literal_val.type, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
         expr_ptr = write_new_node(&expr);
+        xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
 
     // number and string literal values that need to be fetched
     } else if (current_matches(NUMBER)) {
@@ -496,7 +483,17 @@ node * Parser::primary() {
         lit.data.number = command_info.num_lits[current_num_lit];
         current_num_lit++;
         node expr = make_new_literal(lit);
+        xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
+        xpd_echo_int(expr.type, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
+        xpd_echo_int(expr.entry.literal_val.type, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
+        xpd_echo_int(expr.entry.literal_val.data.number, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
         expr_ptr = write_new_node(&expr);
+        xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
     } else if (current_matches(STRING)) {
         literal_value lit;
         lit.type = STRING_VALUE;
