@@ -145,7 +145,12 @@ node * Parser::assign_statement() {
             return expr_ptr;
 
         // augmented assignment involves an additional binary operation on the data, but no chaining
-        } else {
+        } else if (current_matches(A_ASSIGN) || current_matches(S_ASSIGN) || current_matches(M_ASSIGN) ||
+                   current_matches(I_ASSIGN) || current_matches(D_ASSIGN) || current_matches(R_ASSIGN) ||
+                   current_matches(E_ASSIGN) || current_matches(F_ASSIGN) || current_matches(BA_ASSIGN) ||
+                   current_matches(BO_ASSIGN) || current_matches(BX_ASSIGN) || current_matches(BL_ASSIGN) ||
+                   current_matches(BR_ASSIGN) || current_matches(W_ASSIGN)) {
+
             // make a tree node for reading the original variable
             node var = make_new_variable(command_info.identifiers[current_identifier]);
             node * var_ptr = write_new_node(&var);
@@ -154,48 +159,63 @@ node * Parser::assign_statement() {
             // make a tree node for the augmentation operation
             node aug;
 
-            // addition-augmented assignment (+=)
-            if (current_matches(A_ASSIGN)) {
-                aug = make_new_binary(var_ptr, PLUS, value_ptr);
-            // subtraction-augmented assignment (-=)
-            } else if (current_matches(S_ASSIGN)) {
-                aug = make_new_binary(var_ptr, MINUS, value_ptr);
-            // multiplication-augmented assignment (*=)
-            } else if (current_matches(M_ASSIGN)) {
-                aug = make_new_binary(var_ptr, STAR, value_ptr);
-            // matrix-multiplication-augmented assignment (@=)
-            } else if (current_matches(I_ASSIGN)) {
-                aug = make_new_binary(var_ptr, AT, value_ptr);
-            // division-augmented assignment (/=)
-            } else if (current_matches(D_ASSIGN)) {
-                aug = make_new_binary(var_ptr, SLASH, value_ptr);
-            // subtraction-augmented assignment (-=)
-            } else if (current_matches(R_ASSIGN)) {
-                aug = make_new_binary(var_ptr, PLUS, value_ptr);
-            // exponentiation-augmented assignment (**=)
-            } else if (current_matches(E_ASSIGN)) {
-                aug = make_new_binary(var_ptr, D_STAR, value_ptr);
-            // floor-division-augmented assignment (//=)
-            } else if (current_matches(F_ASSIGN)) {
-                aug = make_new_binary(var_ptr, D_SLASH, value_ptr);
-            // bitwise-and-augmented assignment (&=)
-            } else if (current_matches(BA_ASSIGN)) {
-                aug = make_new_binary(var_ptr, B_AND, value_ptr);
-            // bitwise-or-augmented assignment (|=)
-            } else if (current_matches(BO_ASSIGN)) {
-                aug = make_new_binary(var_ptr, B_OR, value_ptr);
-            // bitwise-xor-augmented assignment (^=)
-            } else if (current_matches(BX_ASSIGN)) {
-                aug = make_new_binary(var_ptr, B_XOR, value_ptr);
-            // bitwise-shift-left-augmented assignment (<<=)
-            } else if (current_matches(BL_ASSIGN)) {
-                aug = make_new_binary(var_ptr, B_SLL, value_ptr);
-            // bitwise-shift-right-augmented assignment (>>=)
-            } else if (current_matches(BR_ASSIGN)) {
-                aug = make_new_binary(var_ptr, B_SAR, value_ptr);
-            // walrus-augmented assignment (:=)
-            } else if (current_matches(W_ASSIGN)) {
-                aug = make_new_binary(var_ptr, COLON, value_ptr);
+            switch (previous_token()) {
+                // addition-augmented assignment (+=)
+                case A_ASSIGN:
+                    aug = make_new_binary(var_ptr, PLUS, value_ptr);
+                    break;
+                // subtraction-augmented assignment (-=)
+                case S_ASSIGN:
+                    aug = make_new_binary(var_ptr, MINUS, value_ptr);
+                    break;
+                // multiplication-augmented assignment (*=)
+                case M_ASSIGN:
+                    aug = make_new_binary(var_ptr, STAR, value_ptr);
+                    break;
+                // matrix-multiplication-augmented assignment (@=)
+                case I_ASSIGN:
+                    aug = make_new_binary(var_ptr, AT, value_ptr);
+                    break;
+                // division-augmented assignment (/=)
+                case D_ASSIGN:
+                    aug = make_new_binary(var_ptr, SLASH, value_ptr);
+                    break;
+                // subtraction-augmented assignment (-=)
+                case R_ASSIGN:
+                    aug = make_new_binary(var_ptr, PLUS, value_ptr);
+                    break;
+                // exponentiation-augmented assignment (**=)
+                case E_ASSIGN:
+                    aug = make_new_binary(var_ptr, D_STAR, value_ptr);
+                    break;
+                // floor-division-augmented assignment (//=)
+                case F_ASSIGN:
+                    aug = make_new_binary(var_ptr, D_SLASH, value_ptr);
+                    break;
+                // bitwise-and-augmented assignment (&=)
+                case BA_ASSIGN:
+                    aug = make_new_binary(var_ptr, B_AND, value_ptr);
+                    break;
+                // bitwise-or-augmented assignment (|=)
+                case BO_ASSIGN:
+                    aug = make_new_binary(var_ptr, B_OR, value_ptr);
+                    break;
+                // bitwise-xor-augmented assignment (^=)
+                case BX_ASSIGN:
+                    aug = make_new_binary(var_ptr, B_XOR, value_ptr);
+                    break;
+                // bitwise-shift-left-augmented assignment (<<=)
+                case BL_ASSIGN:
+                    aug = make_new_binary(var_ptr, B_SLL, value_ptr);
+                    break;
+                // bitwise-shift-right-augmented assignment (>>=)
+                case BR_ASSIGN:
+                    aug = make_new_binary(var_ptr, B_SAR, value_ptr);
+                    break;
+                // walrus-augmented assignment (:=)
+                case W_ASSIGN:
+                    aug = make_new_binary(var_ptr, COLON, value_ptr);
+                    break;
             }
 
             node * aug_ptr = write_new_node(&aug);

@@ -17,6 +17,7 @@
  * \return The index of the variable in the table if found; the next empty slot otherwise.
  */
 uint16_t find_variable(environment * env, char name[]) {
+    // TODO: support nesated environments with recursive search
     // check each variable being stored for a name match
     for (uint16_t i = 0; i < (env -> num_used); i++) {
         // check for a match of the current variable to a stored one

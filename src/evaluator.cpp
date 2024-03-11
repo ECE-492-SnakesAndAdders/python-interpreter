@@ -170,7 +170,9 @@ literal_value Evaluator::evaluate(node tree_node) {
  * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_assign(assign_value expr) {
+    // assign the value into the associated variable name
     write_variable(env, expr.name, evaluate(*(expr.value)));
+    // return None from this operation so that nothing is printed
     literal_value result;
     result.type = NONE_VALUE;
     return result;
@@ -784,6 +786,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
  * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_variable(variable_value expr) {
+    // return the literal value associated with the provided variable name
     literal_value result;
     if (read_variable(env, expr.name, &result)) {
         report_error(NAME, "name is not defined");
@@ -809,6 +812,7 @@ bool Evaluator::has_error() {
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
 uint16_t Evaluator::evaluate_input(node * input, literal_value * output) {
+    // only execute actual trees, otherwise just print nothing
     if (input) {
         *output = evaluate(*input);
     } else {
