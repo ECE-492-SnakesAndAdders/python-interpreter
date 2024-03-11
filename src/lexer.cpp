@@ -203,6 +203,20 @@ void Lexer::scan_next_token() {
             report_error(SYNTAX, "invalid syntax");
             error_occurred = true;
             return;
+        // testing
+        case '\n':
+            // if command_info -> tokens[0] == IF/FOR/WHILE:
+            //     if next character is also '\n':
+            //           add_token(NEWLINE) x 2;
+            //           return;
+            //     else:
+            //         add_token(NEWLINE);
+            //         print_string("... ");
+            //         break;
+            // else: 
+            //     return;
+            // add_token(NEWLINE);
+            break;
         // default case handles the rest (number literals, identifiers, keywords, whitespace)
         default:
             // number literal case

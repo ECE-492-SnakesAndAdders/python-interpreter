@@ -73,6 +73,8 @@ enum lexemes {
     TRY, FINALLY, EXCEPT, RAISE,                            // exceptions
     IMPORT, FROM, WITH, AS,                                 // linking
     GLOBAL, NONLOCAL, ASYNC, AWAIT, ASSERT, DEL,            // other
+    // indentation
+    NEWLINE,
 };
 
 
@@ -93,6 +95,7 @@ const char * const token_names[] = {
     "TRY", "FINALLY", "EXCEPT", "RAISE",
     "IMPORT", "FROM", "WITH", "AS",
     "GLOBAL", "NONLOCAL", "ASYNC", "AWAIT", "ASSERT", "DEL",
+    "NEWLINE",
 };
 // for ease of printing
 const char * const token_symbols[] = {
@@ -111,6 +114,7 @@ const char * const token_symbols[] = {
     "try", "finally", "except", "raise",
     "import", "from", "with", "as",
     "global", "nonlocal", "async", "await", "assert", "del",
+    "newline",
 };
 
 
