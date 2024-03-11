@@ -226,6 +226,8 @@ node * Parser::assign_statement() {
             // save this node to build up the syntax tree
             node * expr_ptr = write_new_node(&expr);
             return expr_ptr;
+        } else {
+            current--;
         }
     }
     return expr_statement();
@@ -486,10 +488,9 @@ node * Parser::primary() {
         lit.type = TRUE_VALUE;
         node expr = make_new_literal(lit);
         expr_ptr = write_new_node(&expr);
-    }
 
     // number and string literal values that need to be fetched
-    if (current_matches(NUMBER)) {
+    } else if (current_matches(NUMBER)) {
         literal_value lit;
         lit.type = NUMBER_VALUE;
         lit.data.number = command_info.num_lits[current_num_lit];
@@ -506,10 +507,9 @@ node * Parser::primary() {
         current_str_lit++;
         node expr = make_new_literal(lit);
         expr_ptr = write_new_node(&expr);
-    }
 
     // deal with parentheses (nested expressions)
-    if (current_matches(L_PAREN)) {
+    } else if (current_matches(L_PAREN)) {
         // any general expression can be nested in parentheses
         node expr = make_new_grouping(expression());
         expr_ptr = write_new_node(&expr);
@@ -519,10 +519,9 @@ node * Parser::primary() {
             report_error(SYNTAX, "invalid syntax");
             error_occurred = true;
         }
-    }
 
     // deal with identifiers (meaning variables)
-    if (current_matches(IDENTIFIER)) {
+    } else if (current_matches(IDENTIFIER)) {
         node expr = make_new_variable(command_info.identifiers[current_identifier]);
         current_identifier++;
         expr_ptr = write_new_node(&expr);
