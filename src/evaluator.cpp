@@ -19,6 +19,14 @@
 
 
 /**
+ *
+ */
+Evaluator::Evaluator(environment * my_env) {
+    env = my_env;
+}
+
+
+/**
  * \brief Determines if a literal value is legal to use in a numerical operation.
  * \param [in] value The literal value's type to check.
  * \return True if the literal can be used in a numerical expression; false otherwise.
@@ -812,6 +820,11 @@ bool Evaluator::has_error() {
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
 uint16_t Evaluator::evaluate_input(node * input, literal_value * output) {
+    // xpd_echo_int((env -> num_used), XPD_Flag_UnsignedDecimal);
+    // xpd_putc('\n');
+    // (env -> num_used) = 0;
+    // xpd_echo_int((env -> num_used), XPD_Flag_UnsignedDecimal);
+    // xpd_putc('\n');
     // only execute actual trees, otherwise just print nothing
     if (input) {
         *output = evaluate(*input);

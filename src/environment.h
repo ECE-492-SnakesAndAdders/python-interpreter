@@ -35,8 +35,8 @@ struct environment {
     literal_value values[MAX_NUM_VAR];
     // tracks the number of variables being used (where to insert a new one)
     uint16_t num_used = 0;
-    // points to the parent scope for nested variable scopes
-    environment * parent = NULL;
+    // // points to the parent scope for nested variable scopes
+    // environment * parent = NULL;
 };
 
 

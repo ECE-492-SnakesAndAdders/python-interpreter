@@ -10,6 +10,7 @@
 #include <SystemClock.h>
 #include <Thread.h>
 #include <XPD.h>
+#include "environment.h"
 #include "error.h"
 #include "evaluator.h"
 #include "expr.h"
@@ -102,7 +103,15 @@ int main() {
 
     uint16_t return_code = 0;
     // REPL: Read-Eval-Print-Loop
-    Interpreter interpreter(0);
+    environment env;
+    env.num_used = 0;
+    xpd_echo_int(env.num_used, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    env.num_used++;
+    xpd_echo_int(env.num_used, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    Interpreter interpreter(&env);
+    // // Interpreter interpreter(0);
     while (true) {
         // stores the input command received
         char input[MAX_INPUT_LEN] = "";

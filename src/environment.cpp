@@ -38,8 +38,15 @@ uint16_t find_variable(environment * env, char name[]) {
  * \param [in] value The value to store in this variable.
  */
 void write_variable(environment * env, char name[], literal_value value) {
+    // xpd_echo_int((env -> num_used), XPD_Flag_UnsignedDecimal);
+    // xpd_putc('\n');
+    // (env -> num_used) = 0;
+    // xpd_echo_int((env -> num_used), XPD_Flag_UnsignedDecimal);
+    // xpd_putc('\n');
     // determine if the variable exists and where to store it
     uint16_t index = find_variable(env, name);
+    // xpd_echo_int(index, XPD_Flag_UnsignedDecimal);
+    // xpd_putc('\n');
 
     // if variable does not yet exist, make a new one
     if (index == (env -> num_used)) {
@@ -53,6 +60,8 @@ void write_variable(environment * env, char name[], literal_value value) {
     } else {
         env -> values[index] = value;
     }
+//     xpd_echo_int((env -> num_used), XPD_Flag_UnsignedDecimal);
+//     xpd_putc('\n');
 }
 
 

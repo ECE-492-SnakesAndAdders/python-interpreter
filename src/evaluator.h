@@ -41,6 +41,8 @@ class Evaluator {
         bool has_error();
 
     public:
+        //
+        Evaluator(environment * my_env);
         // converts a tree (or subtree, or node) into a single value
         uint16_t evaluate_input(node * input, literal_value * output);
 };
