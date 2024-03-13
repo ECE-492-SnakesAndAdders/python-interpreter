@@ -25,8 +25,8 @@ uint16_t Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
 
     // lex command, convert raw string into a sequence of tokens
     lexed_command token_sequence;
-    Lexer lexer(input_ptr, &token_sequence);
-    if ((return_code = lexer.scan_input())) {
+    Lexer lexer(&token_sequence);
+    if ((return_code = lexer.scan_input(input_ptr))) {
         return 1;
     }
     // ------------------------------------------------------------------------

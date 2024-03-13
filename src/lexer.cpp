@@ -24,15 +24,16 @@
  * \param [in] input Pointer to the input string entered by the user.
  * \param [in] output Pointer to the location to store information about the lexed command.
  */
-Lexer::Lexer(char ** input, lexed_command * output) {
-    // transfer input string into object
-    for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
-        line[i] = *(*input + i);
-    }
-    // get the number of non-null characters in the command
-    while (*(*input + length) != '\0') {
-        length++;
-    }
+Lexer::Lexer(lexed_command * output) {
+// Lexer::Lexer(char ** input, lexed_command * output) {
+    // // transfer input string into object
+    // for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
+    //     line[i] = *(*input + i);
+    // }
+    // // get the number of non-null characters in the command
+    // while (*(*input + length) != '\0') {
+    //     length++;
+    // }
     // store where to save the final output to
     command_info = output;
 }
@@ -205,17 +206,36 @@ void Lexer::scan_next_token() {
             return;
         // testing
         case '\n':
-            // if command_info -> tokens[0] == IF/FOR/WHILE:
-            //     if next character is also '\n':
-            //           add_token(NEWLINE) x 2;
-            //           return;
-            //     else:
-            //         add_token(NEWLINE);
-            //         print_string("... ");
-            //         break;
-            // else: 
-            //     return;
+            add_token(NEWLINE);
+            if (command_info -> tokens[0] == IF) {
+                if (next_matches('\n')) {
+                      add_token(NEWLINE);
+                      return;
+                } else {
+                    print_string("... ");
+                    // TODO: Prompt for more input
+                    // read characters until 'enter' key is hit or buffer is full
+                    char input[MAX_INPUT_LEN] = "";
+                    char * input_x = (char *) input;
+                    char ** input_ptr = &input_x;
+                    for (uint16_t i = 0; i < MAX_INPUT_LEN - 1; i++) {
+                        *(*input_ptr + i) = (char) xpd_getchar();
+                        if ((*(*input_ptr + i) == '\n') || (i == MAX_INPUT_LEN - 2)) {
+                            // add NULL terminator character after 'enter' key or final slot
+                            *(*input_ptr + i + 1) = '\0';
+                            break;
+                        }
+                    }
+                    scan_input(input_ptr);
+                    break;
+                }
+            } else { 
+                return;
+            }
             // add_token(NEWLINE);
+
+            // TODO: if we are dealing with a control flow identifier, keep reading input
+
             break;
         // default case handles the rest (number literals, identifiers, keywords, whitespace)
         default:
@@ -685,7 +705,15 @@ bool Lexer::has_error() {
  * \brief Scans the input string and returns a list of its tokens.
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
-uint16_t Lexer::scan_input() {
+uint16_t Lexer::scan_input(char ** input) {
+    // transfer input string into object
+    for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
+        line[i] = *(*input + i);
+    }
+    // get the number of non-null characters in the command
+    while (*(*input + length) != '\0') {
+        length++;
+    }
     // keep on reading next character until command is over
     while (!(end_reached())) {
         scan_next_token();

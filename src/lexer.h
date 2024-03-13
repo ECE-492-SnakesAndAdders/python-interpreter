@@ -170,9 +170,9 @@ class Lexer {
 
     public:
         // basic constructor for the class
-        Lexer(char ** input, lexed_command * output);
+        Lexer(lexed_command * output);
         // converts the input line into a list of tokens
-        uint16_t scan_input();
+        uint16_t scan_input(char ** input);
 };
 
 

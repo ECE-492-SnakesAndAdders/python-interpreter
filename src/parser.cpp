@@ -70,8 +70,20 @@ node * Parser::write_new_node(node * value) {
  * \return The internal representation of the statement.
  */
 node * Parser::statement() {
-    // start recursively looking for statement operators
-    return assign();
+    return ifelse();
+}
+
+
+/**
+ * \brief Starts the chain of parsing a Python statement.
+ * \return The internal representation of the statement.
+ */
+node * Parser::ifelse() {
+    if (current_matches(IF)) {
+
+    } else {
+        return assign();
+    }
 }
 
 
