@@ -17,10 +17,16 @@ class Interpreter {
     private:
         // The evaluator must persist between runs to save variables and environment
         Evaluator evaluator;
+        // Environment environment;
+        // //
+        // environment env;
 
     public:
+        Environment environment;
         // basic constructor (needs dummy parameter to be callable) that calls evaluator constructor
-        Interpreter(environment * my_env): evaluator(my_env) {}
+        Interpreter(uint16_t nothing): environment(), evaluator(&environment) {}
+        // Interpreter(uint16_t nothing): evaluator(&env) {}
+        // Interpreter(environment * my_env): evaluator(my_env) {}
         // executes a single command from start to finish
         uint16_t interpret_command(char ** input_ptr, char ** output_ptr);
 };

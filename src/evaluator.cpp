@@ -21,7 +21,7 @@
 /**
  *
  */
-Evaluator::Evaluator(environment * my_env) {
+Evaluator::Evaluator(Environment * my_env) {
     env = my_env;
 }
 
@@ -179,7 +179,7 @@ literal_value Evaluator::evaluate(node tree_node) {
  */
 literal_value Evaluator::evaluate_assign(assign_value expr) {
     // assign the value into the associated variable name
-    write_variable(env, expr.name, evaluate(*(expr.value)));
+    env -> write_variable(expr.name, evaluate(*(expr.value)));
     // return None from this operation so that nothing is printed
     literal_value result;
     result.type = NONE_VALUE;
@@ -796,7 +796,7 @@ literal_value Evaluator::evaluate_unary(unary_value expr) {
 literal_value Evaluator::evaluate_variable(variable_value expr) {
     // return the literal value associated with the provided variable name
     literal_value result;
-    if (read_variable(env, expr.name, &result)) {
+    if (env -> read_variable(expr.name, &result)) {
         report_error(NAME, "name is not defined");
         error_occurred = true;
     }
@@ -820,11 +820,11 @@ bool Evaluator::has_error() {
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
 uint16_t Evaluator::evaluate_input(node * input, literal_value * output) {
-    // xpd_echo_int((env -> num_used), XPD_Flag_UnsignedDecimal);
+    // xpd_echo_int((&envs[0] -> num_used), XPD_Flag_UnsignedDecimal);
     // xpd_putc('\n');
-    // (env -> num_used) = 0;
-    // xpd_echo_int((env -> num_used), XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
+    // (&envs[0] -> num_used) = 0;
+    xpd_echo_int((env -> num_used), XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     // only execute actual trees, otherwise just print nothing
     if (input) {
         *output = evaluate(*input);

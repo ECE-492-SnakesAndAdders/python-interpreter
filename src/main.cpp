@@ -103,15 +103,16 @@ int main() {
 
     uint16_t return_code = 0;
     // REPL: Read-Eval-Print-Loop
-    environment env;
-    env.num_used = 0;
-    xpd_echo_int(env.num_used, XPD_Flag_UnsignedDecimal);
+    // environment env;
+    // env.num_used = 0;
+    // xpd_echo_int(env.num_used, XPD_Flag_UnsignedDecimal);
+    // xpd_putc('\n');
+    // env.num_used++;
+    xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
     xpd_putc('\n');
-    env.num_used++;
-    xpd_echo_int(env.num_used, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
-    Interpreter interpreter(&env);
-    // // Interpreter interpreter(0);
+    // Interpreter interpreter(&env);
+    Interpreter interpreter(0);
+    xpd_echo_int(interpreter.environment.num_used, XPD_Flag_UnsignedDecimal);
     while (true) {
         // stores the input command received
         char input[MAX_INPUT_LEN] = "";

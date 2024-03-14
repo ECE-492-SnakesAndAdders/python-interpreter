@@ -20,7 +20,8 @@
 class Evaluator {
     private:
         // for storing variables
-        environment * env;
+        Environment * env;
+        // environment * env;
         // for determining if data types are compatible
         bool is_numerical(literal_types type);
         uint16_t numerify(literal_value value);
@@ -41,8 +42,8 @@ class Evaluator {
         bool has_error();
 
     public:
-        //
-        Evaluator(environment * my_env);
+        // //
+        Evaluator(Environment * my_env);
         // converts a tree (or subtree, or node) into a single value
         uint16_t evaluate_input(node * input, literal_value * output);
 };
