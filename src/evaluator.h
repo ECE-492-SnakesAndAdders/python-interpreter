@@ -14,7 +14,9 @@
 #include "expr.h"
 
 
+// #ifndef my_env
 // environment my_env;
+// #endif
 // environment my_env = {.names = {}, .values = {}, .num_used = 0, .parent = NULL};
 
 
@@ -24,6 +26,7 @@
 class Evaluator {
     private:
         // for storing variables
+        // environment env;
         environment * env;
         // environment * env = &my_env;
         // for determining if data types are compatible
@@ -46,6 +49,8 @@ class Evaluator {
         bool has_error();
 
     public:
+        //
+        Evaluator(environment * test_var_2);
         // converts a tree (or subtree, or node) into a single value
         uint16_t evaluate_input(node * input, literal_value * output);
 };

@@ -71,6 +71,7 @@ node * Parser::write_new_node(node * value) {
  */
 node * Parser::statement() {
     // start recursively looking for statement operators
+    xpd_echo_int(55555, XPD_Flag_UnsignedDecimal);
     return assign();
 }
 
@@ -182,8 +183,11 @@ node * Parser::assign() {
         } else {
             current--;
         }
+    } else {
+        xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+        xpd_putc('\n');
+        return expression();
     }
-    return expression();
 }
 
 
@@ -192,6 +196,8 @@ node * Parser::assign() {
  * \return The internal representation of the expression.
  */
 node * Parser::expression() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     // start recursively looking for expression operators
     return disjunction();
 }
@@ -202,6 +208,8 @@ node * Parser::expression() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::disjunction() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     /** general strategy for all levels of expression operators is as follows:
      *    recurse down, allowing higher priority operators to start, then
      *    deal with current operator as it arises, then
@@ -230,6 +238,8 @@ node * Parser::disjunction() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::conjunction() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     node * expr_ptr = inversion();
     while (current_matches(AND)) {
         node expr = make_new_logical(expr_ptr, previous_token(), inversion());
@@ -244,6 +254,8 @@ node * Parser::conjunction() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::inversion() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     // unary operator handled differently, no left operand to handle first
     while (current_matches(NOT)) {
         // recursively call itself to allow stacked unary operators
@@ -262,6 +274,8 @@ node * Parser::inversion() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::comparison() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     // TODO: handle cascaded comaprison operators properly
     // TODO: handle "is not" and "not in" keywords
     node * expr_ptr = bor();
@@ -280,6 +294,8 @@ node * Parser::comparison() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::bor() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     node * expr_ptr = bxor();
     while (current_matches(B_OR)) {
         node expr = make_new_binary(expr_ptr, previous_token(), bxor());
@@ -294,6 +310,8 @@ node * Parser::bor() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::bxor() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     node * expr_ptr = band();
     while (current_matches(B_XOR)) {
         node expr = make_new_binary(expr_ptr, previous_token(), band());
@@ -308,6 +326,8 @@ node * Parser::bxor() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::band() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     node * expr_ptr = shift();
     while (current_matches(B_AND)) {
         node expr = make_new_binary(expr_ptr, previous_token(), shift());
@@ -322,6 +342,8 @@ node * Parser::band() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::shift() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     node * expr_ptr = sum();
     while (current_matches(B_SLL) || current_matches(B_SAR)) {
         node expr = make_new_binary(expr_ptr, previous_token(), sum());
@@ -336,6 +358,8 @@ node * Parser::shift() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::sum() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     node * expr_ptr = term();
     while (current_matches(PLUS) || current_matches(MINUS)) {
         node expr = make_new_binary(expr_ptr, previous_token(), term());
@@ -350,6 +374,8 @@ node * Parser::sum() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::term() {
+    xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     node * expr_ptr = factor();
     while (current_matches(STAR) || current_matches(SLASH) || current_matches(D_SLASH) ||
            current_matches(PERCENT) || current_matches(AT)) {
@@ -365,10 +391,15 @@ node * Parser::term() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::factor() {
+    xpd_echo_int(33334, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
+    xpd_echo_int(current_token(), XPD_Flag_UnsignedDecimal);
     while (current_matches(PLUS) || current_matches(MINUS) || current_matches(B_NOT)) {
         node expr = make_new_unary(previous_token(), factor());
         return write_new_node(&expr);
     }
+    // xpd_echo_int(33333, XPD_Flag_UnsignedDecimal);
+    // xpd_putc('\n');
     return power();
 }
 
@@ -378,6 +409,8 @@ node * Parser::factor() {
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::power() {
+    // xpd_echo_int(33335, XPD_Flag_UnsignedDecimal);
+    // xpd_putc('\n');
     node * expr_ptr = primary();
     if (current_matches(D_STAR)) {
         node expr = make_new_binary(expr_ptr, previous_token(), power());
@@ -394,6 +427,8 @@ node * Parser::power() {
 node * Parser::primary() {
     // base case deals with literal values and parentheses
     node * expr_ptr = NULL;
+    xpd_echo_int(22222, XPD_Flag_UnsignedDecimal);
+
 
     // sentinel literal values
     if (current_matches(FALSE)) {
@@ -414,11 +449,13 @@ node * Parser::primary() {
 
     // number and string literal values that need to be fetched
     } else if (current_matches(NUMBER)) {
+        xpd_echo_int(44444, XPD_Flag_UnsignedDecimal);
         literal_value lit;
         lit.type = NUMBER_VALUE;
         lit.data.number = command_info.num_lits[current_num_lit];
         current_num_lit++;
         node expr = make_new_literal(lit);
+        xpd_echo_int(expr.type, XPD_Flag_UnsignedDecimal);
         expr_ptr = write_new_node(&expr);
     } else if (current_matches(STRING)) {
         literal_value lit;

@@ -19,6 +19,15 @@
 
 
 /**
+ * 
+ */
+Evaluator::Evaluator(environment * test_var_2) {
+    env = test_var_2;
+    env -> num_used = 0;
+}
+
+
+/**
  * \brief Determines if a literal value is legal to use in a numerical operation.
  * \param [in] value The literal value's type to check.
  * \return True if the literal can be used in a numerical expression; false otherwise.
@@ -147,24 +156,24 @@ literal_value Evaluator::evaluate(node tree_node) {
             xpd_echo_int(-3, XPD_Flag_UnsignedDecimal);
             xpd_putc('\n');
             break;
-        case BINARY_NODE:
-            result = evaluate_binary(tree_node.entry.binary_val);
-            break;
-        case GROUPING_NODE:
-            result = evaluate_grouping(tree_node.entry.grouping_val);
-            break;
+        // case BINARY_NODE:
+        //     result = evaluate_binary(tree_node.entry.binary_val);
+        //     break;
+        // case GROUPING_NODE:
+        //     result = evaluate_grouping(tree_node.entry.grouping_val);
+        //     break;
         case LITERAL_NODE:
             result = evaluate_literal(tree_node.entry.literal_val);
             break;
-        case LOGICAL_NODE:
-            result = evaluate_logical(tree_node.entry.logical_val);
-            break;
-        case UNARY_NODE:
-            result = evaluate_unary(tree_node.entry.unary_val);
-            break;
-        case VARIABLE_NODE:
-            result = evaluate_variable(tree_node.entry.variable_val);
-            break;
+        // case LOGICAL_NODE:
+        //     result = evaluate_logical(tree_node.entry.logical_val);
+        //     break;
+        // case UNARY_NODE:
+        //     result = evaluate_unary(tree_node.entry.unary_val);
+        //     break;
+        // case VARIABLE_NODE:
+        //     result = evaluate_variable(tree_node.entry.variable_val);
+        //     break;
     }
     return result;
 }
