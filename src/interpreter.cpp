@@ -78,8 +78,12 @@ uint16_t Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
     if ((return_code = evaluator.evaluate_input(tree, &result))) {
         return 1;
     }
+    xpd_echo_int(-6, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
 
     // save the result of the execution
     stringify_value(result, output_ptr);
+    xpd_echo_int(-7, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     return 0;
 }

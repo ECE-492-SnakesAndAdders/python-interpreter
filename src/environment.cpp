@@ -39,7 +39,11 @@ uint16_t find_variable(environment * env, char name[]) {
  */
 void write_variable(environment * env, char name[], literal_value value) {
     // determine if the variable exists and where to store it
+    xpd_echo_int(env -> num_used, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
     uint16_t index = find_variable(env, name);
+    xpd_echo_int(env -> num_used, XPD_Flag_UnsignedDecimal);
+    xpd_putc('\n');
 
     // if variable does not yet exist, make a new one
     if (index == (env -> num_used)) {
@@ -75,4 +79,5 @@ uint16_t read_variable(environment * env, char name[], literal_value * value) {
         *value = env -> values[index];
         return 0;
     }
+    return 0;
 }

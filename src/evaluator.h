@@ -14,6 +14,10 @@
 #include "expr.h"
 
 
+// environment my_env;
+// environment my_env = {.names = {}, .values = {}, .num_used = 0, .parent = NULL};
+
+
 /**
  * \brief The evaluator of the interpreter; it takes a syntax tree as input and executes it.
  */
@@ -21,6 +25,7 @@ class Evaluator {
     private:
         // for storing variables
         environment * env;
+        // environment * env = &my_env;
         // for determining if data types are compatible
         bool is_numerical(literal_types type);
         uint16_t numerify(literal_value value);
