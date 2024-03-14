@@ -102,35 +102,8 @@ int main() {
 
     uint16_t return_code = 0;
     // REPL: Read-Eval-Print-Loop
-    // Interpreter interpreter(0);
-    // xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
-    // environment env;
-    // env.num_used = 0;
-    // xpd_echo_int(env.num_used, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
-    // literal_value test1;
-    // test1.type = TRUE_VALUE;
-    // write_variable(&env, "name", test1);
-    // literal_value test2;
-    // test2.type = NUMBER_VALUE;
-    // test2.data.number = 23;
-    // write_variable(&env, "number", test2);
-    // literal_value ans;
-    // read_variable(&env, "name", &ans);
-    // xpd_echo_int(ans.type, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
-    // read_variable(&env, "number", &ans);
-    // xpd_echo_int(ans.type, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
-    // xpd_echo_int(ans.data.number, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
     environment env;
-    // env.num_used = 0;
     Interpreter interpreter(&env);
-    xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
-
     while (true) {
         // stores the input command received
         char input[MAX_INPUT_LEN] = "";

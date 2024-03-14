@@ -19,11 +19,12 @@
 
 
 /**
- * 
+ * \brief Constructor for the evaluator class.
+ * \param [in] env Pointer to the pre-created environment to use.
  */
-Evaluator::Evaluator(environment * test_var_2) {
-    env = test_var_2;
-    env -> num_used = 0;
+Evaluator::Evaluator(environment * env) {
+    this -> env = env;
+    this -> env -> num_used = 0;
 }
 
 
@@ -144,36 +145,30 @@ bool Evaluator::equals(literal_value left, literal_value right) {
  * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate(node tree_node) {
-    xpd_echo_int(-1, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
     literal_value result;
     // call appropriate function based on the operation needed (polymorphism not possible)
     switch (tree_node.type) {
         case ASSIGN_NODE:
-            xpd_echo_int(-2, XPD_Flag_UnsignedDecimal);
-            xpd_putc('\n');
             result = evaluate_assign(tree_node.entry.assign_val);
-            xpd_echo_int(-3, XPD_Flag_UnsignedDecimal);
-            xpd_putc('\n');
             break;
-        // case BINARY_NODE:
-        //     result = evaluate_binary(tree_node.entry.binary_val);
-        //     break;
-        // case GROUPING_NODE:
-        //     result = evaluate_grouping(tree_node.entry.grouping_val);
-        //     break;
+        case BINARY_NODE:
+            result = evaluate_binary(tree_node.entry.binary_val);
+            break;
+        case GROUPING_NODE:
+            result = evaluate_grouping(tree_node.entry.grouping_val);
+            break;
         case LITERAL_NODE:
             result = evaluate_literal(tree_node.entry.literal_val);
             break;
-        // case LOGICAL_NODE:
-        //     result = evaluate_logical(tree_node.entry.logical_val);
-        //     break;
-        // case UNARY_NODE:
-        //     result = evaluate_unary(tree_node.entry.unary_val);
-        //     break;
-        // case VARIABLE_NODE:
-        //     result = evaluate_variable(tree_node.entry.variable_val);
-        //     break;
+        case LOGICAL_NODE:
+            result = evaluate_logical(tree_node.entry.logical_val);
+            break;
+        case UNARY_NODE:
+            result = evaluate_unary(tree_node.entry.unary_val);
+            break;
+        case VARIABLE_NODE:
+            result = evaluate_variable(tree_node.entry.variable_val);
+            break;
     }
     return result;
 }
@@ -185,23 +180,12 @@ literal_value Evaluator::evaluate(node tree_node) {
  * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_assign(assign_value expr) {
-    // xpd_echo_int(env -> num_used, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
-    // env -> names[env -> num_used];
-    // xpd_echo_int(env -> num_used, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
     // assign the value into the associated variable name
     literal_value x = evaluate(*(expr.value));
-    xpd_echo_int(x.data.number, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
     write_variable(env, expr.name, x);
-    xpd_echo_int(env -> num_used, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
     // return None from this operation so that nothing is printed
     literal_value result;
     result.type = NONE_VALUE;
-    xpd_echo_int(env -> num_used, XPD_Flag_UnsignedDecimal);
-    xpd_putc('\n');
     return result;
 }
 
@@ -842,8 +826,6 @@ uint16_t Evaluator::evaluate_input(node * input, literal_value * output) {
     // only execute actual trees, otherwise just print nothing
     if (input) {
         *output = evaluate(*input);
-        xpd_echo_int(-4, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
     } else {
         output -> type = NONE_VALUE;
     }
@@ -851,7 +833,5 @@ uint16_t Evaluator::evaluate_input(node * input, literal_value * output) {
     if (has_error()) {
         return 1;
     }
-    xpd_echo_int(-5, XPD_Flag_UnsignedDecimal);
-        xpd_putc('\n');
     return 0;
 }

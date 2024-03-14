@@ -35,9 +35,6 @@ node make_new_assign(char name[], node * value) {
     for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
         current.entry.assign_val.name[i] = name[i];
     }
-    // ---------------------------------------------------------
-    print_string(current.entry.assign_val.name);
-    // ---------------------------------------------------------
     current.entry.assign_val.value = value;
     return current;
 }
@@ -137,9 +134,6 @@ node make_new_variable(char name[]) {
     for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
         current.entry.variable_val.name[i] = name[i];
     }
-    // ---------------------------------------------------------
-    print_string(current.entry.variable_val.name);
-    // ---------------------------------------------------------
     return current;
 }
 

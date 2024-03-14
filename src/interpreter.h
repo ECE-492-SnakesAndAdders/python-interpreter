@@ -20,8 +20,7 @@ class Interpreter {
 
     public:
         // basic constructor (needs dummy parameter to be callable) that calls evaluator constructor
-        Interpreter(environment * test_var): evaluator(test_var) {};
-        // Interpreter(uint16_t nothing): evaluator() {};
+        Interpreter(environment * env): evaluator(env) {};
         // executes a single command from start to finish
         uint16_t interpret_command(char ** input_ptr, char ** output_ptr);
 };

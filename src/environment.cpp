@@ -17,7 +17,7 @@
  * \return The index of the variable in the table if found; the next empty slot otherwise.
  */
 uint16_t find_variable(environment * env, char name[]) {
-    // TODO: support nesated environments with recursive search
+    // TODO: support nested environments with recursive search
     // check each variable being stored for a name match
     for (uint16_t i = 0; i < (env -> num_used); i++) {
         // check for a match of the current variable to a stored one
@@ -39,11 +39,7 @@ uint16_t find_variable(environment * env, char name[]) {
  */
 void write_variable(environment * env, char name[], literal_value value) {
     // determine if the variable exists and where to store it
-    // xpd_echo_int(env -> num_used, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
     uint16_t index = find_variable(env, name);
-    // xpd_echo_int(env -> num_used, XPD_Flag_UnsignedDecimal);
-    // xpd_putc('\n');
 
     // if variable does not yet exist, make a new one
     if (index == (env -> num_used)) {
