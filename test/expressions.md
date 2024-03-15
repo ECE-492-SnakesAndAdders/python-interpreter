@@ -14,10 +14,10 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `True and False` | `False` |
 | `False and True` | `False` |
 | `False and False` | `False` |
-| `True and None` | `` |
-| `None and True` | `` |
+| `True and None` | ` ` |
+| `None and True` | ` ` |
 | `False and None` | `False` |
-| `None and False` | `` |
+| `None and False` | ` ` |
 | `0 and True` | `0` |
 | `True and 0` | `0` |
 | `0 and False` | `0` |
@@ -224,7 +224,38 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True //// True` | `1` |
+| `True //// False` | `ZeroDivisionError` |
+| `False //// True` | `0` |
+| `False //// False` | `ZeroDivisionError` |
+| `0 //// True` | `0` |
+| `True //// 0` | `ZeroDivisionError` |
+| `0 //// False` | `ZeroDivisionError` |
+| `False //// 0` | `ZeroDivisionError` |
+| `1 //// True` | `1` |
+| `True //// 1` | `1` |
+| `1 //// False` | `ZeroDivisionError` |
+| `False //// 1` | `0` |
+| `0 //// 1` | `0` |
+| `1 //// 0` | `ZeroDivisionError` |
+| `2 //// 1` | `2` |
+| `1 //// 2` | `0` |
+| `2 //// 3` | `0` |
+| `3 //// 2` | `1` |
+| `100 //// 50` | `2` |
+| `99 //// 50` | `1` |
+| `1000 //// 12` | `83` |
+| `True //// None` | `TypeError` |
+| `None //// True` | `TypeError` |
+| `False //// None` | `TypeError` |
+| `None //// False` | `TypeError` |
+| `"" //// 2` | `TypeError` |
+| `"test" //// True` | `TypeError` |
+| `"test" //// False` | `TypeError` |
+| `"test" //// None` | `TypeError` |
+| `"test" //// 0` | `TypeError` |
+| `"test" //// 2` | `TypeError` |
+| `"test" //// "test"` | `TypeError` |
 
 * `**`
 
@@ -290,7 +321,7 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `False or False` | `False` |
 | `True or None` | `True` |
 | `None or True` | `True` |
-| `False or None` | `` |
+| `False or None` | ` ` |
 | `None or False` | `False` |
 | `0 or True` | `True` |
 | `True or 0` | `True` |
@@ -335,9 +366,42 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 * `/`
 
+Note that in CPython, floating-point numbers are returned from this operation. However, the C3 does not have floating-point hardware, so this operator implements integer division (making it identical to `//`).
+
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True // True` | `1.0` |
+| `True // False` | `ZeroDivisionError` |
+| `False // True` | `0.0` |
+| `False // False` | `ZeroDivisionError` |
+| `0 // True` | `0.0` |
+| `True // 0` | `ZeroDivisionError` |
+| `0 // False` | `ZeroDivisionError` |
+| `False // 0` | `ZeroDivisionError` |
+| `1 // True` | `1.0` |
+| `True // 1` | `1.0` |
+| `1 // False` | `ZeroDivisionError` |
+| `False // 1` | `0.0` |
+| `0 // 1` | `0.0` |
+| `1 // 0` | `ZeroDivisionError` |
+| `2 // 1` | `2.0` |
+| `1 // 2` | `0.5` |
+| `2 // 3` | `0.6666666666666666` |
+| `3 // 2` | `1.5` |
+| `100 // 50` | `2.0` |
+| `99 // 50` | `1.98` |
+| `1000 // 12` | `83.33333333333333` |
+| `True // None` | `TypeError` |
+| `None // True` | `TypeError` |
+| `False // None` | `TypeError` |
+| `None // False` | `TypeError` |
+| `"" // 2` | `TypeError` |
+| `"test" // True` | `TypeError` |
+| `"test" // False` | `TypeError` |
+| `"test" // None` | `TypeError` |
+| `"test" // 0` | `TypeError` |
+| `"test" // 2` | `TypeError` |
+| `"test" // "test"` | `TypeError` |
 
 * `*`
 
