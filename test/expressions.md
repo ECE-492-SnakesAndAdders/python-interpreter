@@ -57,13 +57,67 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True & True` | `True` |
+| `True & False` | `False` |
+| `False & True` | `False` |
+| `False & False` | `False` |
+| `0 & True` | `0` |
+| `True & 0` | `0` |
+| `0 & False` | `0` |
+| `False & 0` | `0` |
+| `1 & True` | `1` |
+| `True & 1` | `1` |
+| `1 & False` | `0` |
+| `False & 1` | `0` |
+| `0 & 1` | `0` |
+| `1 & 0` | `0` |
+| `2 & 1` | `0` |
+| `1 & 2` | `0` |
+| `2 & 3` | `2` |
+| `3 & 2` | `2` |
+| `True & None` | `TypeError` |
+| `None & True` | `TypeError` |
+| `False & None` | `TypeError` |
+| `None & False` | `TypeError` |
+| `"" & True` | `TypeError` |
+| `"test" & True` | `TypeError` |
+| `"test" & False` | `TypeError` |
+| `"test" & None` | `TypeError` |
+| `"test" & 0` | `TypeError` |
+| `"test" & "test"` | `TypeError` |
 
 * `|`
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True \| True` | `True` |
+| `True \| False` | `True` |
+| `False \| True` | `True` |
+| `False \| False` | `False` |
+| `0 \| True` | `1` |
+| `True \| 0` | `1` |
+| `0 \| False` | `0` |
+| `False \| 0` | `0` |
+| `1 \| True` | `1` |
+| `True \| 1` | `1` |
+| `1 \| False` | `1` |
+| `False \| 1` | `1` |
+| `0 \| 1` | `1` |
+| `1 \| 0` | `1` |
+| `2 \| 1` | `3` |
+| `1 \| 2` | `3` |
+| `2 \| 3` | `3` |
+| `3 \| 2` | `3` |
+| `True \| None` | `TypeError` |
+| `None \| True` | `TypeError` |
+| `False \| None` | `TypeError` |
+| `None \| False` | `TypeError` |
+| `"" \| True` | `TypeError` |
+| `"test" \| True` | `TypeError` |
+| `"test" \| False` | `TypeError` |
+| `"test" \| None` | `TypeError` |
+| `"test" \| 0` | `TypeError` |
+| `"test" \| "test"` | `TypeError` |
 
 * `>>`
 
@@ -81,7 +135,34 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True ^ True` | `False` |
+| `True ^ False` | `True` |
+| `False ^ True` | `True` |
+| `False ^ False` | `False` |
+| `0 ^ True` | `1` |
+| `True ^ 0` | `1` |
+| `0 ^ False` | `0` |
+| `False ^ 0` | `0` |
+| `1 ^ True` | `0` |
+| `True ^ 1` | `0` |
+| `1 ^ False` | `1` |
+| `False ^ 1` | `1` |
+| `0 ^ 1` | `1` |
+| `1 ^ 0` | `1` |
+| `2 ^ 1` | `3` |
+| `1 ^ 2` | `3` |
+| `2 ^ 3` | `1` |
+| `3 ^ 2` | `1` |
+| `True ^ None` | `TypeError` |
+| `None ^ True` | `TypeError` |
+| `False ^ None` | `TypeError` |
+| `None ^ False` | `TypeError` |
+| `"" ^ True` | `TypeError` |
+| `"test" ^ True` | `TypeError` |
+| `"test" ^ False` | `TypeError` |
+| `"test" ^ None` | `TypeError` |
+| `"test" ^ 0` | `TypeError` |
+| `"test" ^ "test"` | `TypeError` |
 
 * `//`
 
