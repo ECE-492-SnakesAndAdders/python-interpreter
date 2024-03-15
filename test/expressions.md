@@ -275,7 +275,36 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True ** True` | `1` |
+| `True ** False` | `1` |
+| `False ** True` | `0` |
+| `False ** False` | `1` |
+| `0 ** True` | `0` |
+| `True ** 0` | `1` |
+| `0 ** False` | `1` |
+| `False ** 0` | `1` |
+| `1 ** True` | `1` |
+| `True ** 1` | `1` |
+| `1 ** False` | `1` |
+| `False ** 1` | `0` |
+| `0 ** 0` | `1` |
+| `0 ** 1` | `0` |
+| `1 ** 0` | `1` |
+| `2 ** 1` | `2` |
+| `1 ** 2` | `1` |
+| `2 ** 3` | `8` |
+| `3 ** 2` | `9` |
+| `True ** None` | `TypeError` |
+| `None ** True` | `TypeError` |
+| `False ** None` | `TypeError` |
+| `None ** False` | `TypeError` |
+| `"" ** 2` | `TypeError` |
+| `"test" ** True` | `TypeError` |
+| `"test" ** False` | `TypeError` |
+| `"test" ** None` | `TypeError` |
+| `"test" ** 0` | `TypeError` |
+| `"test" ** 2` | `TypeError` |
+| `"test" ** "test"` | `TypeError` |
 
 * `==`
 
@@ -480,7 +509,44 @@ Note that in CPython, floating-point numbers are returned from this operation. H
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True * True` | `1` |
+| `True * False` | `0` |
+| `False * True` | `0` |
+| `False * False` | `0` |
+| `0 * True` | `0` |
+| `True * 0` | `0` |
+| `0 * False` | `0` |
+| `False * 0` | `0` |
+| `1 * True` | `1` |
+| `True * 1` | `1` |
+| `1 * False` | `0` |
+| `False * 1` | `0` |
+| `0 * 1` | `0` |
+| `1 * 0` | `0` |
+| `2 * 1` | `2` |
+| `1 * 2` | `2` |
+| `2 * 3` | `6` |
+| `3 * 2` | `6` |
+| `100 * 50` | `5000` |
+| `99 * 50` | `4950` |
+| `1000 * 12` | `12000` |
+| `"" * 2` | `''` |
+| `"test" * True` | `'test'` |
+| `"test" * False` | `''` |
+| `"test" * 0` | `''` |
+| `0 * "test"` | `''` |
+| `"test" * 1` | `'test'` |
+| `1 * "test"` | `'test'` |
+| `"test" * 2` | `'testtest'` |
+| `2 * "test"` | `'testtest'` |
+| `"test" * "test"` | `TypeError` |
+| `True * None` | `TypeError` |
+| `None * True` | `TypeError` |
+| `False * None` | `TypeError` |
+| `None * False` | `TypeError` |
+| `1 * None` | `TypeError` |
+| `None * 1` | `TypeError` |
+| `"test" * None` | `TypeError` |
 
 ### Integration Tests
 
