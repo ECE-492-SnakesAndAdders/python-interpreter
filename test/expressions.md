@@ -224,38 +224,38 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| `True //// True` | `1` |
-| `True //// False` | `ZeroDivisionError` |
-| `False //// True` | `0` |
-| `False //// False` | `ZeroDivisionError` |
-| `0 //// True` | `0` |
-| `True //// 0` | `ZeroDivisionError` |
-| `0 //// False` | `ZeroDivisionError` |
-| `False //// 0` | `ZeroDivisionError` |
-| `1 //// True` | `1` |
-| `True //// 1` | `1` |
-| `1 //// False` | `ZeroDivisionError` |
-| `False //// 1` | `0` |
-| `0 //// 1` | `0` |
-| `1 //// 0` | `ZeroDivisionError` |
-| `2 //// 1` | `2` |
-| `1 //// 2` | `0` |
-| `2 //// 3` | `0` |
-| `3 //// 2` | `1` |
-| `100 //// 50` | `2` |
-| `99 //// 50` | `1` |
-| `1000 //// 12` | `83` |
-| `True //// None` | `TypeError` |
-| `None //// True` | `TypeError` |
-| `False //// None` | `TypeError` |
-| `None //// False` | `TypeError` |
-| `"" //// 2` | `TypeError` |
-| `"test" //// True` | `TypeError` |
-| `"test" //// False` | `TypeError` |
-| `"test" //// None` | `TypeError` |
-| `"test" //// 0` | `TypeError` |
-| `"test" //// 2` | `TypeError` |
-| `"test" //// "test"` | `TypeError` |
+| `True // True` | `1` |
+| `True // False` | `ZeroDivisionError` |
+| `False // True` | `0` |
+| `False // False` | `ZeroDivisionError` |
+| `0 // True` | `0` |
+| `True // 0` | `ZeroDivisionError` |
+| `0 // False` | `ZeroDivisionError` |
+| `False // 0` | `ZeroDivisionError` |
+| `1 // True` | `1` |
+| `True // 1` | `1` |
+| `1 // False` | `ZeroDivisionError` |
+| `False // 1` | `0` |
+| `0 // 1` | `0` |
+| `1 // 0` | `ZeroDivisionError` |
+| `2 // 1` | `2` |
+| `1 // 2` | `0` |
+| `2 // 3` | `0` |
+| `3 // 2` | `1` |
+| `100 // 50` | `2` |
+| `99 // 50` | `1` |
+| `1000 // 12` | `83` |
+| `True // None` | `TypeError` |
+| `None // True` | `TypeError` |
+| `False // None` | `TypeError` |
+| `None // False` | `TypeError` |
+| `"" // 2` | `TypeError` |
+| `"test" // True` | `TypeError` |
+| `"test" // False` | `TypeError` |
+| `"test" // None` | `TypeError` |
+| `"test" // 0` | `TypeError` |
+| `"test" // 2` | `TypeError` |
+| `"test" // "test"` | `TypeError` |
 
 * `**`
 
@@ -356,7 +356,38 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True % True` | `0` |
+| `True % False` | `ZeroDivisionError` |
+| `False % True` | `0` |
+| `False % False` | `ZeroDivisionError` |
+| `0 % True` | `0` |
+| `True % 0` | `ZeroDivisionError` |
+| `0 % False` | `ZeroDivisionError` |
+| `False % 0` | `ZeroDivisionError` |
+| `1 % True` | `0` |
+| `True % 1` | `0` |
+| `1 % False` | `ZeroDivisionError` |
+| `False % 1` | `0` |
+| `0 % 1` | `0` |
+| `1 % 0` | `ZeroDivisionError` |
+| `2 % 1` | `0` |
+| `1 % 2` | `1` |
+| `2 % 3` | `2` |
+| `3 % 2` | `1` |
+| `100 % 50` | `0` |
+| `99 % 50` | `49` |
+| `1000 % 12` | `4` |
+| `True % None` | `TypeError` |
+| `None % True` | `TypeError` |
+| `False % None` | `TypeError` |
+| `None % False` | `TypeError` |
+| `"" % 2` | `TypeError` |
+| `"test" % True` | `TypeError` |
+| `"test" % False` | `TypeError` |
+| `"test" % None` | `TypeError` |
+| `"test" % 0` | `TypeError` |
+| `"test" % 2` | `TypeError` |
+| `"test" % "test"` | `TypeError` |
 
 * `+`
 
@@ -366,42 +397,42 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 * `/`
 
-Note that in CPython, floating-point numbers are returned from this operation. However, the C3 does not have floating-point hardware, so this operator implements integer division (making it identical to `//`).
+Note that in CPython, floating-point numbers are returned from this operation. However, the C3 does not have floating-point hardware, so this operator implements integer division (making the desired results identical to the results for `//`).
 
 | Input | Correct Output |
 | ----- | -------------- |
-| `True // True` | `1.0` |
-| `True // False` | `ZeroDivisionError` |
-| `False // True` | `0.0` |
-| `False // False` | `ZeroDivisionError` |
-| `0 // True` | `0.0` |
-| `True // 0` | `ZeroDivisionError` |
-| `0 // False` | `ZeroDivisionError` |
-| `False // 0` | `ZeroDivisionError` |
-| `1 // True` | `1.0` |
-| `True // 1` | `1.0` |
-| `1 // False` | `ZeroDivisionError` |
-| `False // 1` | `0.0` |
-| `0 // 1` | `0.0` |
-| `1 // 0` | `ZeroDivisionError` |
-| `2 // 1` | `2.0` |
-| `1 // 2` | `0.5` |
-| `2 // 3` | `0.6666666666666666` |
-| `3 // 2` | `1.5` |
-| `100 // 50` | `2.0` |
-| `99 // 50` | `1.98` |
-| `1000 // 12` | `83.33333333333333` |
-| `True // None` | `TypeError` |
-| `None // True` | `TypeError` |
-| `False // None` | `TypeError` |
-| `None // False` | `TypeError` |
-| `"" // 2` | `TypeError` |
-| `"test" // True` | `TypeError` |
-| `"test" // False` | `TypeError` |
-| `"test" // None` | `TypeError` |
-| `"test" // 0` | `TypeError` |
-| `"test" // 2` | `TypeError` |
-| `"test" // "test"` | `TypeError` |
+| `True / True` | `1.0` |
+| `True / False` | `ZeroDivisionError` |
+| `False / True` | `0.0` |
+| `False / False` | `ZeroDivisionError` |
+| `0 / True` | `0.0` |
+| `True / 0` | `ZeroDivisionError` |
+| `0 / False` | `ZeroDivisionError` |
+| `False / 0` | `ZeroDivisionError` |
+| `1 / True` | `1.0` |
+| `True / 1` | `1.0` |
+| `1 / False` | `ZeroDivisionError` |
+| `False / 1` | `0.0` |
+| `0 / 1` | `0.0` |
+| `1 / 0` | `ZeroDivisionError` |
+| `2 / 1` | `2.0` |
+| `1 / 2` | `0.5` |
+| `2 / 3` | `0.6666666666666666` |
+| `3 / 2` | `1.5` |
+| `100 / 50` | `2.0` |
+| `99 / 50` | `1.98` |
+| `1000 / 12` | `83.33333333333333` |
+| `True / None` | `TypeError` |
+| `None / True` | `TypeError` |
+| `False / None` | `TypeError` |
+| `None / False` | `TypeError` |
+| `"" / 2` | `TypeError` |
+| `"test" / True` | `TypeError` |
+| `"test" / False` | `TypeError` |
+| `"test" / None` | `TypeError` |
+| `"test" / 0` | `TypeError` |
+| `"test" / 2` | `TypeError` |
+| `"test" / "test"` | `TypeError` |
 
 * `*`
 
