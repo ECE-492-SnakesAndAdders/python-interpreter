@@ -6,7 +6,7 @@
 *********************************************************************************/
 
 
-#include <XPD.h>
+#include <cstdio>
 #include "expr.h"
 #include "lexer.h"
 #include "parser.h"
@@ -32,7 +32,7 @@
 node make_new_assign(char name[], node * value) {
     node current;
     current.type = ASSIGN_NODE;
-    for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+    for (int i = 0; i < MAX_IDENTIFIER_LEN; i++) {
         current.entry.assign_val.name[i] = name[i];
     }
     current.entry.assign_val.value = value;
@@ -83,7 +83,7 @@ node make_new_literal(literal_value value) {
     if (current.entry.literal_val.type == NUMBER_VALUE) {
         current.entry.literal_val.data.number = value.data.number;
     } else if (current.entry.literal_val.type == STRING_VALUE) {
-        for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
+        for (int i = 0; i < MAX_LIT_LEN; i++) {
             current.entry.literal_val.data.string[i] = value.data.string[i];
         }
     }
@@ -131,7 +131,7 @@ node make_new_unary(lexemes opcode, node * right) {
 node make_new_variable(char name[]) {
     node current;
     current.type = VARIABLE_NODE;
-    for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+    for (int i = 0; i < MAX_IDENTIFIER_LEN; i++) {
         current.entry.variable_val.name[i] = name[i];
     }
     return current;
@@ -162,7 +162,7 @@ void stringify_value(literal_value value, char ** output_ptr) {
 
         case STRING_VALUE:
             **output_ptr = '\'';
-            for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
+            for (int i = 0; i < MAX_LIT_LEN; i++) {
                 if (value.data.string[i]) {
                     *(*output_ptr + i + 1) = value.data.string[i];
                 } else {
@@ -194,64 +194,64 @@ void stringify_value(literal_value value, char ** output_ptr) {
 void print_tree(node tree) {
     switch (tree.type) {
         case ASSIGN_NODE:
-            print_string(" ( ");
-            print_string(tree.entry.assign_val.name);
-            print_string(" GETS ");
+            printf(" ( ");
+            printf(tree.entry.assign_val.name);
+            printf(" GETS ");
             print_tree(*(tree.entry.assign_val.value));
-            print_string(" ) ");
+            printf(" ) ");
             break;
 
         case BINARY_NODE:
-            print_string(" ( ");
+            printf(" ( ");
             print_tree(*(tree.entry.binary_val.left));
-            print_string(token_names[tree.entry.binary_val.opcode]);
+            printf(token_names[tree.entry.binary_val.opcode]);
             print_tree(*(tree.entry.binary_val.right));
-            print_string(" ) ");
+            printf(" ) ");
             break;
 
         case GROUPING_NODE:
-            print_string(" ( ");
+            printf(" ( ");
             print_tree(*(tree.entry.grouping_val.expression));
-            print_string(" ) ");
+            printf(" ) ");
             break;
 
         case LITERAL_NODE:
             if (tree.entry.literal_val.type == FALSE_VALUE) {
-                print_string(" False ");
+                printf(" False ");
             } else if (tree.entry.literal_val.type == NONE_VALUE) {
-                print_string(" None ");
+                printf(" None ");
             } else if (tree.entry.literal_val.type == NUMBER_VALUE) {
-                print_string(" ");
-                xpd_echo_int(tree.entry.literal_val.data.number, XPD_Flag_SignedDecimal);
-                print_string(" ");
+                printf(" ");
+                printf("%d", tree.entry.literal_val.data.number);
+                printf(" ");
             } else if (tree.entry.literal_val.type == STRING_VALUE) {
-                print_string(" ");
-                print_string(tree.entry.literal_val.data.string);
-                print_string(" ");
+                printf(" ");
+                printf(tree.entry.literal_val.data.string);
+                printf(" ");
             } else if (tree.entry.literal_val.type == TRUE_VALUE) {
-                print_string(" True ");
+                printf(" True ");
             }
             break;
 
         case LOGICAL_NODE:
-            print_string(" ( ");
+            printf(" ( ");
             print_tree(*(tree.entry.logical_val.left));
-            print_string(token_names[tree.entry.logical_val.opcode]);
+            printf(token_names[tree.entry.logical_val.opcode]);
             print_tree(*(tree.entry.logical_val.right));
-            print_string(" ) ");
+            printf(" ) ");
             break;
             
         case UNARY_NODE:
-            print_string(" ( ");
-            print_string(token_names[tree.entry.unary_val.opcode]);
+            printf(" ( ");
+            printf(token_names[tree.entry.unary_val.opcode]);
             print_tree(*(tree.entry.unary_val.right));
-            print_string(" ) ");
+            printf(" ) ");
             break;
 
         case VARIABLE_NODE:
-            print_string(" ( ");
-            print_string(tree.entry.variable_val.name);
-            print_string(" ) ");
+            printf(" ( ");
+            printf(tree.entry.variable_val.name);
+            printf(" ) ");
             break;
     }
 }

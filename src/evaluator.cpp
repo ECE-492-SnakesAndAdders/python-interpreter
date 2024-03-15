@@ -6,7 +6,7 @@
 *********************************************************************************/
 
 
-#include <XPD.h>
+#include <cstring>
 #include "error.h"
 #include "evaluator.h"
 #include "utility.h"
@@ -43,7 +43,7 @@ bool Evaluator::is_numerical(literal_types type) {
  * \param [in] value The literal value to convert.
  * \return The integer representation of the literal.
  */
-uint16_t Evaluator::numerify(literal_value value) {
+int Evaluator::numerify(literal_value value) {
     switch (value.type) {
         // valid types map directly to integers
         case FALSE_VALUE:
@@ -120,10 +120,10 @@ bool Evaluator::equals(literal_value left, literal_value right) {
                 return true;
             // numerical values must be numerically equal
             case NUMBER_VALUE:
-                return left.data.number == right.data.number;
+                return (left.data.number == right.data.number);
             // string values must have each and every character match
             case STRING_VALUE:
-                return strcmp(left.data.string, right.data.string);
+                return (strcmp(left.data.string, right.data.string) == 0);
             case TRUE_VALUE:
                 return true;
             // theoretically unreachable
@@ -299,12 +299,8 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 // compute number directly for positive exponents
                 } else if (numerify(right) < 32768) {
                     result.data.number = numerify(left);
-                    for (uint16_t i = 1; i < numerify(right); i++) {
-                        uint16_t temp = result.data.number;
-                        for (uint16_t j = 1; j < numerify(left); j++) {
-                            temp += result.data.number;
-                        }
-                        result.data.number = temp;
+                    for (int i = 1; i < numerify(right); i++) {
+                        result.data.number *= numerify(left);
                     }
                 // negatve exponents produce fractions, which round to 0 here (no floating point numbers)
                 } else {
@@ -341,7 +337,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.type = FALSE_VALUE;
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
-                uint16_t i = 0;
+                int i = 0;
                 // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
                 while ((left.data.string[i]) && (right.data.string[i]) && (left.data.string[i] == right.data.string[i])) {
                     i++;
@@ -369,12 +365,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.type = FALSE_VALUE;
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
-                if (strcmp(left.data.string, right.data.string)){
+                if (strcmp(left.data.string, right.data.string) == 0) {
                     result.type = TRUE_VALUE;
                 }
-                uint16_t i = 0;
+                int i = 0;
                 // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
-                while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
+                while ((left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i])) {
                     i++;
                 }
                 // whichever character is bigger at this point is the bigger string
@@ -404,8 +400,8 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 } else {
                     // initially assume that the substring is not present, update if assumption wrong
                     result.type = FALSE_VALUE;
-                    uint16_t sub_index = 0;
-                    uint16_t full_index = 0;
+                    int sub_index = 0;
+                    int full_index = 0;
                     while (right.data.string[full_index] && (full_index < MAX_LIT_LEN)) {
                         if (left.data.string[sub_index] && (left.data.string[sub_index] == right.data.string[full_index])) {
                             // another substring character must be consumed
@@ -449,7 +445,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.type = FALSE_VALUE;
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
-                uint16_t i = 0;
+                int i = 0;
                 // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
                 while ((left.data.string[i]) && (right.data.string[i]) && (left.data.string[i] == right.data.string[i])) {
                     i++;
@@ -475,12 +471,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.type = TRUE_VALUE;
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
-                if (strcmp(left.data.string, right.data.string)){
+                if (strcmp(left.data.string, right.data.string) == 0) {
                     result.type = TRUE_VALUE;
                 }
-                uint16_t i = 0;
+                int i = 0;
                 // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
-                while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
+                while ((left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i])) {
                     i++;
                 }
                 // whichever character is smaller at this point is the smaller string
@@ -544,8 +540,8 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
                 result.type = STRING_VALUE;
                 // track how many characters consumed from the left string
-                uint16_t left_count = 0;
-                for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
+                int left_count = 0;
+                for (int i = 0; i < MAX_LIT_LEN; i++) {
                     // always start by simply transcribing left string
                     if (left.data.string[i]) {
                         result.data.string[i] = left.data.string[i];
@@ -588,14 +584,11 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // repeats a string
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = numerify(left);
-                for (uint16_t i = 1; i < numerify(right); i++) {
-                    result.data.number += numerify(left);
-                }
+                result.data.number = numerify(left) * numerify(right);
             // repeatedly concatenates a string to itself (right) number of times
             } else if (((left.type == STRING_VALUE) && is_numerical(right.type)) || ((right.type == STRING_VALUE) && is_numerical(left.type))) {
                 // fetch the multiplier and string from the correct operands
-                uint16_t multiplier = 0;
+                int multiplier = 0;
                 char * initial;
                 if (is_numerical(left.type)) {
                     multiplier = numerify(left);
@@ -606,18 +599,18 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 }
                 result.type = STRING_VALUE;
                 // edge case: user does string * (nonpositive number)
-                if (multiplier <= 0){
+                if (multiplier <= 0) {
                     result.data.string[0] = '\0';
                 } else {
-                    uint16_t initial_length = 0;
+                    int initial_length = 0;
                     while ((initial[initial_length]) && (initial_length < MAX_LIT_LEN - 1)) {
                         initial_length++;
                     }
-                    uint16_t end_index = 0; // keep track of the end of the resultant string
+                    int end_index = 0; // keep track of the end of the resultant string
                     // append the string to itself (right) number of times
-                    for (uint16_t i = 0; i < multiplier; i++) {
-                        for (uint16_t j = 0; j < initial_length; j++) {
-                            if (end_index < MAX_LIT_LEN - 1){
+                    for (int i = 0; i < multiplier; i++) {
+                        for (int j = 0; j < initial_length; j++) {
+                            if (end_index < MAX_LIT_LEN - 1) {
                                 result.data.string[end_index++] = initial[j];
                             }
                         }
@@ -822,7 +815,7 @@ bool Evaluator::has_error() {
  * \param [in] output Pointer to where to store the output value.
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
-uint16_t Evaluator::evaluate_input(node * input, literal_value * output) {
+int Evaluator::evaluate_input(node * input, literal_value * output) {
     // only execute actual trees, otherwise just print nothing
     if (input) {
         *output = evaluate(*input);

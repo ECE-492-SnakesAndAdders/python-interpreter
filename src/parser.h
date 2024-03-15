@@ -33,13 +33,13 @@ class Parser {
         // input information
         lexed_command command_info;
         // the current indices of command information being read
-        uint16_t current = 0;
-        uint16_t current_str_lit = 0;
-        uint16_t current_num_lit = 0;
-        uint16_t current_identifier = 0;
+        int current = 0;
+        int current_str_lit = 0;
+        int current_num_lit = 0;
+        int current_identifier = 0;
         // output tree information and operations
         node tree_nodes[MAX_NUM_NODES];
-        uint16_t current_node = 0;
+        int current_node = 0;
         node ** syntax_tree;
         node * write_new_node(node * value);
         // for parsing statements
@@ -77,7 +77,7 @@ class Parser {
         // basic constructor for the class
         Parser(lexed_command input, node ** output);
         // converts the input token list into a syntax tree
-        uint16_t parse_input();
+        int parse_input();
 };
 
 

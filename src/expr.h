@@ -10,7 +10,6 @@
 #define EXPR_H
 
 
-#include <XPD.h>
 #include "lexer.h"
 
 
@@ -83,7 +82,7 @@ struct literal_value {
     literal_types type;
     // the actual data being stored
     union {
-        uint16_t number;
+        int number;
         char string[MAX_LIT_LEN];
     } data;
 };

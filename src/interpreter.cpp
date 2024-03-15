@@ -6,7 +6,7 @@
 *********************************************************************************/
 
 
-#include <XPD.h>
+#include <cstdio>
 #include "evaluator.h"
 #include "interpreter.h"
 #include "lexer.h"
@@ -20,8 +20,8 @@
  * \param [in] output_ptr Pointer to where to store the text to be printed.
  * \return 0 on success; a non-zero error number on failure.
  */
-uint16_t Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
-    uint16_t return_code = 0;
+int Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
+    int return_code = 0;
 
     // lex command, convert raw string into a sequence of tokens
     lexed_command token_sequence;
@@ -31,33 +31,33 @@ uint16_t Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
     }
     // ------------------------------------------------------------------------
     // // FOR DEBUGGING; print each token to see that lexer works
-    // print_string("LEXED INFO:\n");
-    // print_string("Tokens: ");
-    // for (uint16_t i = 0; i < token_sequence.token_count; i++) {
-    //     xpd_echo_int(token_sequence.tokens[i], XPD_Flag_UnsignedDecimal);
-    //     print_string(" ");
-    //     print_string(token_names[token_sequence.tokens[i]]);
-    //     print_string(", ");
+    // printf("LEXED INFO:\n");
+    // printf("Tokens: ");
+    // for (int i = 0; i < token_sequence.token_count; i++) {
+    //     printf("%d",token_sequence.tokens[i]);
+    //     printf(" ");
+    //     printf(token_names[token_sequence.tokens[i]]);
+    //     printf(", ");
     // }
-    // print_string("\n");
-    // print_string("Strings: ");
-    // for (uint16_t i = 0; i < token_sequence.str_lit_count; i++) {
-    //     print_string(token_sequence.str_lits[i]);
-    //     print_string(", ");
+    // printf("\n");
+    // printf("Strings: ");
+    // for (int i = 0; i < token_sequence.str_lit_count; i++) {
+    //     printf(token_sequence.str_lits[i]);
+    //     printf(", ");
     // }
-    // print_string("\n");
-    // print_string("Numbers: ");
-    // for (uint16_t i = 0; i < token_sequence.num_lit_count; i++) {
-    //     xpd_echo_int(token_sequence.num_lits[i], XPD_Flag_UnsignedDecimal);
-    //     print_string(", ");
+    // printf("\n");
+    // printf("Numbers: ");
+    // for (int i = 0; i < token_sequence.num_lit_count; i++) {
+    //     printf("%d",token_sequence.num_lits[i]);
+    //     printf(", ");
     // }
-    // print_string("\n");
-    // print_string("Identifiers: ");
-    // for (uint16_t i = 0; i < token_sequence.identifier_count; i++) {
-    //     print_string(token_sequence.identifiers[i]);
-    //     print_string(", ");
+    // printf("\n");
+    // printf("Identifiers: ");
+    // for (int i = 0; i < token_sequence.identifier_count; i++) {
+    //     printf(token_sequence.identifiers[i]);
+    //     printf(", ");
     // }
-    // print_string("\n");
+    // printf("\n");
     // ------------------------------------------------------------------------
 
     // parse command, convert sequence of tokens into a syntax tree
@@ -68,9 +68,9 @@ uint16_t Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
     }
     // ------------------------------------------------------------------------
     // // FOR DEBUGGING; print tree to see that parser works
-    // print_string("PARSED INFO:\n");
+    // printf("PARSED INFO:\n");
     // print_tree(*tree);
-    // print_string("\n");
+    // printf("\n");
     // ------------------------------------------------------------------------
 
     // evaluate command, convert syntax tree into a result

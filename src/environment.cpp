@@ -6,6 +6,7 @@
 *********************************************************************************/
 
 
+#include <cstring>
 #include "environment.h"
 #include "utility.h"
 
@@ -16,12 +17,12 @@
  * \param [in] name The name of the variable to find.
  * \return The index of the variable in the table if found; the next empty slot otherwise.
  */
-uint16_t find_variable(environment * env, char name[]) {
+int find_variable(environment * env, char name[]) {
     // TODO: support nested environments with recursive search
     // check each variable being stored for a name match
-    for (uint16_t i = 0; i < (env -> num_used); i++) {
+    for (int i = 0; i < (env -> num_used); i++) {
         // check for a match of the current variable to a stored one
-        if (strcmp(env -> names[i], name)) {
+        if (strcmp(env -> names[i], name) == 0) {
             // return the index of the variable with this name
             return i;
         }
@@ -39,12 +40,12 @@ uint16_t find_variable(environment * env, char name[]) {
  */
 void write_variable(environment * env, char name[], literal_value value) {
     // determine if the variable exists and where to store it
-    uint16_t index = find_variable(env, name);
+    int index = find_variable(env, name);
 
     // if variable does not yet exist, make a new one
     if (index == (env -> num_used)) {
         // if variable does not yet exist, make a new one
-        for (uint16_t i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+        for (int i = 0; i < MAX_IDENTIFIER_LEN; i++) {
             env -> names[index][i] = name[i];
         }
         env -> values[index] = value;
@@ -63,9 +64,9 @@ void write_variable(environment * env, char name[], literal_value value) {
  * \param [in] value Pointer to where to store the value held by this variable.
  * \return 0 if the operation was successful (the variable existed); 1 otherwise.
  */
-uint16_t read_variable(environment * env, char name[], literal_value * value) {
+int read_variable(environment * env, char name[], literal_value * value) {
     // determine if the variable exists and where it is stored
-    uint16_t index = find_variable(env, name);
+    int index = find_variable(env, name);
 
     // if variable does not yet exist, return sentinel error value
     if (index == (env -> num_used)) {

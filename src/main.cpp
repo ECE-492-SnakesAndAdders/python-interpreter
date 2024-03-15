@@ -6,16 +6,13 @@
 *********************************************************************************/
 
 
-#include <GPIO.h>
-#include <SystemClock.h>
-#include <Thread.h>
-#include <XPD.h>
+#include <cstdio>
+#include <cstring>
 #include "error.h"
 #include "evaluator.h"
 #include "expr.h"
 #include "interpreter.h"
 #include "lexer.h"
-#include "main.h"
 #include "parser.h"
 #include "utility.h"
 
@@ -47,15 +44,12 @@
  * \param [in] input_ptr Pointer to where to store the input received.
  * \return 0 on success; a non-zero error number on failure.
  */
-uint16_t read(char ** input_ptr) {
+int read(char ** input_ptr) {
     // prompt user for command
-    xpd_putc('>');
-    xpd_putc('>');
-    xpd_putc('>');
-    xpd_putc(' ');
+    printf(">>> ");
     // read characters until 'enter' key is hit or buffer is full
-    for (uint16_t i = 0; i < MAX_INPUT_LEN - 1; i++) {
-        *(*input_ptr + i) = (char) xpd_getchar();
+    for (int i = 0; i < MAX_INPUT_LEN - 1; i++) {
+        *(*input_ptr + i) = (char) fgetchar();
         if ((*(*input_ptr + i) == '\n') || (i == MAX_INPUT_LEN - 2)) {
             // add NULL terminator character after 'enter' key or final slot
             *(*input_ptr + i + 1) = '\0';
@@ -73,7 +67,7 @@ uint16_t read(char ** input_ptr) {
  * \param [in] output_ptr Pointer to where to store the text to be printed.
  * \return 0 on success; a non-zero error number on failure.
  */
-uint16_t eval(Interpreter interpreter, char ** input_ptr, char ** output_ptr) {
+int eval(Interpreter interpreter, char ** input_ptr, char ** output_ptr) {
     return interpreter.interpret_command(input_ptr, output_ptr);
 }
 
@@ -83,11 +77,11 @@ uint16_t eval(Interpreter interpreter, char ** input_ptr, char ** output_ptr) {
  * \param [in] output_ptr Pointer to where the text to be printed is stored.
  * \return 0 on success; a non-zero error number on failure.
  */
-uint16_t print(char ** output_ptr) {
+int print(char ** output_ptr) {
     // print the output string received
     if (**output_ptr) {
-        print_string(output_ptr);
-        xpd_putc('\n');
+        printf(*output_ptr);
+        printf("\n");
     }
     return 0;
 }
@@ -98,9 +92,9 @@ uint16_t print(char ** output_ptr) {
  * \return 0 on success; a non-zero integer on failure.
  */
 int main() {
-    print_string("\nWelcome to Python on the C3 board.\n");
+    printf("\nWelcome to Python on the C3 board.\n");
 
-    uint16_t return_code = 0;
+    int return_code = 0;
     // REPL: Read-Eval-Print-Loop
     environment env;
     Interpreter interpreter(&env);
@@ -108,11 +102,11 @@ int main() {
         // stores the input command received
         char input[MAX_INPUT_LEN] = "";
         char * input_ptr = (char *) input;
-        memclear(input, MAX_INPUT_LEN);
+        memset(input, 0, MAX_INPUT_LEN);
         // stores the output to be printed
         char output[MAX_OUTPUT_LEN] = "";
         char * output_ptr = (char *) output;
-        memclear(output, MAX_OUTPUT_LEN);
+        memset(output, 0, MAX_OUTPUT_LEN);
 
         // read in user input (command / code), handle sytem error
         if ((return_code = read(&input_ptr))) {

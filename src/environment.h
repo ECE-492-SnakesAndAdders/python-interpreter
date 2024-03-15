@@ -10,7 +10,6 @@
 #define ENVIRONMENT_H
 
 
-#include <XPD.h>
 #include "expr.h"
 
 
@@ -34,17 +33,17 @@ struct environment {
     // stores the actual corresponding values of these variables
     literal_value values[MAX_NUM_VAR];
     // tracks the number of variables being used (where to insert a new one)
-    uint16_t num_used = 0;
+    int num_used = 0;
     // TODO: store pointer to the parent scope for nested variable scopes
 };
 
 
 // returns the index where the variable being searched for is stored
-uint16_t find_variable(environment * env, char name[]);
+int find_variable(environment * env, char name[]);
 // assigns a value to a variable (either existing or new)
 void write_variable(environment * env, char name[], literal_value value);
 // fetches the associated value from a variable
-uint16_t read_variable(environment * env, char name[], literal_value * value);
+int read_variable(environment * env, char name[], literal_value * value);
 
 
 #endif

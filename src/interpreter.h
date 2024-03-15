@@ -22,7 +22,7 @@ class Interpreter {
         // basic constructor (needs dummy parameter to be callable) that calls evaluator constructor
         Interpreter(environment * env): evaluator(env) {};
         // executes a single command from start to finish
-        uint16_t interpret_command(char ** input_ptr, char ** output_ptr);
+        int interpret_command(char ** input_ptr, char ** output_ptr);
 };
 
 

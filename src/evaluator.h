@@ -23,7 +23,7 @@ class Evaluator {
         environment * env;
         // for determining if data types are compatible
         bool is_numerical(literal_types type);
-        uint16_t numerify(literal_value value);
+        int numerify(literal_value value);
         bool is_boolean(literal_types type);
         bool boolify(literal_value value);
         bool equals(literal_value left, literal_value right);
@@ -44,7 +44,7 @@ class Evaluator {
         // constructor to svae pre-created environment
         Evaluator(environment * env);
         // converts a tree (or subtree, or node) into a single value
-        uint16_t evaluate_input(node * input, literal_value * output);
+        int evaluate_input(node * input, literal_value * output);
 };
 
 
