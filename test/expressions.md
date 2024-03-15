@@ -51,7 +51,7 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| anything `@` anything | `TypeError` |
 
 * `&`
 
@@ -123,13 +123,69 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True >> True` | `0` |
+| `True >> False` | `1` |
+| `False >> True` | `0` |
+| `False >> False` | `0` |
+| `0 >> True` | `0` |
+| `True >> 0` | `1` |
+| `0 >> False` | `0` |
+| `False >> 0` | `0` |
+| `1 >> True` | `0` |
+| `True >> 1` | `0` |
+| `1 >> False` | `1` |
+| `False >> 1` | `0` |
+| `0 >> 1` | `0` |
+| `1 >> 0` | `0` |
+| `2 >> 1` | `1` |
+| `1 >> 2` | `0` |
+| `2 >> 3` | `0` |
+| `3 >> 2` | `0` |
+| `4 >> 1` | `2` |
+| `True >> None` | `TypeError` |
+| `None >> True` | `TypeError` |
+| `False >> None` | `TypeError` |
+| `None >> False` | `TypeError` |
+| `"" >> True` | `TypeError` |
+| `"test" >> True` | `TypeError` |
+| `"test" >> False` | `TypeError` |
+| `"test" >> None` | `TypeError` |
+| `"test" >> 0` | `TypeError` |
+| `"test" >> "test"` | `TypeError` |
 
 * `<<`
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True << True` | `2` |
+| `True << False` | `1` |
+| `False << True` | `0` |
+| `False << False` | `0` |
+| `0 << True` | `0` |
+| `True << 0` | `1` |
+| `0 << False` | `0` |
+| `False << 0` | `0` |
+| `1 << True` | `2` |
+| `True << 1` | `2` |
+| `1 << False` | `1` |
+| `False << 1` | `0` |
+| `0 << 1` | `0` |
+| `1 << 0` | `1` |
+| `2 << 1` | `4` |
+| `1 << 2` | `4` |
+| `2 << 3` | `16` |
+| `3 << 2` | `12` |
+| `4 << 1` | `8` |
+| `True << None` | `TypeError` |
+| `None << True` | `TypeError` |
+| `False << None` | `TypeError` |
+| `None << False` | `TypeError` |
+| `"" << True` | `TypeError` |
+| `"test" << True` | `TypeError` |
+| `"test" << False` | `TypeError` |
+| `"test" << None` | `TypeError` |
+| `"test" << 0` | `TypeError` |
+| `"test" << "test"` | `TypeError` |
 
 * `^`
 
