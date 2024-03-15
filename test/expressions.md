@@ -86,6 +86,20 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `"test" & 0` | `TypeError` |
 | `"test" & "test"` | `TypeError` |
 
+* `~`
+
+| Input | Correct Output |
+| ----- | -------------- |
+| `~True` | `-2` |
+| `~False` | `-1` |
+| `~0` | `-1` |
+| `~1` | `-2` |
+| `~2` | `-3` |
+| `~100` | `-101` |
+| `~None` | `TypeError` |
+| `~""` | `TypeError` |
+| `~"test"` | `TypeError` |
+
 * `|`
 
 | Input | Correct Output |
@@ -299,11 +313,25 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | ----- | -------------- |
 | ` ` | ` ` |
 
-* `-`
+* `-` (binary)
 
 | Input | Correct Output |
 | ----- | -------------- |
 | ` ` | ` ` |
+
+* `-` (unary)
+
+| Input | Correct Output |
+| ----- | -------------- |
+| `-True` | `-1` |
+| `-False` | `0` |
+| `-0` | `0` |
+| `-1` | `-1` |
+| `-2` | `-2` |
+| `-100` | `-100` |
+| `-None` | `TypeError` |
+| `-""` | `TypeError` |
+| `-"test"` | `TypeError` |
 
 * `!=`
 
@@ -389,11 +417,25 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `"test" % 2` | `TypeError` |
 | `"test" % "test"` | `TypeError` |
 
-* `+`
+* `+` (binary)
 
 | Input | Correct Output |
 | ----- | -------------- |
 | ` ` | ` ` |
+
+* `+` (unary)
+
+| Input | Correct Output |
+| ----- | -------------- |
+| `+True` | `1` |
+| `+False` | `0` |
+| `+0` | `0` |
+| `+1` | `1` |
+| `+2` | `2` |
+| `+100` | `100` |
+| `+None` | `TypeError` |
+| `+""` | `TypeError` |
+| `+"test"` | `TypeError` |
 
 * `/`
 
