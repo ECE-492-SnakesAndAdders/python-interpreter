@@ -205,8 +205,15 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
 
         // bitwise and operation (&)
         case B_AND:
+            // same as logical counterparts for boolean inputs
+            if (is_boolean(left.type) && is_boolean(right.type)) {
+                if (boolify(left) && boolify(right)) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
             // directly translates to C operator for numerical values only
-            if (is_numerical(left.type) && is_numerical(right.type)) {
+            } else if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) & numerify(right);
             } else {
@@ -217,8 +224,15 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
 
         // bitwise or operation (|)
         case B_OR:
+            // same as logical counterparts for boolean inputs
+            if (is_boolean(left.type) && is_boolean(right.type)) {
+                if (boolify(left) || boolify(right)) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
             // directly translates to C operator for numerical values only
-            if (is_numerical(left.type) && is_numerical(right.type)) {
+            } else if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) | numerify(right);
             } else {
@@ -253,8 +267,15 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
 
         // bitwise exclusive or operation (^)
         case B_XOR:
+            // same as logical counterparts for boolean inputs
+            if (is_boolean(left.type) && is_boolean(right.type)) {
+                if (boolify(left) != boolify(right)) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
             // directly translates to C operator for numerical values only
-            if (is_numerical(left.type) && is_numerical(right.type)) {
+            } else if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 result.data.number = numerify(left) ^ numerify(right);
             } else {
