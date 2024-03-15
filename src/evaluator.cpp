@@ -110,29 +110,16 @@ bool Evaluator::boolify(literal_value value) {
  * \return True if the two values are equal; false otherwise.
  */
 bool Evaluator::equals(literal_value left, literal_value right) {
-    // if types are the same, the values must match to be equal
-    if (left.type == right.type) {
-        switch (left.type) {
-            case FALSE_VALUE:
-                return true;
-            case NONE_VALUE:
-                return true;
-            // numerical values must be numerically equal
-            case NUMBER_VALUE:
-                return left.data.number == right.data.number;
-            // string values must have each and every character match
-            case STRING_VALUE:
-                // TODO: compare strings by value
-                return false;
-            case TRUE_VALUE:
-                return true;
-            // theoretically unreachable
-            default:
-                report_failure("unexpected error");
-                error_occurred = true;
-                return false;
-        }
-    // if types don't match, we are guaranteed that the values do not match
+    // numerical values must be numerically equal
+    if (is_numerical(left.type) && is_numerical(right.type)) {
+        return (numerify(left) == numerify(right));
+    // string values must have each and every character match
+    } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+        return (strcmp(left.data.string, right.data.string) == 0);
+    // if both are None, then they are equal
+    } else if ((left.type == NONE_VALUE) && (right.type == NONE_VALUE)) {
+        return true;
+    // values cannot possibly match
     } else {
         return false;
     }
@@ -319,7 +306,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
 
         // equality operation (==)
         case EQUAL:
-            // check that types and contained values match
+            // check that contained values match
             if (equals(left, right)) {
                 result.type = TRUE_VALUE;
             } else {
@@ -362,7 +349,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
         // identity operation (is)
         case IS:
             // check that types and contained values match
-            if (equals(left, right)) {
+            if ((left.type == right.type) && equals(left, right)) {
                 result.type = TRUE_VALUE;
             } else {
                 result.type = FALSE_VALUE;
