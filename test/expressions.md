@@ -310,7 +310,36 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True == True` | `True` |
+| `True == False` | `False` |
+| `False == True` | `False` |
+| `False == False` | `True` |
+| `True == 0` | `False` |
+| `0 == True` | `False` |
+| `False == 0` | `True` |
+| `0 == False` | `True` |
+| `True == 1` | `True` |
+| `1 == True` | `True` |
+| `False == 1` | `False` |
+| `1 == False` | `False` |
+| `0 == 0` | `True` |
+| `0 == 1` | `False` |
+| `1 == 0` | `False` |
+| `1 == 1` | `True` |
+| `50 == 100` | `False` |
+| `333 == 333` | `True` |
+| `True == None` | `False` |
+| `None == True` | `False` |
+| `False == None` | `False` |
+| `None == False` | `False` |
+| `None == None` | `True` |
+| `0 == "test"` | `False` |
+| `0 == "0"` | `False` |
+| `"" == ""` | `True` |
+| `"" == "test"` | `False` |
+| `"test" == ""` | `False` |
+| `"test" == "test"` | `True` |
+| `"test1" == "test2"` | `False` |
 
 * `>`
 
@@ -328,7 +357,36 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True is True` | `True` |
+| `True is False` | `False` |
+| `False is True` | `False` |
+| `False is False` | `True` |
+| `True is 0` | `False` |
+| `0 is True` | `False` |
+| `False is 0` | `False` |
+| `0 is False` | `False` |
+| `True is 1` | `False` |
+| `1 is True` | `False` |
+| `False is 1` | `False` |
+| `1 is False` | `False` |
+| `0 is 0` | `True` |
+| `0 is 1` | `False` |
+| `1 is 0` | `False` |
+| `1 is 1` | `True` |
+| `50 is 100` | `False` |
+| `333 is 333` | `True` |
+| `True is None` | `False` |
+| `None is True` | `False` |
+| `False is None` | `False` |
+| `None is False` | `False` |
+| `None is None` | `True` |
+| `0 is "test"` | `False` |
+| `0 is "0"` | `False` |
+| `"" is ""` | `True` |
+| `"" is "test"` | `False` |
+| `"test" is ""` | `False` |
+| `"test" is "test"` | `True` |
+| `"test1" is "test2"` | `False` |
 
 * `<`
 
