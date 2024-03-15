@@ -20,8 +20,6 @@ bool isalpha(char character);
 bool isalphanumeric(char character);
 // for checking if a string is made of only letters and/or numbers
 bool isalphanumeric(char * str);
-// // string concatenation function
-// void strcat(char s1[], char s2[], char ** s3);
 // for checking if two strings match
 bool strcmp(const char * s1, const char * s2);
 // for converting between numerical strings and integer values

@@ -177,9 +177,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // case where left operand is "True" -- just return the right operand
             } else if (boolify(left)) {
                 result = right;
+            // theoretically unreachable
             } else {
-                // TODO: determine if this is reachable in CPython
-                report_error(TYPE, "unsupported operand type(s)");
+                report_failure("unexpected error");
                 error_occurred = true;
             }
             break;
@@ -187,7 +187,8 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
         // matrix multiplication operation (@)
         case AT:
             // TODO: support?
-            report_failure("@ operator (matrix multiplication) not supported");
+            report_error(TYPE, "unsupported operand type(s)");
+            error_occurred = true;
             break;
 
         // bitwise and operation (&)
@@ -277,7 +278,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // identical to regular divison because only integers are allowed
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = numerify(left) / numerify(right);
+                if (numerify(right)) {
+                    result.data.number = numerify(left) / numerify(right);
+                } else {
+                    report_error(ZERODIVISION, "integer division or modulo by zero");
+                    error_occurred = true;
+                }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
@@ -289,19 +295,32 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // no access to standard library or multiplication operator, so manual computation for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = numerify(left);
-                for (uint16_t i = 1; i < numerify(right); i++) {
-                    uint16_t temp = result.data.number;
-                    for (uint16_t j = 1; j < numerify(left); j++) {
-                        temp += result.data.number;
+                // zero exponent always produces 1 as answer
+                if (numerify(right) == 0) {
+                    result.data.number = 1;
+                // compute number directly for positive exponents
+                } else if (numerify(right) < 32768) {
+                    result.data.number = numerify(left);
+                    for (uint16_t i = 1; i < numerify(right); i++) {
+                        uint16_t temp = result.data.number;
+                        for (uint16_t j = 1; j < numerify(left); j++) {
+                            temp += result.data.number;
+                        }
+                        result.data.number = temp;
                     }
-                    result.data.number = temp;
+                // negatve exponents produce fractions, which round to 0 here (no floating point numbers)
+                } else {
+                    if (numerify(left)) {
+                        result.data.number = 0;
+                    } else {
+                        report_error(ZERODIVISION, "0 cannot be raised to a negative power");
+                        error_occurred = true;
+                    }
                 }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
             }
-            // TODO: handle negative case
             break;
 
         // equality operation (==)
@@ -323,11 +342,23 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 } else {
                     result.type = FALSE_VALUE;
                 }
+            } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                uint16_t i = 0;
+                // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
+                while ((left.data.string[i]) && (right.data.string[i]) && (left.data.string[i] == right.data.string[i])) {
+                    i++;
+                }
+                // whichever character is bigger at this point is the bigger string
+                // by bigger we mean bigger value in ASCII table
+                if (left.data.string[i] > right.data.string[i]) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
             } else {
                 report_error(TYPE, "not supported between instances of");
                 error_occurred = true;
             }
-            // TODO: support string comparison
             break;
 
         // greater than or equal to operation (>=)
@@ -339,11 +370,65 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 } else {
                     result.type = FALSE_VALUE;
                 }
+            } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                if (strcmp(left.data.string, right.data.string)){
+                    result.type = TRUE_VALUE;
+                }
+                uint16_t i = 0;
+                // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
+                while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
+                    i++;
+                }
+                // whichever character is bigger at this point is the bigger string
+                // by bigger we mean bigger value in ASCII table
+                if (left.data.string[i] >= right.data.string[i]) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
             } else {
                 report_error(TYPE, "not supported between instances of");
                 error_occurred = true;
             }
-            // TODO: support string comparison
+            break;
+
+        // membership operator (in)
+        case IN:
+            // only valid for strings, just check if substring is present
+            if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                // edge case where left operand is the null string, always a substring then
+                if (!left.data.string[0]) {
+                    result.type = TRUE_VALUE;
+                // edge case where right operand is the null string, no substrings then
+                } else if (!right.data.string[0]) {
+                    result.type = FALSE_VALUE;
+                // normal case
+                } else {
+                    // initially assume that the substring is not present, update if assumption wrong
+                    result.type = FALSE_VALUE;
+                    uint16_t sub_index = 0;
+                    uint16_t full_index = 0;
+                    while (right.data.string[full_index] && (full_index < MAX_LIT_LEN)) {
+                        if (left.data.string[sub_index] && (left.data.string[sub_index] == right.data.string[full_index])) {
+                            // another substring character must be consumed
+                            sub_index++;
+                            // if this is the end of the substring, it has been successfully found
+                            if (!left.data.string[sub_index]) {
+                                result.type = TRUE_VALUE;
+                                break;
+                            }
+                        // no match, so try to match substring again from the start
+                        } else {
+                            sub_index = 0;
+                        }
+                        // one more character consumed
+                        full_index++;
+                    }
+                }
+            } else {
+                report_error(TYPE, "argument is not iterable");
+                error_occurred = true;
+            }
             break;
             
         // identity operation (is)
@@ -354,7 +439,6 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             } else {
                 result.type = FALSE_VALUE;
             }
-            // TODO: make this different from "=="
             break;
 
         // less than operation (<)
@@ -366,18 +450,15 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 } else {
                     result.type = FALSE_VALUE;
                 }
-            } else {
-                report_error(TYPE, "not supported between instances of");
-                error_occurred = true;
-            }
-            // TODO: support string comparison
-            break;
-            
-        // less than or equal to operation (<=)
-        case L_EQUAL:
-            // numeric-adjacent types directly translate to C operator
-            if (is_numerical(left.type) && is_numerical(right.type)) {
-                if (numerify(left) <= numerify(right)) {
+            } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                uint16_t i = 0;
+                // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
+                while ((left.data.string[i]) && (right.data.string[i]) && (left.data.string[i] == right.data.string[i])) {
+                    i++;
+                }
+                // whichever character is smaller at this point is the smaller string
+                // by smaller we mean smaller value in ASCII table
+                if (left.data.string[i] < right.data.string[i]) {
                     result.type = TRUE_VALUE;
                 } else {
                     result.type = FALSE_VALUE;
@@ -386,7 +467,35 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 report_error(TYPE, "not supported between instances of");
                 error_occurred = true;
             }
-            // TODO: support string comparison
+            break;
+            
+        // less than or equal to operation (<=)
+        case L_EQUAL:
+            // numeric-adjacent types directly translate to C operator
+            if (is_numerical(left.type) && is_numerical(right.type)) {
+                if (numerify(left) <= numerify(right)) {
+                    result.type = TRUE_VALUE;
+                }
+            } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                if (strcmp(left.data.string, right.data.string)){
+                    result.type = TRUE_VALUE;
+                }
+                uint16_t i = 0;
+                // if one string is shorter than the other then its i is NULL; which is the smallest ASCII character
+                while ( (left.data.string[i] && right.data.string[i]) && (left.data.string[i] == right.data.string[i]) ) {
+                    i++;
+                }
+                // whichever character is smaller at this point is the smaller string
+                // by smaller we mean smaller value in ASCII table
+                if (left.data.string[i] <= right.data.string[i]) {
+                    result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
+                }
+            } else {
+                report_error(TYPE, "not supported between instances of");
+                error_occurred = true;
+            }
             break;
 
         // subtraction operation (-)
@@ -422,9 +531,9 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // case where left operand is "False" -- just return the right operand
             } else if (!boolify(left)) {
                 result = right;
+            // theoretically unreachable
             } else {
-                // TODO: determine if this is reachable in CPython
-                report_error(TYPE, "unsupported operand type(s)");
+                report_failure("unexpected error");
                 error_occurred = true;
             }
             break;
@@ -434,12 +543,16 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = numerify(left) % numerify(right);
+                if (numerify(right)) {
+                    result.data.number = numerify(left) % numerify(right);
+                } else {
+                    report_error(ZERODIVISION, "integer division or modulo by zero");
+                    error_occurred = true;
+                }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
             }
-            // TODO: support string concatenation
             break;
 
         // addition and string concatenation operation (+)
@@ -477,7 +590,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             // directly translates to C operator for numerical values only
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
-                result.data.number = numerify(left) / numerify(right);
+                if (numerify(right)) {
+                    result.data.number = numerify(left) / numerify(right);
+                } else {
+                    report_error(ZERODIVISION, "division by zero");
+                    error_occurred = true;
+                }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
@@ -494,11 +612,42 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 for (uint16_t i = 1; i < numerify(right); i++) {
                     result.data.number += numerify(left);
                 }
+            // repeatedly concatenates a string to itself (right) number of times
+            } else if (((left.type == STRING_VALUE) && is_numerical(right.type)) || ((right.type == STRING_VALUE) && is_numerical(left.type))) {
+                // fetch the multiplier and string from the correct operands
+                uint16_t multiplier = 0;
+                char * initial;
+                if (is_numerical(left.type)) {
+                    multiplier = numerify(left);
+                    initial = (char *) &(right.data.string);
+                } else {
+                    multiplier = numerify(right);
+                    initial = (char *) &(left.data.string);
+                }
+                result.type = STRING_VALUE;
+                // edge case: user does string * (nonpositive number)
+                if (multiplier <= 0){
+                    result.data.string[0] = '\0';
+                } else {
+                    uint16_t initial_length = 0;
+                    while ((initial[initial_length]) && (initial_length < MAX_LIT_LEN - 1)) {
+                        initial_length++;
+                    }
+                    uint16_t end_index = 0; // keep track of the end of the resultant string
+                    // append the string to itself (right) number of times
+                    for (uint16_t i = 0; i < multiplier; i++) {
+                        for (uint16_t j = 0; j < initial_length; j++) {
+                            if (end_index < MAX_LIT_LEN - 1){
+                                result.data.string[end_index++] = initial[j];
+                            }
+                        }
+                    }
+                    result.data.string[end_index] = '\0';
+                }
             } else {
                 report_error(TYPE, "unsupported operand type(s)");
                 error_occurred = true;
             }
-            // TODO: support string concatenation
             break;
 
         // theoretically unreachable

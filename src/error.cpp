@@ -20,6 +20,7 @@
         IndentationError (raised when some problem occurs with improper indentation)
         TypeError (raised when an operand of an invalid type is used)
         RuntimeError (raised when some other error occurs)
+        ZeroDivisionError (raised when there is a division by 0)
 */
 
 

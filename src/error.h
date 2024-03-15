@@ -14,13 +14,13 @@
  * \brief The list of all possible error classes in Python.
  */
 enum error_types {
-    ASSERTION, INDEX, NAME, SYNTAX, INDENTATION, TYPE, RUNTIME
+    ASSERTION, INDEX, NAME, SYNTAX, INDENTATION, TYPE, RUNTIME, ZERODIVISION
 };
 
 
 // for ease of printing
 const char * const error_names[] = {
-    "AssertionError", "IndexError", "NameError", "SyntaxError", "IndentationError", "TypeError", "RuntimeError"
+    "AssertionError", "IndexError", "NameError", "SyntaxError", "IndentationError", "TypeError", "RuntimeError", "ZeroDivisionError"
 };
 
 
