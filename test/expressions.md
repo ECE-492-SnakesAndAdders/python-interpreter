@@ -346,7 +346,38 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True - True` | `0` |
+| `True - False` | `1` |
+| `False - True` | `-1` |
+| `False - False` | `0` |
+| `0 - True` | `-1` |
+| `True - 0` | `1` |
+| `0 - False` | `0` |
+| `False - 0` | `0` |
+| `1 - True` | `0` |
+| `True - 1` | `0` |
+| `1 - False` | `1` |
+| `False - 1` | `-1` |
+| `0 - 1` | `-1` |
+| `1 - 0` | `1` |
+| `2 - 1` | `2` |
+| `1 - 2` | `-1` |
+| `2 - 3` | `-1` |
+| `3 - 2` | `1` |
+| `100 - 50` | `50` |
+| `99 - 50` | `49` |
+| `1000 - 12` | `988` |
+| `True - None` | `TypeError` |
+| `None - True` | `TypeError` |
+| `False - None` | `TypeError` |
+| `None - False` | `TypeError` |
+| `"" - 2` | `TypeError` |
+| `"test" - True` | `TypeError` |
+| `"test" - False` | `TypeError` |
+| `"test" - None` | `TypeError` |
+| `"test" - 0` | `TypeError` |
+| `"test" - 2` | `TypeError` |
+| `"test" - "test"` | `TypeError` |
 
 * `-` (unary)
 
@@ -450,7 +481,38 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True + True` | `2` |
+| `True + False` | `1` |
+| `False + True` | `1` |
+| `False + False` | `0` |
+| `0 + True` | `1` |
+| `True + 0` | `1` |
+| `0 + False` | `0` |
+| `False + 0` | `0` |
+| `1 + True` | `2` |
+| `True + 1` | `2` |
+| `1 + False` | `1` |
+| `False + 1` | `1` |
+| `0 + 1` | `1` |
+| `1 + 0` | `1` |
+| `2 + 1` | `3` |
+| `1 + 2` | `3` |
+| `2 + 3` | `5` |
+| `3 + 2` | `5` |
+| `100 + 50` | `150` |
+| `99 + 50` | `149` |
+| `1000 + 12` | `1012` |
+| `True + None` | `TypeError` |
+| `None + True` | `TypeError` |
+| `False + None` | `TypeError` |
+| `None + False` | `TypeError` |
+| `"" + 2` | `TypeError` |
+| `"test" + True` | `TypeError` |
+| `"test" + False` | `TypeError` |
+| `"test" + None` | `TypeError` |
+| `"test" + 0` | `TypeError` |
+| `"test" + 2` | `TypeError` |
+| `"test" + "test"` | `TypeError` |
 
 * `+` (unary)
 
