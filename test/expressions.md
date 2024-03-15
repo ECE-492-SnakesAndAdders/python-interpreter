@@ -345,13 +345,75 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True > True` | `False` |
+| `True > False` | `True` |
+| `False > True` | `False` |
+| `False > False` | `False` |
+| `True > 0` | `True` |
+| `0 > True` | `False` |
+| `False > 0` | `False` |
+| `0 > False` | `False` |
+| `True > 1` | `False` |
+| `1 > True` | `False` |
+| `False > 1` | `False` |
+| `1 > False` | `False` |
+| `0 > 0` | `False` |
+| `0 > 1` | `False` |
+| `1 > 0` | `True` |
+| `1 > 1` | `False` |
+| `50 > 100` | `False` |
+| `333 > 333` | `False` |
+| `87 > 62` | `True` |
+| `"" > ""` | `False` |
+| `"" > "test"` | `False` |
+| `"test" > ""` | `True` |
+| `"test" > "test"` | `False` |
+| `"test1" > "test2"` | `False` |
+| `"test2" > "test1"` | `True` |
+| `"test" > 0` | `TypeError` |
+| `1 > ""` | `TypeError` |
+| `True > None` | `TypeError` |
+| `None > True` | `TypeError` |
+| `False > None` | `TypeError` |
+| `None > False` | `TypeError` |
+| `None > None` | `TypeError` |
 
 * `>=`
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True >= True` | `True` |
+| `True >= False` | `True` |
+| `False >= True` | `False` |
+| `False >= False` | `True` |
+| `True >= 0` | `True` |
+| `0 >= True` | `False` |
+| `False >= 0` | `True` |
+| `0 >= False` | `True` |
+| `True >= 1` | `True` |
+| `1 >= True` | `True` |
+| `False >= 1` | `False` |
+| `1 >= False` | `True` |
+| `0 >= 0` | `True` |
+| `0 >= 1` | `False` |
+| `1 >= 0` | `True` |
+| `1 >= 1` | `True` |
+| `50 >= 100` | `False` |
+| `333 >= 333` | `True` |
+| `87 >= 62` | `True` |
+| `"" >= ""` | `True` |
+| `"" >= "test"` | `False` |
+| `"test" >= ""` | `True` |
+| `"test" >= "test"` | `False` |
+| `"test1" >= "test2"` | `False` |
+| `"test2" >= "test1"` | `True` |
+| `"test" >= 0` | `TypeError` |
+| `1 >= ""` | `TypeError` |
+| `True >= None` | `TypeError` |
+| `None >= True` | `TypeError` |
+| `False >= None` | `TypeError` |
+| `None >= False` | `TypeError` |
+| `None >= None` | `TypeError` |
 
 * `is`
 
@@ -455,7 +517,36 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `True != True` | `False` |
+| `True != False` | `True` |
+| `False != True` | `True` |
+| `False != False` | `False` |
+| `True != 0` | `True` |
+| `0 != True` | `True` |
+| `False != 0` | `False` |
+| `0 != False` | `False` |
+| `True != 1` | `False` |
+| `1 != True` | `False` |
+| `False != 1` | `True` |
+| `1 != False` | `True` |
+| `0 != 0` | `False` |
+| `0 != 1` | `True` |
+| `1 != 0` | `True` |
+| `1 != 1` | `False` |
+| `50 != 100` | `True` |
+| `333 != 333` | `False` |
+| `True != None` | `True` |
+| `None != True` | `True` |
+| `False != None` | `True` |
+| `None != False` | `True` |
+| `None != None` | `False` |
+| `0 != "test"` | `True` |
+| `0 != "0"` | `True` |
+| `"" != ""` | `False` |
+| `"" != "test"` | `True` |
+| `"test" != ""` | `True` |
+| `"test" != "test"` | `False` |
+| `"test1" != "test2"` | `True` |
 
 * `or`
 
