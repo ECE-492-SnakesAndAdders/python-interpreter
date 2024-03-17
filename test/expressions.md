@@ -749,27 +749,27 @@ Note that in CPython, floating-point numbers are returned from this operation. H
 
 | Input | Correct Output |
 | ----- | -------------- |
-| `True / True` | `1.0` |
+| `True / True` | `1` (really `1.0`) |
 | `True / False` | `ZeroDivisionError` |
-| `False / True` | `0.0` |
+| `False / True` | `0` (really `0.0`) |
 | `False / False` | `ZeroDivisionError` |
-| `0 / True` | `0.0` |
+| `0 / True` | `0` (really `0.0`)|
 | `True / 0` | `ZeroDivisionError` |
 | `0 / False` | `ZeroDivisionError` |
 | `False / 0` | `ZeroDivisionError` |
-| `1 / True` | `1.0` |
-| `True / 1` | `1.0` |
+| `1 / True` | `1` (really `1.0`) |
+| `True / 1` | `1` (really `1.0`) |
 | `1 / False` | `ZeroDivisionError` |
-| `False / 1` | `0.0` |
-| `0 / 1` | `0.0` |
+| `False / 1` | `0` (really `0.0`) |
+| `0 / 1` | `0` (really `0.0`) |
 | `1 / 0` | `ZeroDivisionError` |
-| `2 / 1` | `2.0` |
-| `1 / 2` | `0.5` |
-| `2 / 3` | `0.6666666666666666` |
-| `3 / 2` | `1.5` |
-| `100 / 50` | `2.0` |
-| `99 / 50` | `1.98` |
-| `1000 / 12` | `83.33333333333333` |
+| `2 / 1` | `2` (really `2.0`) |
+| `1 / 2` | `0` (really `0.5`) |
+| `2 / 3` | `0` (really `0.6666666666666666`) |
+| `3 / 2` | `1` (really `1.5`) |
+| `100 / 50` | `2` (really `2.0`) |
+| `99 / 50` | `1` (really `1.98`) |
+| `1000 / 12` | `83` (really `83.33333333333333`) |
 | `True / None` | `TypeError` |
 | `None / True` | `TypeError` |
 | `False / None` | `TypeError` |
