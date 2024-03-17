@@ -262,16 +262,16 @@ node * Parser::inversion() {
 /**
  * \brief Handles the next lowest priority operator: "=="/"EQUAL", "!="/"N_EQUAL", ">"/"GREATER",
  *                                                   ">="/"G_EQUAL", "<"/"LESS", "<="/"L_EQUAL",
- *                                                   "is"/"IS", "is not"/"", "in"/"IN", "not in"/"") .
+ *                                                   "is"/"IS", "is not"/"ISNOT", "in"/"IN", "not in"/"NOTIN") .
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::comparison() {
     // TODO: handle cascaded comaprison operators properly
-    // TODO: handle "is not" and "not in" keywords
     node * expr_ptr = bor();
     while (current_matches(EQUAL) || current_matches(N_EQUAL) || current_matches(GREATER) ||
            current_matches(G_EQUAL) || current_matches(LESS) || current_matches(L_EQUAL) ||
-           current_matches(IS) || current_matches(IN)) {
+           current_matches(IS) || current_matches(ISNOT) || current_matches(IN) ||
+           current_matches(NOTIN)) {
         lexemes opcode = previous_token();
         node * right_ptr = bor();
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);

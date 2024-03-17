@@ -64,8 +64,8 @@ enum lexemes {
     // names of things like variables
     IDENTIFIER,
     // reserved keywords
-    TRUE, FALSE, NONE, AND, OR, NOT, IS, IF, ELIF, ELSE,    // selection
-    FOR, WHILE, CONTINUE, BREAK, PASS, IN,                  // iteration
+    TRUE, FALSE, NONE, AND, OR, NOT, IS, ISNOT, IF, ELIF, ELSE,    // selection
+    FOR, WHILE, CONTINUE, BREAK, PASS, IN, NOTIN,                 // iteration
     DEF, RETURN, YIELD, CLASS, LAMBDA,                      // control flow
     TRY, FINALLY, EXCEPT, RAISE,                            // exceptions
     IMPORT, FROM, WITH, AS,                                 // linking
@@ -86,8 +86,8 @@ const char * const token_names[] = {
     "EQUAL", "GREATER", "LESS", "N_EQUAL", "G_EQUAL", "L_EQUAL",
     "STRING", "NUMBER",
     "IDENTIFIER",
-    "TRUE", "FALSE", "NONE", "AND", "OR", "NOT", "IS", "IF", "ELIF", "ELSE",
-    "FOR", "WHILE", "CONTINUE", "BREAK", "PASS", "IN",
+    "TRUE", "FALSE", "NONE", "AND", "OR", "NOT", "IS", "ISNOT", "IF", "ELIF", "ELSE",
+    "FOR", "WHILE", "CONTINUE", "BREAK", "PASS", "IN", "NOTIN",
     "DEF", "RETURN", "YIELD", "CLASS", "LAMBDA",
     "TRY", "FINALLY", "EXCEPT", "RAISE",
     "IMPORT", "FROM", "WITH", "AS",
@@ -105,8 +105,8 @@ const char * const token_symbols[] = {
     "=", ">", "<", "!=", ">=", "<=",
     "str", "int",
     "name",
-    "True", "False", "None", "and", "or", "not", "is", "if", "elif", "else",
-    "for", "while", "continue", "break", "pass", "in",
+    "True", "False", "None", "and", "or", "not", "is", "is not", "if", "elif", "else",
+    "for", "while", "continue", "break", "pass", "in", "not in",
     "def", "return", "yield", "class", "lambda",
     "try", "finally", "except", "raise",
     "import", "from", "with", "as",
