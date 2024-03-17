@@ -60,6 +60,9 @@ def main():
             # account for empty string case
             if (str(eval(inputs[i])) == '') and (outputs[i].replace('\'', '') == '\'\''):
                 continue
+            # account for decimal in division case
+            if ('.' in str(eval(inputs[i]))) and (str(eval(inputs[i])).split('.')[0] == outputs[i]):
+                continue
         # catch errors for those tests
         except TypeError:
             is_incorrect = (outputs[i] != 'TypeError')
