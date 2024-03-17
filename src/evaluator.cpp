@@ -441,6 +441,16 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // inverse identity operation (is not)
+        case ISNOT:
+            // check that types and contained values match
+            if ((left.type == right.type) && equals(left, right)) {
+                result.type = FALSE_VALUE;
+            } else {
+                result.type = TRUE_VALUE;
+            }
+            break;
+
         // less than operation (<)
         case LESS:
             // numeric-adjacent types directly translate to C operator
@@ -519,6 +529,45 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = TRUE_VALUE;
             } else {
                 result.type = FALSE_VALUE;
+            }
+            break;
+
+        // inverse membership operator (not in)
+        case NOTIN:
+            // only valid for strings, just check if substring is present
+            if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                // edge case where left operand is the null string, always a substring then       
+                if (!left.data.string[0]) {
+                    result.type = FALSE_VALUE;
+                // edge case where right operand is the null string, no substrings then
+                } else if (!right.data.string[0]) {
+                    result.type = TRUE_VALUE;
+                // normal case
+                } else {
+                    // initially assume that the substring is not present, update if assumption wrong
+                    result.type = TRUE_VALUE;
+                    int sub_index = 0;
+                    int full_index = 0;
+                    while (right.data.string[full_index] && (full_index < MAX_LIT_LEN)) {
+                        if (left.data.string[sub_index] && (left.data.string[sub_index] == right.data.string[full_index])) {
+                            // another substring character must be consumed
+                            sub_index++;
+                            // if this is the end of the substring, it has been successfully found
+                            if (!left.data.string[sub_index]) {
+                                result.type = FALSE_VALUE;
+                                break;
+                            }
+                        // no match, so try to match substring again from the start
+                        } else {
+                            sub_index = 0;
+                        }
+                        // one more character consumed
+                        full_index++;
+                    }
+                }
+            } else {
+                report_error(TYPE, "argument is not iterable");
+                error_occurred = true;
             }
             break;
 
