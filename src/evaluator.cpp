@@ -287,6 +287,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 if (numerify(right)) {
                     result.data.number = numerify(left) / numerify(right);
+                    // account for case of one negative operand
+                    if ((((numerify(left) < 0) && (numerify(right) > 0)) ||
+                         ((numerify(left) > 0) && (numerify(right) < 0))) &&
+                        (numerify(left) % numerify(right))) {
+                        result.data.number--;
+                    }
                 } else {
                     report_error(ZERODIVISION, "integer division or modulo by zero");
                     error_occurred = true;
@@ -581,6 +587,11 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 if (numerify(right)) {
                     result.data.number = numerify(left) % numerify(right);
+                    // account for case of one negative operand
+                    if (((numerify(left) < 0) && (numerify(right) > 0)) ||
+                        ((numerify(left) > 0) && (numerify(right) < 0))) {
+                        result.data.number += numerify(right);
+                    }
                 } else {
                     report_error(ZERODIVISION, "integer division or modulo by zero");
                     error_occurred = true;
