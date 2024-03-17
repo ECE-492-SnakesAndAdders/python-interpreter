@@ -1,7 +1,7 @@
 /*********************************************************************************
 * Description:
 * Author(s): Isaac Joffe
-* Copyright: University of Alberta", "2024
+* Copyright: University of Alberta, 2024
 * License: CC-BY-4.0
 *********************************************************************************/
 

@@ -150,7 +150,7 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `1 >> False` | `1` |
 | `False >> 1` | `0` |
 | `0 >> 1` | `0` |
-| `1 >> 0` | `0` |
+| `1 >> 0` | `1` |
 | `2 >> 1` | `1` |
 | `1 >> 2` | `0` |
 | `2 >> 3` | `0` |
@@ -542,7 +542,7 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `False - 1` | `-1` |
 | `0 - 1` | `-1` |
 | `1 - 0` | `1` |
-| `2 - 1` | `2` |
+| `2 - 1` | `1` |
 | `1 - 2` | `-1` |
 | `2 - 3` | `-1` |
 | `3 - 2` | `1` |
@@ -713,6 +713,11 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `100 + 50` | `150` |
 | `99 + 50` | `149` |
 | `1000 + 12` | `1012` |
+| `"" + ""` | `''` |
+| `"" + "test"` | `'test'` |
+| `"test" + ""` | `'test'` |
+| `"test" + "test"` | `'testtest'` |
+| `"test1" + "test2"` | `'test1test2'` |
 | `True + None` | `TypeError` |
 | `None + True` | `TypeError` |
 | `False + None` | `TypeError` |
@@ -723,7 +728,6 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `"test" + None` | `TypeError` |
 | `"test" + 0` | `TypeError` |
 | `"test" + 2` | `TypeError` |
-| `"test" + "test"` | `TypeError` |
 
 * `+` (unary)
 
