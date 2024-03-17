@@ -401,7 +401,7 @@ node * Parser::power() {
     node * expr_ptr = primary();
     if (current_matches(D_STAR)) {
         lexemes opcode = previous_token();
-        node * right_ptr = power();
+        node * right_ptr = factor();
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }
