@@ -89,7 +89,7 @@ def main():
     try:
         subprocess.run(command,
                        shell=True,
-                       timeout=0.05,
+                       timeout=0.5,
         )
     # let the timer expire so that the process terminates
     except subprocess.TimeoutExpired:

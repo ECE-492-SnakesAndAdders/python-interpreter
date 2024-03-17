@@ -475,6 +475,8 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 if (numerify(left) <= numerify(right)) {
                     result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
                 if (strcmp(left.data.string, right.data.string)){

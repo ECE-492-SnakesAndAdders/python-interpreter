@@ -415,6 +415,35 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `None >= False` | `TypeError` |
 | `None >= None` | `TypeError` |
 
+* `in`
+
+| Input | Correct Output |
+| ----- | -------------- |
+| `"" in ""` | `True` |
+| `"" in "test"` | `True` |
+| `"test" in ""` | `False` |
+| `"test" in "test"` | `True` |
+| `"t" in "test"` | `True` |
+| `"te" in "test"` | `True` |
+| `"tes" in "test"` | `True` |
+| `"e" in "test"` | `True` |
+| `"es" in "test"` | `True` |
+| `"est" in "test"` | `True` |
+| `"s" in "test"` | `True` |
+| `"st" in "test"` | `True` |
+| `"testing" in "test"` | `False` |
+| `"test1" in "test2"` | `False` |
+| `"test" in True` | `TypeError` |
+| `True in "test"` | `TypeError` |
+| `"test" in False` | `TypeError` |
+| `False in "test"` | `TypeError` |
+| `"test" in 0` | `TypeError` |
+| `0 in "test"` | `TypeError` |
+| `"1" in 1` | `TypeError` |
+| `1 in "1"` | `TypeError` |
+| `"test" in None` | `TypeError` |
+| `None in "test"` | `TypeError` |
+
 * `is`
 
 | Input | Correct Output |
@@ -831,7 +860,6 @@ Note that in CPython, floating-point numbers are returned from this operation. H
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
 
 * bitwise
 
@@ -875,7 +903,6 @@ Note that in CPython, floating-point numbers are returned from this operation. H
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
 
 * logical
 
@@ -912,4 +939,17 @@ Note that in CPython, floating-point numbers are returned from this operation. H
 
 | Input | Correct Output |
 | ----- | -------------- |
-| ` ` | ` ` |
+| `"" + "test" * 2` | `'testtest'` |
+| `"test" + "" * 2` | `'test'` |
+| `("" + "test") * 2` | `'testtest'` |
+| `("test" + "") * 2` | `'testtest'` |
+| `"test" + "test" * 2` | `'testtesttest'` |
+| `("test" + "test") * 2` | `'testtesttesttest'` |
+| `"" * 10 in ""` | `True` |
+| `"" in "" * 10` | `True` |
+| `"test" * 1 in "test" * 1` | `True` |
+| `"test" * 1 in "test" * 2` | `True` |
+| `"test" * 2 in "test" * 1` | `False` |
+| `"test" * 2 in "test" * 2` | `True` |
+| `"test" * 3 in "test" * 2` | `False` |
+| `"test" * 2 in "test" * 3` | `True` |
