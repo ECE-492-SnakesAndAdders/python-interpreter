@@ -48,14 +48,7 @@ int read(char ** input_ptr) {
     // prompt user for command
     printf(">>> ");
     // read characters until 'enter' key is hit or buffer is full
-    for (int i = 0; i < MAX_INPUT_LEN - 1; i++) {
-        *(*input_ptr + i) = (char) fgetchar();
-        if ((*(*input_ptr + i) == '\n') || (i == MAX_INPUT_LEN - 2)) {
-            // add NULL terminator character after 'enter' key or final slot
-            *(*input_ptr + i + 1) = '\0';
-            break;
-        }
-    }
+    gets(*input_ptr);
     return 0;
 }
 

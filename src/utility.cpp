@@ -6,6 +6,7 @@
 *********************************************************************************/
 
 
+#include <cstdio>
 #include "utility.h"
 
 
@@ -97,37 +98,5 @@ int stoi(char ** num_str, int str_len) {
  * \return The string representation of the integer.
  */
 void itos(char ** num_str, int num_value) {
-    // maximum number of 65535, so we need to account for 5 characters
-
-    // the number of characters stored so far
-    int length = 0;
-    // 2's complement negate any number with a negative sign bit
-    if (num_value >= 32768) {
-        // insert negative sign and increment because there is another character
-        **num_str = '-';
-        length++;
-        num_value = ~num_value + 1;
-    }
-
-    bool is_significant = false;
-    int counter = 10000;
-    int digit;
-    // iteratively insert any non-zero digits into the string as their respective characters
-    for (int i = 0; i < 5; i++) {
-        digit = (num_value / counter) % 10;
-        counter /= 10;
-        if (digit || is_significant) {
-            // insert digit's character and increment because there is another character
-            // 48 is the ASCII value of '0', so offset numbers by that for real value
-            *(*num_str + length) = digit + 48;
-            length++;
-            // all digits after first non-zero one are significant
-            is_significant = true;
-        }
-    }
-
-    // make sure that a zero value is still displayed
-    if (!(**num_str)) {
-        **num_str = '0';
-    }
+    sprintf(*num_str, "%d", num_value); 
 }
