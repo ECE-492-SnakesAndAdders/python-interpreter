@@ -823,3 +823,37 @@ Note that in CPython, floating-point numbers are returned from this operation. H
 
 ### Integration Tests
 
+* logical
+
+| Input | Correct Output |
+| ----- | -------------- |
+| `False and False and False` | `False` |
+| `True and True and False` | `False` |
+| `True and True and True` | `True` |
+| `not False and not False and not False` | `True` |
+| `False and False and not False` | `False` |
+| `not True and True and True` | `False` |
+| `not not True and True and True` | `True` |
+| `not (not True and True and True)` | `True` |
+| `not (not False and True and True)` | `False` |
+| `False or False or False` | `False` |
+| `True or True or False` | `True` |
+| `True or True or True` | `True` |
+| `not False or not False or not False` | `True` |
+| `False or False or not False` | `True` |
+| `not True or True or True` | `True` |
+| `not not True or True or True` | `True` |
+| `not (not True or True or True)` | `False` |
+| `not (not False or True or True)` | `False` |
+| `True and True or True and True` | `True` |
+| `False and True or True and True` | `True` |
+| `False and False or True and True` | `True` |
+| `False and False or False and True` | `False` |
+| `True or False or True and False` | `True` |
+| `False or False or True and False` | `False` |
+| `(True or False) and (True or False)` | `True` |
+| `(True or False) and (False or False)` | `False` |
+
+* arithmetic
+
+* string
