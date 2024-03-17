@@ -77,9 +77,9 @@ def main():
             print(f'\tActual Output: {eval(inputs[i])}')
     # print information about tests to user
     if error_count:
-        print(f'\t{error_count} tests failed.')
+        print(f'{error_count} of {len(inputs)} tests failed.')
     else:
-        print('\tAll tests passed!')
+        print(f'All {len(inputs)} tests passed!')
 
     # now verify that outputs are correct in C3Python
     print('Verifying all tests pass in C3Python...')
@@ -89,7 +89,7 @@ def main():
     try:
         subprocess.run(command,
                        shell=True,
-                       timeout=0.5,
+                       timeout=1,
         )
     # let the timer expire so that the process terminates
     except subprocess.TimeoutExpired:
@@ -135,9 +135,9 @@ def main():
                 break
     # print information about tests to user
     if error_count:
-        print(f'\t{error_count} tests failed.')
+        print(f'{error_count} of {test_number} tests failed.')
     else:
-        print('\tAll tests passed!')
+        print(f'All {test_number} tests passed!')
 
     return
 
