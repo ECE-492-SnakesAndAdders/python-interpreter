@@ -49,6 +49,10 @@ int read(char ** input_ptr) {
     printf(">>> ");
     // read characters until 'enter' key is hit or buffer is full
     gets(*input_ptr);
+    // exit if user wants to
+    if (strcmp(*input_ptr, "exit()") == 0) {
+        return 1;
+    }
     return 0;
 }
 

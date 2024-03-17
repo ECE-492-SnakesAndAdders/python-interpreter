@@ -306,7 +306,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 if (numerify(right) == 0) {
                     result.data.number = 1;
                 // compute number directly for positive exponents
-                } else if (numerify(right) < 32768) {
+                } else if (numerify(right) > 0) {
                     result.data.number = numerify(left);
                     for (int i = 1; i < numerify(right); i++) {
                         result.data.number *= numerify(left);
