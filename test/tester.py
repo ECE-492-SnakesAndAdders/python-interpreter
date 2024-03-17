@@ -87,9 +87,7 @@ def main():
     error_count = 0
     # run the tests with file redirection as a subprocess
     command = f'{options.program_path[0]} < {options.input_path[0]} > {options.generated_path[0]}'.split(' ')
-    subprocess.run(command,
-                   shell=True,
-    )
+    subprocess.run(command, shell=True)
     # read the data written to the output log file
     with open(options.generated_path[0], 'r') as f:
         data = f.readlines()

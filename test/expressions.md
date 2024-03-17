@@ -432,6 +432,7 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `"s" in "test"` | `True` |
 | `"st" in "test"` | `True` |
 | `"testing" in "test"` | `False` |
+| `"test" in "testing"` | `True` |
 | `"test1" in "test2"` | `False` |
 | `"test" in True` | `TypeError` |
 | `True in "test"` | `TypeError` |
@@ -690,7 +691,8 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `"est" not in "test"` | `False` |
 | `"s" not in "test"` | `False` |
 | `"st" not in "test"` | `False` |
-| `"testnot ing" not in "test"` | `True` |
+| `"testing" not in "test"` | `True` |
+| `"test" not in "testing"` | `False` |
 | `"test1" not in "test2"` | `True` |
 | `"test" not in True` | `TypeError` |
 | `True not in "test"` | `TypeError` |
