@@ -444,6 +444,35 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `"test" in None` | `TypeError` |
 | `None in "test"` | `TypeError` |
 
+* `not in`
+
+| Input | Correct Output |
+| ----- | -------------- |
+| `"" not in ""` | `False` |
+| `"" not in "test"` | `False` |
+| `"test" not in ""` | `True` |
+| `"test" not in "test"` | `False` |
+| `"t" not in "test"` | `False` |
+| `"te" not in "test"` | `False` |
+| `"tes" not in "test"` | `False` |
+| `"e" not in "test"` | `False` |
+| `"es" not in "test"` | `False` |
+| `"est" not in "test"` | `False` |
+| `"s" not in "test"` | `False` |
+| `"st" not in "test"` | `False` |
+| `"testnot ing" not in "test"` | `True` |
+| `"test1" not in "test2"` | `True` |
+| `"test" not in True` | `TypeError` |
+| `True not in "test"` | `TypeError` |
+| `"test" not in False` | `TypeError` |
+| `False not in "test"` | `TypeError` |
+| `"test" not in 0` | `TypeError` |
+| `0 not in "test"` | `TypeError` |
+| `"1" not in 1` | `TypeError` |
+| `1 not in "1"` | `TypeError` |
+| `"test" not in None` | `TypeError` |
+| `None not in "test"` | `TypeError` |
+
 * `is`
 
 | Input | Correct Output |
@@ -478,6 +507,41 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `"test" is ""` | `False` |
 | `"test" is "test"` | `True` |
 | `"test1" is "test2"` | `False` |
+
+* `is not`
+
+| Input | Correct Output |
+| ----- | -------------- |
+| `True is not True` | `False` |
+| `True is not False` | `True` |
+| `False is not True` | `True` |
+| `False is not False` | `False` |
+| `True is not 0` | `True` |
+| `0 is not True` | `True` |
+| `False is not 0` | `True` |
+| `0 is not False` | `True` |
+| `True is not 1` | `True` |
+| `1 is not True` | `True` |
+| `False is not 1` | `True` |
+| `1 is not False` | `True` |
+| `0 is not 0` | `False` |
+| `0 is not 1` | `True` |
+| `1 is not 0` | `True` |
+| `1 is not 1` | `False` |
+| `50 is not 100` | `True` |
+| `333 is not 333` | `False` |
+| `True is not None` | `True` |
+| `None is not True` | `True` |
+| `False is not None` | `True` |
+| `None is not False` | `True` |
+| `None is not None` | `False` |
+| `0 is not "test"` | `True` |
+| `0 is not "0"` | `True` |
+| `"" is not ""` | `False` |
+| `"" is not "test"` | `True` |
+| `"test" is not ""` | `True` |
+| `"test" is not "test"` | `False` |
+| `"test1" is not "test2"` | `True` |
 
 * `<`
 
@@ -940,7 +1004,7 @@ Note that in CPython, floating-point numbers are returned from this operation. H
 
 * comparison
 
-Note that some of these will fail. CPython has separate `not in` and `is not` operators and chained comparison operators work differently (`x < y < z` is really interpreted as `(x < y) and (y < z)`).
+Note that some of these will fail. Cchained comparison operators work differently in CPython (`x < y < z` is really interpreted as `(x < y) and (y < z)`).
 
 | Input | Correct Output |
 | ----- | -------------- |

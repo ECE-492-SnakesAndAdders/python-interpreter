@@ -24,5 +24,4 @@ The parser converts the list of tokens returned by the lexer into an abstract sy
 * Certain constructs are not supported by the parser. This includes the following:
    * The use of the ternary operator (`first_statement if condition else second_statement`); this syntax is rarely used and was introduced in Python 2.5.
    * The use of list, set, and dict comprehensions (such as `[abs(x) for x in y]`); this syntax was added in Python 2.0 and later.
-   * The use of implicitly combined logical operators (`not in` and `is not`); this may be fixed in future versions.
    * The use of chained comparison operators (`x < y < z` becomes `(x < y) < z` and not `(x < y) and (y < z)`); this may be fixed in future versions.
