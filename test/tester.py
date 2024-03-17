@@ -42,6 +42,7 @@ def main():
         for input_command in inputs:
             f.write(input_command)
             f.write('\n')
+        f.write('exit()\n')
     with open(options.output_path[0], 'w') as f:
         for output_result in outputs:
             f.write(output_result)
@@ -86,14 +87,9 @@ def main():
     error_count = 0
     # run the tests with file redirection as a subprocess
     command = f'{options.program_path[0]} < {options.input_path[0]} > {options.generated_path[0]}'.split(' ')
-    try:
-        subprocess.run(command,
-                       shell=True,
-                       timeout=1,
-        )
-    # let the timer expire so that the process terminates
-    except subprocess.TimeoutExpired:
-        pass
+    subprocess.run(command,
+                   shell=True,
+    )
     # read the data written to the output log file
     with open(options.generated_path[0], 'r') as f:
         data = f.readlines()

@@ -940,8 +940,55 @@ Note that in CPython, floating-point numbers are returned from this operation. H
 
 * comparison
 
+Note that some of these will fail. CPython has separate `not in` and `is not` operators and chained comparison operators work differently (`x < y < z` is really interpreted as `(x < y) and (y < z)`).
+
 | Input | Correct Output |
 | ----- | -------------- |
+| `False == 0 == False` | `True` |
+| `(False == 0) == False` | `False` |
+| `True == 0 == False` | `False` |
+| `(True == 0) == False` | `True` |
+| `False == 0 == True` | `False` |
+| `(False == 0) == True` | `True` |
+| `True == 0 == True` | `False` |
+| `(True == 0) == True` | `False` |
+| `(True == 1) is True` | `True` |
+| `(True == 1) is 1` | `False` |
+| `(True is 1) == (True == 1)` | `False` |
+| `(False is 0) == (False == 0)` | `False` |
+| `(True is 1) == (False is 0)` | `True` |
+| `(True == 1) is (False == 0)` | `True` |
+| `(True is 1) is (False is 0)` | `True` |
+| `2 != 0 != 1` | `True` |
+| `(2 != 0) and (0 != 1)` | `True` |
+| `(2 != 0) != 1` | `False` |
+| `2 != (0 != 1)` | `True` |
+| `1 != 2 != 0` | `True` |
+| `(1 != 2) and (2 != 0)` | `True` |
+| `(1 != 2) != 0` | `True` |
+| `1 != (2 != 0)` | `False` |
+| `-1 < 0 < 1` | `True` |
+| `(-1 < 0) and (0 < 1)` | `True` |
+| `(-1 < 0) < 1` | `False` |
+| `-1 < (0 < 1)` | `True` |
+| `-1 <= 0 <= 1` | `True` |
+| `(-1 <= 0) and (0 <= 1)` | `True` |
+| `(-1 <= 0) <= 1` | `True` |
+| `-1 <= (0 <= 1)` | `True` |
+| `1 > 0 > -1` | `True` |
+| `(1 > 0) and (0 > -1)` | `True` |
+| `(1 > 0) > -1` | `True` |
+| `1 > (0 > -1)` | `False` |
+| `1 >= 0 >= -1` | `True` |
+| `(1 >= 0) and (0 >= -1)` | `True` |
+| `(1 >= 0) >= -1` | `True` |
+| `1 >= (0 >= -1)` | `True` |
+| `(0 > 10) == (0 >= 10)` | `True` |
+| `(10 > 10) == (10 >= 10)` | `False` |
+| `(20 > 10) == (20 >= 10)` | `True` |
+| `(0 < 10) == (0 <= 10)` | `True` |
+| `(10 < 10) == (10 <= 10)` | `False` |
+| `(20 < 10) == (20 <= 10)` | `True` |
 
 * logical
 
