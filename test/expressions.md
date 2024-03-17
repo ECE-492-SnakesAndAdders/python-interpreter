@@ -444,35 +444,6 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `"test" in None` | `TypeError` |
 | `None in "test"` | `TypeError` |
 
-* `not in`
-
-| Input | Correct Output |
-| ----- | -------------- |
-| `"" not in ""` | `False` |
-| `"" not in "test"` | `False` |
-| `"test" not in ""` | `True` |
-| `"test" not in "test"` | `False` |
-| `"t" not in "test"` | `False` |
-| `"te" not in "test"` | `False` |
-| `"tes" not in "test"` | `False` |
-| `"e" not in "test"` | `False` |
-| `"es" not in "test"` | `False` |
-| `"est" not in "test"` | `False` |
-| `"s" not in "test"` | `False` |
-| `"st" not in "test"` | `False` |
-| `"testnot ing" not in "test"` | `True` |
-| `"test1" not in "test2"` | `True` |
-| `"test" not in True` | `TypeError` |
-| `True not in "test"` | `TypeError` |
-| `"test" not in False` | `TypeError` |
-| `False not in "test"` | `TypeError` |
-| `"test" not in 0` | `TypeError` |
-| `0 not in "test"` | `TypeError` |
-| `"1" not in 1` | `TypeError` |
-| `1 not in "1"` | `TypeError` |
-| `"test" not in None` | `TypeError` |
-| `None not in "test"` | `TypeError` |
-
 * `is`
 
 | Input | Correct Output |
@@ -702,6 +673,35 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 | `"test" != ""` | `True` |
 | `"test" != "test"` | `False` |
 | `"test1" != "test2"` | `True` |
+
+* `not in`
+
+| Input | Correct Output |
+| ----- | -------------- |
+| `"" not in ""` | `False` |
+| `"" not in "test"` | `False` |
+| `"test" not in ""` | `True` |
+| `"test" not in "test"` | `False` |
+| `"t" not in "test"` | `False` |
+| `"te" not in "test"` | `False` |
+| `"tes" not in "test"` | `False` |
+| `"e" not in "test"` | `False` |
+| `"es" not in "test"` | `False` |
+| `"est" not in "test"` | `False` |
+| `"s" not in "test"` | `False` |
+| `"st" not in "test"` | `False` |
+| `"testnot ing" not in "test"` | `True` |
+| `"test1" not in "test2"` | `True` |
+| `"test" not in True` | `TypeError` |
+| `True not in "test"` | `TypeError` |
+| `"test" not in False` | `TypeError` |
+| `False not in "test"` | `TypeError` |
+| `"test" not in 0` | `TypeError` |
+| `0 not in "test"` | `TypeError` |
+| `"1" not in 1` | `TypeError` |
+| `1 not in "1"` | `TypeError` |
+| `"test" not in None` | `TypeError` |
+| `None not in "test"` | `TypeError` |
 
 * `or`
 
@@ -1004,7 +1004,7 @@ Note that in CPython, floating-point numbers are returned from this operation. H
 
 * comparison
 
-Note that some of these will fail. Cchained comparison operators work differently in CPython (`x < y < z` is really interpreted as `(x < y) and (y < z)`).
+Note that some of these tests will fail. Chained comparison operators behave differently in CPython (`x < y < z` is really interpreted as `(x < y) and (y < z)`).
 
 | Input | Correct Output |
 | ----- | -------------- |
@@ -1023,6 +1023,13 @@ Note that some of these will fail. Cchained comparison operators work differentl
 | `(True is 1) == (False is 0)` | `True` |
 | `(True == 1) is (False == 0)` | `True` |
 | `(True is 1) is (False is 0)` | `True` |
+| `(True == 1) is not True` | `False` |
+| `(True == 1) is not 1` | `True` |
+| `(True is not 1) == (True == 1)` | `True` |
+| `(False is not 0) == (False == 0)` | `True` |
+| `(True is not 1) == (False is not 0)` | `True` |
+| `(True == 1) is not (False == 0)` | `False` |
+| `(True is not 1) is not (False is not 0)` | `False` |
 | `2 != 0 != 1` | `True` |
 | `(2 != 0) and (0 != 1)` | `True` |
 | `(2 != 0) != 1` | `False` |
@@ -1103,3 +1110,11 @@ Note that some of these will fail. Cchained comparison operators work differentl
 | `"test" * 2 in "test" * 2` | `True` |
 | `"test" * 3 in "test" * 2` | `False` |
 | `"test" * 2 in "test" * 3` | `True` |
+| `"" * 10 not in ""` | `False` |
+| `"" not in "" * 10` | `False` |
+| `"test" * 1 not in "test" * 1` | `False` |
+| `"test" * 1 not in "test" * 2` | `False` |
+| `"test" * 2 not in "test" * 1` | `True` |
+| `"test" * 2 not in "test" * 2` | `False` |
+| `"test" * 3 not in "test" * 2` | `True` |
+| `"test" * 2 not in "test" * 3` | `False` |
