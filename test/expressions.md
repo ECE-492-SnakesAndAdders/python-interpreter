@@ -840,7 +840,7 @@ The tests in this file verify that the interpreter analyzes expressions correctl
 
 * `/`
 
-Note that in CPython, floating-point numbers are returned from this operation. However, the C3 does not have floating-point hardware, so this operator implements integer division (making the desired results identical to the results for `//`).
+Note that in CPython, floating-point numbers are returned from this operation. However, the C3 does not have floating-point hardware, so this operator implements integer division (making the desired results almost identical to the results for the `//` operator).
 
 | Input | Correct Output |
 | ----- | -------------- |
@@ -1008,8 +1008,6 @@ Note that in CPython, floating-point numbers are returned from this operation. H
 | `~(18 \| 39 << 2 ^ 5 >> 9)` | `-159` |
 
 * comparison
-
-Note that some of these tests will fail. Chained comparison operators behave differently in CPython (`x < y < z` is really interpreted as `(x < y) and (y < z)`).
 
 | Input | Correct Output |
 | ----- | -------------- |
