@@ -115,7 +115,7 @@ bool Evaluator::equals(literal_value left, literal_value right) {
         return (numerify(left) == numerify(right));
     // string values must have each and every character match
     } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
-        return (strcmp(left.data.string, right.data.string) == 0);
+        return (strcmp(left.data.string, right.data.string));
     // if both are None, then they are equal
     } else if ((left.type == NONE_VALUE) && (right.type == NONE_VALUE)) {
         return true;
@@ -377,7 +377,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.type = FALSE_VALUE;
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
-                if (strcmp(left.data.string, right.data.string)){
+                if (strcmp(left.data.string, right.data.string)) {
                     result.type = TRUE_VALUE;
                 }
                 uint16_t i = 0;
@@ -495,7 +495,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.type = FALSE_VALUE;
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
-                if (strcmp(left.data.string, right.data.string)){
+                if (strcmp(left.data.string, right.data.string)) {
                     result.type = TRUE_VALUE;
                 }
                 uint16_t i = 0;
@@ -601,11 +601,15 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 if (numerify(right)) {
-                    result.data.number = numerify(left) % numerify(right);
                     // account for case of one negative operand
-                    if (((numerify(left) >= 32768) && (numerify(right) < 32768)) ||
-                        ((numerify(left) < 32768) && (numerify(right) >= 32768))) {
-                        result.data.number += numerify(right);
+                    if ((numerify(left) < 32768) && (numerify(right) < 32768)) {
+                        result.data.number = numerify(left) % numerify(right);
+                    } else if ((numerify(left) >= 32768) && (numerify(right) < 32768)) {
+                        result.data.number = numerify(right) - (-numerify(left) % numerify(right));
+                    } else if ((numerify(left) < 32768) && (numerify(right) >= 32768)) {
+                        result.data.number = (numerify(left) % -numerify(right)) + numerify(right);
+                    } else if ((numerify(left) >= 32768) && (numerify(right) >= 32768)) {
+                        result.data.number = -(-numerify(left) % -numerify(right));
                     }
                 } else {
                     report_error(ZERODIVISION, "integer division or modulo by zero");
