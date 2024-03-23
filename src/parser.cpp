@@ -1,7 +1,7 @@
 /*********************************************************************************
 * Description: The parser (the second stage of the interpreter)
 * Author(s): Isaac Joffe
-* Copyright: University of Alberta", "2024
+* Copyright: University of Alberta, 2024
 * License: CC-BY-4.0
 *********************************************************************************/
 
@@ -168,20 +168,41 @@ node * Parser::inversion() {
 /**
  * \brief Handles the next lowest priority operator: "=="/"EQUAL", "!="/"N_EQUAL", ">"/"GREATER",
  *                                                   ">="/"G_EQUAL", "<"/"LESS", "<="/"L_EQUAL",
- *                                                   "is"/"IS", "is not"/"", "in"/"IN", "not in"/"") .
+ *                                                   "is"/"IS", "is not"/"ISNOT", "in"/"IN", "not in"/"NOTIN") .
  * \return The internal representation of the expression parsed so far.
  */
 node * Parser::comparison() {
-    // TODO: handle cascaded comaprison operators properly
-    // TODO: handle "is not" and "not in" keywords
+    // these operators handled differently, can be chained with implicit conversion
     node * expr_ptr = bor();
+    // need to be able to store inner operands for longer expressions
+    node * right_ptr;
+    bool first_time = true;
     while (current_matches(EQUAL) || current_matches(N_EQUAL) || current_matches(GREATER) ||
            current_matches(G_EQUAL) || current_matches(LESS) || current_matches(L_EQUAL) ||
-           current_matches(IS) || current_matches(IN)) {
-        lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(bor());
-        node expr = make_new_binary(expr_ptr, opcode, right_ptr);
-        expr_ptr = write_new_node(&expr);
+           current_matches(IS) || current_matches(ISNOT) || current_matches(IN) ||
+           current_matches(NOTIN)) {
+        // process normally on the first encounter of comparison operator
+        if (first_time) {
+            first_time = false;
+            lexemes opcode = previous_token();
+            right_ptr = bor();
+            node expr = make_new_binary(expr_ptr, opcode, right_ptr);
+            expr_ptr = write_new_node(&expr);
+        // implicitly convert logic for subsequent chained operators
+        } else {
+            // left operand of next expression becomes what the right operand of the last one was
+            node * left_ptr = right_ptr;
+            lexemes opcode = previous_token();
+            right_ptr = bor();
+            // old expression must be saved to be chained with the new one
+            node * old_ptr = expr_ptr;
+            // make comparison node for new operand
+            node expr = make_new_binary(left_ptr, opcode, right_ptr);
+            expr_ptr = write_new_node(&expr);
+            // combine this and previous node with AND condition as per Python standard (both comparisons must be true)
+            expr = make_new_binary(old_ptr, AND, expr_ptr);
+            expr_ptr = write_new_node(&expr);
+        }
     }
     return expr_ptr;
 }
@@ -307,7 +328,7 @@ node * Parser::power() {
     node * expr_ptr = primary();
     if (current_matches(D_STAR)) {
         lexemes opcode = previous_token();
-        node * right_ptr = write_new_node(power());
+        node * right_ptr = write_new_node(factor());
         node expr = make_new_binary(expr_ptr, opcode, right_ptr);
         expr_ptr = write_new_node(&expr);
     }

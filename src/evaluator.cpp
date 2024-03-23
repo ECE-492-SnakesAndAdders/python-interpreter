@@ -1,7 +1,7 @@
 /*********************************************************************************
 * Description: The evaluator (the third and final stage of the interpreter)
 * Author(s): Isaac Joffe
-* Copyright: University of Alberta", "2024
+* Copyright: University of Alberta, 2024
 * License: CC-BY-4.0
 *********************************************************************************/
 
@@ -115,7 +115,7 @@ bool Evaluator::equals(literal_value left, literal_value right) {
         return (numerify(left) == numerify(right));
     // string values must have each and every character match
     } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
-        return (strcmp(left.data.string, right.data.string) == 0);
+        return (strcmp(left.data.string, right.data.string));
     // if both are None, then they are equal
     } else if ((left.type == NONE_VALUE) && (right.type == NONE_VALUE)) {
         return true;
@@ -280,6 +280,12 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                 result.type = NUMBER_VALUE;
                 if (numerify(right)) {
                     result.data.number = numerify(left) / numerify(right);
+                    // account for case of one negative operand
+                    if ((((numerify(left) >= 32768) && (numerify(right) < 32768)) ||
+                         ((numerify(left) < 32768) && (numerify(right) >= 32768))) &&
+                        (numerify(left) % numerify(right))) {
+                        result.data.number--;
+                    }
                 } else {
                     report_error(ZERODIVISION, "integer division or modulo by zero");
                     error_occurred = true;
@@ -371,7 +377,7 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
                     result.type = FALSE_VALUE;
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
-                if (strcmp(left.data.string, right.data.string)){
+                if (strcmp(left.data.string, right.data.string)) {
                     result.type = TRUE_VALUE;
                 }
                 uint16_t i = 0;
@@ -441,6 +447,16 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // inverse identity operation (is not)
+        case ISNOT:
+            // check that types and contained values match
+            if ((left.type == right.type) && equals(left, right)) {
+                result.type = FALSE_VALUE;
+            } else {
+                result.type = TRUE_VALUE;
+            }
+            break;
+
         // less than operation (<)
         case LESS:
             // numeric-adjacent types directly translate to C operator
@@ -475,9 +491,11 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 if (numerify(left) <= numerify(right)) {
                     result.type = TRUE_VALUE;
+                } else {
+                    result.type = FALSE_VALUE;
                 }
             } else if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
-                if (strcmp(left.data.string, right.data.string)){
+                if (strcmp(left.data.string, right.data.string)) {
                     result.type = TRUE_VALUE;
                 }
                 uint16_t i = 0;
@@ -520,6 +538,45 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             }
             break;
 
+        // inverse membership operator (not in)
+        case NOTIN:
+            // only valid for strings, just check if substring is present
+            if ((left.type == STRING_VALUE) && (right.type == STRING_VALUE)) {
+                // edge case where left operand is the null string, always a substring then       
+                if (!left.data.string[0]) {
+                    result.type = FALSE_VALUE;
+                // edge case where right operand is the null string, no substrings then
+                } else if (!right.data.string[0]) {
+                    result.type = TRUE_VALUE;
+                // normal case
+                } else {
+                    // initially assume that the substring is not present, update if assumption wrong
+                    result.type = TRUE_VALUE;
+                    int sub_index = 0;
+                    int full_index = 0;
+                    while (right.data.string[full_index] && (full_index < MAX_LIT_LEN)) {
+                        if (left.data.string[sub_index] && (left.data.string[sub_index] == right.data.string[full_index])) {
+                            // another substring character must be consumed
+                            sub_index++;
+                            // if this is the end of the substring, it has been successfully found
+                            if (!left.data.string[sub_index]) {
+                                result.type = FALSE_VALUE;
+                                break;
+                            }
+                        // no match, so try to match substring again from the start
+                        } else {
+                            sub_index = 0;
+                        }
+                        // one more character consumed
+                        full_index++;
+                    }
+                }
+            } else {
+                report_error(TYPE, "argument is not iterable");
+                error_occurred = true;
+            }
+            break;
+
         // logical or operation (or)
         case OR:
             // case where left operand is "True" -- always must be True output (short circuit)
@@ -544,7 +601,16 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
             if (is_numerical(left.type) && is_numerical(right.type)) {
                 result.type = NUMBER_VALUE;
                 if (numerify(right)) {
-                    result.data.number = numerify(left) % numerify(right);
+                    // account for case of one negative operand
+                    if ((numerify(left) < 32768) && (numerify(right) < 32768)) {
+                        result.data.number = numerify(left) % numerify(right);
+                    } else if ((numerify(left) >= 32768) && (numerify(right) < 32768)) {
+                        result.data.number = numerify(right) - (-numerify(left) % numerify(right));
+                    } else if ((numerify(left) < 32768) && (numerify(right) >= 32768)) {
+                        result.data.number = (numerify(left) % -numerify(right)) + numerify(right);
+                    } else if ((numerify(left) >= 32768) && (numerify(right) >= 32768)) {
+                        result.data.number = -(-numerify(left) % -numerify(right));
+                    }
                 } else {
                     report_error(ZERODIVISION, "integer division or modulo by zero");
                     error_occurred = true;

@@ -510,7 +510,12 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                     return IF;
                 } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'n') &&
                            !(*(*input_ptr + 2))) {
-                    return IN;
+                    if (command_info -> tokens[command_info -> token_count - 1] == NOT) {
+                        (command_info -> token_count)--;
+                        return NOTIN;
+                    } else {
+                        return IN;
+                    }
                 } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'm') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'p') &&
                            (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'o') &&
@@ -536,7 +541,12 @@ lexemes Lexer::iskeyword(char ** input_ptr) {
                 if (       (*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 't') &&
                            !(*(*input_ptr + 3))) {
-                    return NOT;
+                    if (command_info -> tokens[command_info -> token_count - 1] == IS) {
+                        (command_info -> token_count)--;
+                        return ISNOT;
+                    } else {
+                        return NOT;
+                    }
                 } else if ((*(*input_ptr + 1)) && (*(*input_ptr + 1) == 'o') &&
                            (*(*input_ptr + 2)) && (*(*input_ptr + 2) == 'n') &&
                            (*(*input_ptr + 3)) && (*(*input_ptr + 3) == 'l') &&
