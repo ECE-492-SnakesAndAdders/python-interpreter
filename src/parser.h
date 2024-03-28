@@ -24,6 +24,11 @@
 #define MAX_NUM_NODES 64
 #endif
 
+// the maximum number of statements allowed on one line
+#ifndef MAX_NUM_STMTS
+#define MAX_NUM_STMTS 32
+#endif
+
 
 /**
  * \brief The parser of the interpreter; it takes a token list as input and a syntax tree as output.
@@ -40,7 +45,7 @@ class Parser {
         // output tree information and operations
         node tree_nodes[MAX_NUM_NODES];
         int current_node = 0;
-        node ** syntax_tree;
+        node ** syntax_trees;
         node * write_new_node(node * value);
         // for parsing statements
         node * statement();

@@ -79,7 +79,6 @@ int print(char ** output_ptr) {
     // print the output string received
     if (**output_ptr) {
         printf(*output_ptr);
-        printf("\n");
     }
     return 0;
 }

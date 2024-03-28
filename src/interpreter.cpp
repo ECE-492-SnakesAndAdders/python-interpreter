@@ -7,6 +7,7 @@
 
 
 #include <cstdio>
+#include <cstring>
 #include "evaluator.h"
 #include "interpreter.h"
 #include "lexer.h"
@@ -61,25 +62,33 @@ int Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
     // ------------------------------------------------------------------------
 
     // parse command, convert sequence of tokens into a syntax tree
-    node * tree;
-    Parser parser(token_sequence, &tree);
+    node * tree[MAX_NUM_STMTS];
+    memset(tree, 0, sizeof(tree));
+    Parser parser(token_sequence, tree);
     if ((return_code = parser.parse_input())) {
         return 1;
     }
     // ------------------------------------------------------------------------
     // // FOR DEBUGGING; print tree to see that parser works
     // printf("PARSED INFO:\n");
-    // print_tree(*tree);
-    // printf("\n");
+    // int j = 0;
+    // while (tree[j] != NULL) {
+    //     print_tree(*tree[j]);
+    //     printf("\n");
+    //     j++;
+    // }
     // ------------------------------------------------------------------------
 
-    // evaluate command, convert syntax tree into a result
-    literal_value result;
-    if ((return_code = evaluator.evaluate_input(tree, &result))) {
-        return 1;
+    int i = 0;
+    while (tree[i] != NULL) {
+        // evaluate command, convert syntax tree into a result
+        literal_value result;
+        if ((return_code = evaluator.evaluate_input(tree[i], &result))) {
+            return 1;
+        }
+        // save the result of the execution
+        stringify_value(result, output_ptr);
+        i++;
     }
-
-    // save the result of the execution
-    stringify_value(result, output_ptr);
     return 0;
 }

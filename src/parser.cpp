@@ -6,6 +6,7 @@
 *********************************************************************************/
 
 
+#include <cstdio>
 #include "error.h"
 #include "expr.h"
 #include "lexer.h"
@@ -46,7 +47,7 @@
  */
 Parser::Parser(lexed_command input, node ** output) {
     command_info = input;
-    syntax_tree = output;
+    syntax_trees = output;
 }
 
 
@@ -493,6 +494,16 @@ node * Parser::primary() {
         expr_ptr = write_new_node(&expr);
     }
 
+    // deal with semicolon separating commands
+    if (current_matches(SEMICOLON)) {
+        // do nothing, just parse next expression
+    }
+
+    // deal with newline at end
+    if (current_matches(NEWLINE)) {
+        // do nothing, just finish parsing
+    }
+
     // TODO: base case?
     
     return expr_ptr;
@@ -574,9 +585,16 @@ bool Parser::has_error() {
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
 int Parser::parse_input() {
-    *syntax_tree = statement();
-    if (has_error()) {
-        return 1;
+    // parse as many statements as there are in the input provided
+    int i = 0;
+    while (!(end_reached())) {
+        syntax_trees[i] = statement();
+        i++;
+        // an error at any time should stop all operations
+        if (has_error()) {
+            return 1;
+        }
     }
+    syntax_trees[i] = NULL;
     return 0;
 }

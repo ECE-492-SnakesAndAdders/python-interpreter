@@ -10,6 +10,12 @@
 #define INTERPRETER_H
 
 
+// the maximum number of statements allowed on one line
+#ifndef MAX_NUM_STMTS
+#define MAX_NUM_STMTS 32
+#endif
+
+
 /**
  * \brief The overall interpreter; it executes commands from start to finish.
  */

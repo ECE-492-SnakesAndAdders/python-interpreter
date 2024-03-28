@@ -7,6 +7,7 @@
 
 
 #include <cstdio>
+#include <cstring>
 #include "expr.h"
 #include "lexer.h"
 #include "parser.h"
@@ -146,42 +147,22 @@ node make_new_variable(char name[]) {
 void stringify_value(literal_value value, char ** output_ptr) {
     switch (value.type) {
         case FALSE_VALUE:
-            *(*output_ptr + 0) = 'F';
-            *(*output_ptr + 1) = 'a';
-            *(*output_ptr + 2) = 'l';
-            *(*output_ptr + 3) = 's';
-            *(*output_ptr + 4) = 'e';
+            sprintf(*output_ptr, "%sFalse\n", *output_ptr);
             break;
 
         case NONE_VALUE:
             break;
 
         case NUMBER_VALUE:
-            itos(output_ptr, value.data.number);
+            sprintf(*output_ptr, "%s%d\n", *output_ptr, value.data.number);
             break;
 
         case STRING_VALUE:
-            **output_ptr = '\'';
-            for (int i = 0; i < MAX_LIT_LEN; i++) {
-                if (value.data.string[i]) {
-                    *(*output_ptr + i + 1) = value.data.string[i];
-                } else {
-                    *(*output_ptr + i + 1) = '\'';
-                    *(*output_ptr + i + 2) = '\0';
-                    break;
-                }
-            }
+            sprintf(*output_ptr, "%s\'%s\'\n", *output_ptr, value.data.string);
             break;
 
         case TRUE_VALUE:
-            *(*output_ptr + 0) = 'T';
-            *(*output_ptr + 1) = 'r';
-            *(*output_ptr + 2) = 'u';
-            *(*output_ptr + 3) = 'e';
-            break;
-
-        default:
-            // TODO: verify that this is unreachable
+            sprintf(*output_ptr, "%sTrue\n", *output_ptr);
             break;
     }
 }
