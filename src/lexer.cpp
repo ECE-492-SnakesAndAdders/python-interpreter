@@ -6,6 +6,8 @@
 *********************************************************************************/
 
 
+#include <cstdio>
+#include <cstring>
 #include "error.h"
 #include "lexer.h"
 #include "utility.h"
@@ -50,6 +52,7 @@ void Lexer::scan_next_token() {
 
     // look at the current character in the string
     char current_char = line[current];
+    // printf("Character: \'%c\'\n", current_char);
     // consider each possible case entered
     switch (current_char) {
         // unconditionally single-character tokens
@@ -204,17 +207,32 @@ void Lexer::scan_next_token() {
             return;
         // testing
         case '\n':
-            // if command_info -> tokens[0] == IF/FOR/WHILE:
-            //     if next character is also '\n':
-            //           add_token(NEWLINE) x 2;
-            //           return;
-            //     else:
-            //         add_token(NEWLINE);
-            //         print_string("... ");
-            //         break;
-            // else: 
-            //     return;
-            // add_token(NEWLINE);
+            // newlines are significant, so always track them
+            add_token(NEWLINE);
+            // an if statement means we expect more input
+            if (command_info -> tokens[0] == IF) {
+                // get another line of input
+                memset(line, 0, sizeof(line));
+                printf("... ");
+                gets((char *) line);
+                // if this line is blank, then it is the end of the statement
+                if (!line[0]) {
+                    add_token(NEWLINE);
+                    return;
+                }
+                // set up inpit to be parsed again
+                current = 0;
+                length = 0;
+                while (line[length] != '\0') {
+                    length++;
+                }
+                line[length] = '\n';
+                length++;
+                line[length] = '\0';
+            }
+            // printf("------------------------------\n");
+            // printf("%s", line);
+            // printf("------------------------------\n");
             break;
         // default case handles the rest (number literals, identifiers, keywords, whitespace)
         default:
