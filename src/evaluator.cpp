@@ -105,6 +105,16 @@ bool Evaluator::boolify(literal_value value) {
 
 
 /**
+ * \brief Determines if a literal value is legal to iterate over in a for loop.
+ * \param [in] value The literal value's type to check.
+ * \return True if the literal can be used in a for loop; false otherwise.
+ */
+bool Evaluator::is_iterable(literal_types type) {
+    return (type == STRING_VALUE);
+}
+
+
+/**
  * \brief Compares two values and determines if they are equal.
  * \param [in] left The first value to compare.
  * \param [in] left The second value to compare.
@@ -181,8 +191,8 @@ literal_value Evaluator::evaluate(node tree_node) {
  */
 literal_value Evaluator::evaluate_assign(assign_value expr) {
     // assign the value into the associated variable name
-    literal_value x = evaluate(*(expr.value));
-    write_variable(env, expr.name, x);
+    literal_value value = evaluate(*(expr.value));
+    write_variable(env, expr.name, value);
     // return None from this operation so that nothing is printed
     literal_value result;
     result.type = NONE_VALUE;
@@ -731,7 +741,7 @@ literal_value Evaluator::evaluate_block(block_value expr) {
         stringify_value(result, &output_str);
         i++;
     }
-    // prevent double-counting the final result
+    // return None from this operation so that nothing is printed
     result.type = NONE_VALUE;
     return result;
 }
@@ -743,7 +753,42 @@ literal_value Evaluator::evaluate_block(block_value expr) {
  * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_forloop(forloop_value expr) {
-    // TODO: add this feature
+    literal_value result;
+    // determine the existing variable/expression to iterate over
+    literal_value iterable = evaluate(*(expr.expression));
+    if (!(is_iterable(iterable.type))) {
+        // error detected, the variable to iterate over must be iterable
+        report_error(SYNTAX, "object is not iterable");
+        error_occurred = true;
+        return result;
+    }
+    // iterate over the iterable
+    literal_value iterator;
+    switch (iterable.type) {
+        // handle case of string iterable
+        case STRING_VALUE:
+            // iterator of a string is just each character (itself another string)
+            iterator.type = STRING_VALUE;
+            for (int i = 0; i < MAX_LIT_LEN; i++) {
+                // once string is done, break out
+                if (iterable.data.string[i] == '\0') {
+                    break;
+                }
+                // write the current version of the iterator as a variable
+                iterator.data.string[0] = iterable.data.string[i];
+                write_variable(env, expr.name, iterator);
+                // run the statements with this version of the iterator
+                result = evaluate(*(expr.statements));
+            }
+            break;
+
+        // TODO: add other iterables?
+        default:
+            break;
+    }
+    // return None from this operation so that nothing is printed
+    result.type = NONE_VALUE;
+    return result;
 }
 
 
@@ -764,11 +809,17 @@ literal_value Evaluator::evaluate_grouping(grouping_value expr) {
  * \return The computed value of the syntax tree node.
  */
 literal_value Evaluator::evaluate_ifelse(ifelse_value expr) {
+    literal_value result;
+    // execute if-branch if the condition is true
     if (boolify(evaluate(*(expr.condition)))) {
-        return evaluate(*(expr.ifbranch));
+        result =  evaluate(*(expr.ifbranch));
+    // otherwise execute the else-branch
     } else {
-        return evaluate(*(expr.elsebranch));
+        result =  evaluate(*(expr.elsebranch));
     }
+    // return None from this operation so that nothing is printed
+    result.type = NONE_VALUE;
+    return result;
 }
 
 
@@ -935,9 +986,12 @@ literal_value Evaluator::evaluate_variable(variable_value expr) {
  */
 literal_value Evaluator::evaluate_whileloop(whileloop_value expr) {
     literal_value result;
+    // execute the block as long as the entry condition is true
     while (boolify(evaluate(*(expr.expression)))) {
         result = evaluate(*(expr.statements));
     }
+    // return None from this operation so that nothing is printed
+    result.type = NONE_VALUE;
     return result;
 }
 

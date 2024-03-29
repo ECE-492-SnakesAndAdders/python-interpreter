@@ -210,7 +210,9 @@ void Lexer::scan_next_token() {
             // newlines are significant, so always track them
             add_token(NEWLINE);
             // an if statement means we expect more input
-            if ((command_info -> tokens[0] == IF) || (command_info -> tokens[0] == WHILE)) {
+            if ((command_info -> tokens[0] == IF) ||
+                (command_info -> tokens[0] == FOR) ||
+                (command_info -> tokens[0] == WHILE)) {
                 // get another line of input
                 memset(line, 0, sizeof(line));
                 printf("... ");

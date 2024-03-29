@@ -102,48 +102,48 @@ node * Parser::statement() {
  * \return The internal representation of the statement parsed so far.
  */
 node * Parser::forloop() {
-    // // TODO: ...
-    // // for loop always begins with a for keyword
-    // if (current_matches(FOR)) {
-    //     // parse condition for branch which must be right after the initial keyword
-    //     node * condition = expression();
-    //     // consume colon which must be immediately after the expression
-    //     if (!current_matches(COLON)) {
-    //         // error detected, must have colon to know that 
-    //         report_error(SYNTAX, "invalid syntax");
-    //         error_occurred = true;
-    //     }
-    //     // consume the optional newline if it exists
-    //     current_matches(NEWLINE);
+    // TODO: ...
+    // for loop always begins with a for keyword
+    if (current_matches(FOR)) {
+        // variable must follow as loop variable
+        char * name = NULL;
+        if (current_matches(IDENTIFIER)) {
+            name = command_info.identifiers[current_identifier++];
+        } else {
+            // error detected, must have loop variable be a variable
+            report_error(SYNTAX, "cannot assign to literal");
+            error_occurred = true;
+        }
 
-    //     // the branches to execute follow, always then-branch is first
-    //     node * first_branch = block();
-    //     node * second_branch = NULL;
-    //     // else-branch depends on what is provided
-    //     if (current_matches(ELSE)) {
-    //         // consume required colon and optional newline
-    //         if (!current_matches(COLON)) {
-    //             report_error(SYNTAX, "invalid syntax");
-    //             error_occurred = true;
-    //         }
-    //         current_matches(NEWLINE);
-    //         second_branch = block();
-    //     // can have subsequent else-if blocks
-    //     } else if (current_matches(ELIF)) {
-    //         // TODO: make this work
-    //     // if none provided, then make it explicit
-    //     } else {
-    //         literal_value temp_val;
-    //         temp_val.type = NONE_VALUE;
-    //         node temp_node = make_new_literal(temp_val);
-    //         second_branch = write_new_node(&temp_node);
-    //     }
+        // in operator must immediately follow
+        if (!(current_matches(IN))) {
+            // error detected, must have loop variable followed by an in operator
+            report_error(SYNTAX, "invalid syntax");
+            error_occurred = true;
+        }
+
+        // parse value that must be iterated over right after the in keyword
+        node * iterable = expression();
+
+        // consume colon which must be immediately after the expression
+        if (!current_matches(COLON)) {
+            // error detected, must have colon to know that 
+            report_error(SYNTAX, "invalid syntax");
+            error_occurred = true;
+        }
+        // consume the optional newline if it exists
+        current_matches(NEWLINE);
+
+        // the block to execute immediately follows
+        node * for_block = block();
         
-    //     // create tree node for the branching
-    //     node expr = make_new_ifelse(condition, first_branch, second_branch);
-    //     node * expr_ptr = write_new_node(&expr);
-    //     return expr_ptr;
-    // }
+        // create tree node for the branching
+        node expr = make_new_forloop(name, iterable, for_block);
+        node * expr_ptr = write_new_node(&expr);
+        return expr_ptr;
+    }
+
+    // no for loop, so try next type of statement
     return whileloop();
 }
 

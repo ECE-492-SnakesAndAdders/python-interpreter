@@ -32,6 +32,7 @@ class Evaluator {
         int numerify(literal_value value);
         bool is_boolean(literal_types type);
         bool boolify(literal_value value);
+        bool is_iterable(literal_types type);
         bool equals(literal_value left, literal_value right);
         // for evaluating each type of syntax tree node
         literal_value evaluate(node tree_node);
