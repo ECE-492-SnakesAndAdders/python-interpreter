@@ -145,6 +145,9 @@ literal_value Evaluator::evaluate(node tree_node) {
         case BLOCK_NODE:
             result = evaluate_block(tree_node.entry.block_val);
             break;
+        case FORLOOP_NODE:
+            result = evaluate_forloop(tree_node.entry.forloop_val);
+            break;
         case GROUPING_NODE:
             result = evaluate_grouping(tree_node.entry.grouping_val);
             break;
@@ -162,6 +165,9 @@ literal_value Evaluator::evaluate(node tree_node) {
             break;
         case VARIABLE_NODE:
             result = evaluate_variable(tree_node.entry.variable_val);
+            break;
+        case WHILELOOP_NODE:
+            result = evaluate_whileloop(tree_node.entry.whileloop_val);
             break;
     }
     return result;
@@ -732,6 +738,16 @@ literal_value Evaluator::evaluate_block(block_value expr) {
 
 
 /**
+ * \brief Evaluates an for loop on a syntax tree node.
+ * \param [in] expr The internal represententation of the for loop.
+ * \return The computed value of the syntax tree node.
+ */
+literal_value Evaluator::evaluate_forloop(forloop_value expr) {
+    // TODO: add this feature
+}
+
+
+/**
  * \brief Evaluates a nested expression within parentheses on a syntax tree node.
  * \param [in] expr The internal represententation of the nested expression.
  * \return The computed value of the syntax tree node.
@@ -907,6 +923,20 @@ literal_value Evaluator::evaluate_variable(variable_value expr) {
     if (read_variable(env, expr.name, &result)) {
         report_error(NAME, "name is not defined");
         error_occurred = true;
+    }
+    return result;
+}
+
+
+/**
+ * \brief Evaluates a while loop on a syntax tree node.
+ * \param [in] expr The internal represententation of the while loop.
+ * \return The computed value of the syntax tree node.
+ */
+literal_value Evaluator::evaluate_whileloop(whileloop_value expr) {
+    literal_value result;
+    while (boolify(evaluate(*(expr.expression)))) {
+        result = evaluate(*(expr.statements));
     }
     return result;
 }

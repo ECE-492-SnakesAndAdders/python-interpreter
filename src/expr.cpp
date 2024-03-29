@@ -74,6 +74,25 @@ node make_new_block(node ** statements) {
 
 
 /**
+ * \brief Constructor for a for loop statement's syntax tree node.
+ * \param [in] name The name of the loop variable to iterate over.
+ * \param [in] expression Pointer to the node representing the variable to iterate over.
+ * \param [in] statements Pointer to the node representing the statements to run at each iteration.
+ * \return A structure representing the syntax tree node.
+ */
+node make_new_forloop(char name[], node * expression, node * statements) {
+    node current;
+    current.type = FORLOOP_NODE;
+    for (int i = 0; i < MAX_IDENTIFIER_LEN; i++) {
+        current.entry.forloop_val.name[i] = name[i];
+    }
+    current.entry.forloop_val.expression = expression;
+    current.entry.forloop_val.statements = statements;
+    return current;
+}
+
+
+/**
  * \brief Constructor for a grouping's syntax tree node.
  * \param [in] expression Pointer to the node representing the nested expression.
  * \return A structure representing the syntax tree node.
@@ -167,6 +186,21 @@ node make_new_variable(char name[]) {
     for (int i = 0; i < MAX_IDENTIFIER_LEN; i++) {
         current.entry.variable_val.name[i] = name[i];
     }
+    return current;
+}
+
+
+/**
+ * \brief Constructor for a while loop statement's syntax tree node.
+ * \param [in] expression Pointer to the node representing the condition to branch on at each iteration.
+ * \param [in] statements Pointer to the node representing the statements to run at each iteration.
+ * \return A structure representing the syntax tree node.
+ */
+node make_new_whileloop(node * expression, node * statements) {
+    node current;
+    current.type = WHILELOOP_NODE;
+    current.entry.whileloop_val.expression = expression;
+    current.entry.whileloop_val.statements = statements;
     return current;
 }
 

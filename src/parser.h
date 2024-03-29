@@ -51,6 +51,8 @@ class Parser {
         node * block();
         // for parsing statements
         node * statement();
+        node * forloop();
+        node * whileloop();
         node * ifelse();
         node * assign();
         // for parsing expressions recursively

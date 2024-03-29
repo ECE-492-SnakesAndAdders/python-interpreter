@@ -38,12 +38,14 @@ class Evaluator {
         literal_value evaluate_assign(assign_value expr);
         literal_value evaluate_binary(binary_value expr);
         literal_value evaluate_block(block_value expr);
+        literal_value evaluate_forloop(forloop_value expr);
         literal_value evaluate_grouping(grouping_value expr);
         literal_value evaluate_ifelse(ifelse_value expr);
         literal_value evaluate_literal(literal_value expr);
         literal_value evaluate_logical(logical_value expr);
         literal_value evaluate_unary(unary_value expr);
         literal_value evaluate_variable(variable_value expr);
+        literal_value evaluate_whileloop(whileloop_value expr);
         // for error handling
         bool error_occurred = false;
         bool has_error();

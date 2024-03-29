@@ -67,6 +67,19 @@ struct block_value {
 
 
 /**
+ * \brief The internal representation of a for loop.
+ */
+struct forloop_value {
+    // the identifier to make the loop variable
+    char name[MAX_IDENTIFIER_LEN];
+    // the iterable expression to loop over
+    node * expression;
+    // the statements to execute at each iteration
+    node * statements;
+};
+
+
+/**
  * \brief The internal representation of a parenthetical expression.
  */
 struct grouping_value {
@@ -75,7 +88,6 @@ struct grouping_value {
 };
 
 
-// TODO: support multiple statements to be run inside a block
 /**
  * \brief The internal representation of an if-else branch.
  */
@@ -150,16 +162,37 @@ struct variable_value {
 
 
 /**
+ * \brief The internal representation of a while loop.
+ */
+struct whileloop_value {
+    // the expression to determine whether loop should continue
+    node * expression;
+    // the statements to execute at each iteration
+    node * statements;
+};
+
+
+/**
  * \brief The list of all possible nodes in the syntax tree.
  */
 enum node_types {
-    ASSIGN_NODE, BINARY_NODE, BLOCK_NODE, GROUPING_NODE, IFELSE_NODE, LITERAL_NODE, LOGICAL_NODE, UNARY_NODE, VARIABLE_NODE
+    ASSIGN_NODE,
+    BINARY_NODE,
+    BLOCK_NODE,
+    FORLOOP_NODE,
+    GROUPING_NODE,
+    IFELSE_NODE,
+    LITERAL_NODE,
+    LOGICAL_NODE,
+    UNARY_NODE,
+    VARIABLE_NODE,
+    WHILELOOP_NODE,
 };
 
 
 // for ease of printing
 const char * const node_names[] = {
-    "assign", "binary", "block", "grouping", "ifelse", "literal", "logical", "unary", "variable"
+    "assign", "binary", "block", "forloop", "grouping", "ifelse", "literal", "logical", "unary", "variable", "whileloop"
 };
 
 
@@ -174,12 +207,14 @@ struct node {
         assign_value assign_val;
         binary_value binary_val;
         block_value block_val;
+        forloop_value forloop_val;
         grouping_value grouping_val;
         ifelse_value ifelse_val;
         literal_value literal_val;
         logical_value logical_val;
         unary_value unary_val;
         variable_value variable_val;
+        whileloop_value whileloop_val;
     } entry;
 };
 
@@ -188,12 +223,14 @@ struct node {
 node make_new_assign(char name[], node * value);
 node make_new_binary(node * left, lexemes opcode, node * right);
 node make_new_block(node ** statements);
+node make_new_forloop(char name[], node * expression, node * statements);
 node make_new_grouping(node * expression);
 node make_new_ifelse(node * condition, node * ifbranch, node * elsebranch);
 node make_new_literal(literal_value value);
 node make_new_logical(node * left, lexemes opcode, node * right);
 node make_new_unary(lexemes opcode, node * right);
 node make_new_variable(char name[]);
+node make_new_whileloop(node * expression, node * statements);
 // to convert a literal value into a well-formatted string
 void stringify_value(literal_value value, char ** output_ptr);
 // to print a representation of the syntax tree for debugging
