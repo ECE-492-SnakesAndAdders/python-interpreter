@@ -72,6 +72,30 @@ node make_new_grouping(node * expression) {
 
 
 /**
+ * \brief Constructor for a if-else statement's syntax tree node.
+ * \param [in] condition Pointer to the node representing the condition to branch on.
+ * \param [in] ifbranch Pointer to the node representing the statements to run if the condition is true.
+ * \param [in] elsebranch Pointer to the node representing the statements to run if the condition is false.
+ * \return A structure representing the syntax tree node.
+ */
+node make_new_ifelse(node * condition, node * ifbranch, node * elsebranch) {
+// node make_new_ifelse(node * condition, node ** ifbranch, node ** elsebranch) {
+    node current;
+    current.type = IFELSE_NODE;
+    current.entry.ifelse_val.condition = condition;
+    current.entry.ifelse_val.ifbranch = ifbranch;
+    current.entry.ifelse_val.elsebranch = elsebranch;
+    // for (int i = 0; i < MAX_NUM_STMTS; i++) {
+    //     current.entry.ifelse_val.ifbranch[i] = *ifbranch + i;
+    // }
+    // for (int i = 0; i < MAX_NUM_STMTS; i++) {
+    //     current.entry.ifelse_val.elsebranch[i] = *elsebranch + i;
+    // }
+    return current;
+}
+
+
+/**
  * \brief Constructor for a literal value's syntax tree node.
  * \param [in] value A structure representing the literal's value.
  * \return A structure representing the syntax tree node.
@@ -194,6 +218,17 @@ void print_tree(node tree) {
             printf(" ( ");
             print_tree(*(tree.entry.grouping_val.expression));
             printf(" ) ");
+            break;
+
+        case IFELSE_NODE:
+            printf("if");
+            printf(" ( ");
+            print_tree(*(tree.entry.ifelse_val.condition));
+            printf(" ) ");
+            printf("then");
+            print_tree(*(tree.entry.ifelse_val.ifbranch));
+            printf("else");
+            print_tree(*(tree.entry.ifelse_val.elsebranch));
             break;
 
         case LITERAL_NODE:

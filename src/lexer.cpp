@@ -221,7 +221,7 @@ void Lexer::scan_next_token() {
                     return;
                 }
                 // set up inpit to be parsed again
-                current = 0;
+                current = -1;
                 length = 0;
                 while (line[length] != '\0') {
                     length++;

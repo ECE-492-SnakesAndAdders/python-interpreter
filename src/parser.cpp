@@ -71,6 +71,66 @@ node * Parser::write_new_node(node * value) {
  */
 node * Parser::statement() {
     // start recursively looking for statement operators
+    return ifelse();
+}
+
+
+/**
+ * \brief Handles all if statements.
+ * \return The internal representation of the statement parsed so far.
+ */
+node * Parser::ifelse() {
+    // TODO: for now, no nested if statements
+    // if-else statement always begins with an if keyword
+    // printf("IN ifelse()\n");
+    if (current_matches(IF)) {
+        // printf("IF MATCHED\n");
+        node * condition = expression();
+        if (!current_matches(COLON)) {
+            // error detected, must have colon to know that 
+            report_error(SYNTAX, "invalid syntax");
+            error_occurred = true;
+        }
+        current_matches(NEWLINE);
+        node * first_branch = assign();
+        node * second_branch = NULL;
+        // node * first_branch[MAX_NUM_STMTS] = assign();
+        // node * second_branch[MAX_NUM_STMTS] = NULL;
+        // if (current_matches(ELIF)) {
+        //     second_branch = ifelse();
+        // } else if (current_matches(ELSE)) {
+        //     second_branch = assign();
+        // }
+        if (current_matches(ELSE)) {
+            if (!current_matches(COLON)) {
+                // error detected, must have colon to know that 
+                report_error(SYNTAX, "invalid syntax");
+                error_occurred = true;
+            }
+            second_branch = ifelse();
+        } else {
+            literal_value temp_val;
+            temp_val.type = NONE_VALUE;
+            node temp_node = make_new_literal(temp_val);
+            second_branch = write_new_node(&temp_node);
+        }
+        node expr = make_new_ifelse(condition, first_branch, second_branch);
+        node * expr_ptr = write_new_node(&expr);
+        return expr_ptr;
+        // // deal with an arbitrary number of else-if clauses
+        // while (current_matches(ELIF)) {
+        //     node * new_condition = expression();
+        //     node * new_branch = assign();
+        //     node super = make_new_ifelse(condition, first_branch, &sub);
+        //     node sub = make_new_ifelse(new_condition, first_branch, second_branch);
+        // }
+        // // deal with final terminating else clause
+        // if (current_matches(ELSE)) {
+        //     else_branch = assign();
+        // }
+    // } else if (current_matches(ELIF)) {
+    // } else if (current_matches(ELSE)) {
+    }
     return assign();
 }
 

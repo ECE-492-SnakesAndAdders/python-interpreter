@@ -716,6 +716,20 @@ literal_value Evaluator::evaluate_grouping(grouping_value expr) {
 
 
 /**
+ * \brief Evaluates an if-else block on a syntax tree node.
+ * \param [in] expr The internal represententation of the if-else block.
+ * \return The computed value of the syntax tree node.
+ */
+literal_value Evaluator::evaluate_ifelse(ifelse_value expr) {
+    if (boolify(evaluate(*(expr.condition)))) {
+        return evaluate(*(expr.ifbranch));
+    } else {
+        return evaluate(*(expr.elsebranch));
+    }
+}
+
+
+/**
  * \brief Evaluates a literal expression represented by a syntax tree node.
  * \param [in] expr The internal representation of teh literal value.
  * \return The computed value of the syntax tree node.

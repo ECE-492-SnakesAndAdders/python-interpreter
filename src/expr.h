@@ -24,6 +24,12 @@
 #endif
 
 
+// the maximum number of statements allowed on one line
+#ifndef MAX_NUM_STMTS
+#define MAX_NUM_STMTS 32
+#endif
+
+
 struct node;    // forward declaration
 
 
@@ -57,6 +63,21 @@ struct binary_value {
 struct grouping_value {
     // the expression inside the parentheses
     node * expression;
+};
+
+
+// TODO: support multiple statements to be run inside a block
+/**
+ * \brief The internal representation of an if-else branch.
+ */
+struct ifelse_value {
+    // the expression whose values determines what branch we select
+    node * condition;
+    // the statements to execute if the condiion is true or false
+    node * ifbranch;
+    node * elsebranch;
+    // node * ifbranch[MAX_NUM_STMTS];
+    // node * elsebranch[MAX_NUM_STMTS];
 };
 
 
@@ -125,13 +146,13 @@ struct variable_value {
  * \brief The list of all possible nodes in the syntax tree.
  */
 enum node_types {
-    ASSIGN_NODE, BINARY_NODE, GROUPING_NODE, LITERAL_NODE, LOGICAL_NODE, UNARY_NODE, VARIABLE_NODE
+    ASSIGN_NODE, BINARY_NODE, GROUPING_NODE, IFELSE_NODE, LITERAL_NODE, LOGICAL_NODE, UNARY_NODE, VARIABLE_NODE
 };
 
 
 // for ease of printing
 const char * const node_names[] = {
-    "assign", "binary", "grouping", "literal", "logical", "unary", "variable"
+    "assign", "binary", "grouping", "ifelse", "literal", "logical", "unary", "variable"
 };
 
 
@@ -146,6 +167,7 @@ struct node {
         assign_value assign_val;
         binary_value binary_val;
         grouping_value grouping_val;
+        ifelse_value ifelse_val;
         literal_value literal_val;
         logical_value logical_val;
         unary_value unary_val;
@@ -158,6 +180,8 @@ struct node {
 node make_new_assign(char name[], node * value);
 node make_new_binary(node * left, lexemes opcode, node * right);
 node make_new_grouping(node * expression);
+node make_new_ifelse(node * condition, node * ifbranch, node * elsebranch);
+// node make_new_ifelse(node * condition, node ** ifbranch, node ** elsebranch);
 node make_new_literal(literal_value value);
 node make_new_logical(node * left, lexemes opcode, node * right);
 node make_new_unary(lexemes opcode, node * right);
