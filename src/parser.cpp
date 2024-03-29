@@ -107,6 +107,7 @@ node * Parser::ifelse() {
                 report_error(SYNTAX, "invalid syntax");
                 error_occurred = true;
             }
+            current_matches(NEWLINE);
             second_branch = ifelse();
         } else {
             literal_value temp_val;
@@ -497,7 +498,7 @@ node * Parser::power() {
  */
 node * Parser::primary() {
     // base case deals with literal values and parentheses
-    node * expr_ptr;
+    node * expr_ptr = NULL;
 
     // sentinel literal values
     if (current_matches(FALSE)) {

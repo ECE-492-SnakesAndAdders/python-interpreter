@@ -145,6 +145,9 @@ literal_value Evaluator::evaluate(node tree_node) {
         case GROUPING_NODE:
             result = evaluate_grouping(tree_node.entry.grouping_val);
             break;
+        case IFELSE_NODE:
+            result = evaluate_ifelse(tree_node.entry.ifelse_val);
+            break;
         case LITERAL_NODE:
             result = evaluate_literal(tree_node.entry.literal_val);
             break;
