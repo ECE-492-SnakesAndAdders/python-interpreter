@@ -44,7 +44,7 @@ class Evaluator {
         // constructor to svae pre-created environment
         Evaluator(environment * env);
         // converts a tree (or subtree, or node) into a single value
-        int evaluate_input(node * input, literal_value * output);
+        int evaluate_input(node ** input, char ** output);
 };
 
 

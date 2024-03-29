@@ -886,16 +886,23 @@ bool Evaluator::has_error() {
  * \param [in] output Pointer to where to store the output value.
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
-int Evaluator::evaluate_input(node * input, literal_value * output) {
-    // only execute actual trees, otherwise just print nothing
-    if (input) {
-        *output = evaluate(*input);
-    } else {
-        output -> type = NONE_VALUE;
+int Evaluator::evaluate_input(node ** input, char ** output) {
+    int i = 0;
+    while (input[i]) {
+        // evaluate command, convert syntax tree into a result
+        // only execute actual trees, otherwise just print nothing
+        if (input[i]) {
+            literal_value result;
+            result = evaluate(*input[i]);
+            // save the result of the execution
+            stringify_value(result, output);
+        }
+        // report any errors that occurred during execution
+        if (has_error()) {
+            return 1;
+        }
+        i++;
     }
-    // report any errors that occurred during execution
-    if (has_error()) {
-        return 1;
-    }
+
     return 0;
 }

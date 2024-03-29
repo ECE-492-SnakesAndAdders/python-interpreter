@@ -72,23 +72,17 @@ int Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
     // // FOR DEBUGGING; print tree to see that parser works
     // printf("PARSED INFO:\n");
     // int j = 0;
-    // while (tree[j] != NULL) {
+    // while (tree[j]) {
     //     print_tree(*tree[j]);
     //     printf("\n");
     //     j++;
     // }
     // ------------------------------------------------------------------------
 
-    int i = 0;
-    while (tree[i] != NULL) {
-        // evaluate command, convert syntax tree into a result
-        literal_value result;
-        if ((return_code = evaluator.evaluate_input(tree[i], &result))) {
-            return 1;
-        }
-        // save the result of the execution
-        stringify_value(result, output_ptr);
-        i++;
+    // evaluate command, convert syntax tree into a result
+    if ((return_code = evaluator.evaluate_input(tree, output_ptr))) {
+        return 1;
     }
+
     return 0;
 }
