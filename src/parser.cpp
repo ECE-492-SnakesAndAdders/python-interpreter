@@ -66,6 +66,28 @@ node * Parser::write_new_node(node * value) {
 
 
 /**
+ * \brief Starts the chain of parsing a Python command.
+ * \return The internal representation of the command.
+ */
+node * Parser::block() {
+    node * trees[MAX_NUM_STMTS] = {NULL};
+    // a block requires one statement, so parse this first
+    trees[0] = statement();
+    // parse as many statements as there are in the input provided
+    int i = 1;
+    while ((current_matches(SEMICOLON) || current_matches(NEWLINE)) && !(end_reached())) {
+        // parse statements delimited by semicolons or newlines until the end
+        trees[i] = statement();
+        i++;
+    }
+    // make this a syntax tree node
+    node expr = make_new_block(trees);
+    node * expr_ptr = write_new_node(&expr);
+    return expr_ptr;
+}
+
+
+/**
  * \brief Starts the chain of parsing a Python statement.
  * \return The internal representation of the statement.
  */
@@ -80,57 +102,44 @@ node * Parser::statement() {
  * \return The internal representation of the statement parsed so far.
  */
 node * Parser::ifelse() {
-    // TODO: for now, no nested if statements
+    // TODO: for now, no nested if statements, also add elif
     // if-else statement always begins with an if keyword
-    // printf("IN ifelse()\n");
     if (current_matches(IF)) {
-        // printf("IF MATCHED\n");
+        // parse condition for branch which must be right after the initial keyword
         node * condition = expression();
+        // consume colon which must be immediately after the expression
         if (!current_matches(COLON)) {
             // error detected, must have colon to know that 
             report_error(SYNTAX, "invalid syntax");
             error_occurred = true;
         }
+        // consume the optional newline if it exists
         current_matches(NEWLINE);
-        node * first_branch = assign();
+
+        // the branches to execute follow, always then-branch is first
+        node * first_branch = block();
         node * second_branch = NULL;
-        // node * first_branch[MAX_NUM_STMTS] = assign();
-        // node * second_branch[MAX_NUM_STMTS] = NULL;
-        // if (current_matches(ELIF)) {
-        //     second_branch = ifelse();
-        // } else if (current_matches(ELSE)) {
-        //     second_branch = assign();
-        // }
+        // else-branch depends on what is provided
         if (current_matches(ELSE)) {
+            // consume required colon and optional newline
             if (!current_matches(COLON)) {
-                // error detected, must have colon to know that 
                 report_error(SYNTAX, "invalid syntax");
                 error_occurred = true;
             }
             current_matches(NEWLINE);
-            second_branch = ifelse();
+            second_branch = block();
+        // if none provided, then make it explicit
         } else {
             literal_value temp_val;
             temp_val.type = NONE_VALUE;
             node temp_node = make_new_literal(temp_val);
             second_branch = write_new_node(&temp_node);
         }
+        
+        // create tree node for the branching
         node expr = make_new_ifelse(condition, first_branch, second_branch);
         node * expr_ptr = write_new_node(&expr);
         return expr_ptr;
-        // // deal with an arbitrary number of else-if clauses
-        // while (current_matches(ELIF)) {
-        //     node * new_condition = expression();
-        //     node * new_branch = assign();
-        //     node super = make_new_ifelse(condition, first_branch, &sub);
-        //     node sub = make_new_ifelse(new_condition, first_branch, second_branch);
-        // }
-        // // deal with final terminating else clause
-        // if (current_matches(ELSE)) {
-        //     else_branch = assign();
-        // }
-    // } else if (current_matches(ELIF)) {
-    // } else if (current_matches(ELSE)) {
     }
     return assign();
 }
@@ -555,16 +564,6 @@ node * Parser::primary() {
         expr_ptr = write_new_node(&expr);
     }
 
-    // deal with semicolon separating commands
-    if (current_matches(SEMICOLON)) {
-        // do nothing, just parse next expression
-    }
-
-    // deal with newline at end
-    if (current_matches(NEWLINE)) {
-        // do nothing, just finish parsing
-    }
-
     // TODO: base case?
     
     return expr_ptr;
@@ -646,16 +645,11 @@ bool Parser::has_error() {
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
 int Parser::parse_input() {
-    // parse as many statements as there are in the input provided
-    int i = 0;
-    while (!(end_reached())) {
-        syntax_trees[i] = statement();
-        i++;
-        // an error at any time should stop all operations
-        if (has_error()) {
-            return 1;
-        }
+    // parse the input provided
+    *syntax_trees = block();
+    // an error at any time should stop all operations
+    if (has_error()) {
+        return 1;
     }
-    syntax_trees[i] = NULL;
     return 0;
 }

@@ -62,21 +62,16 @@ int Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {
     // ------------------------------------------------------------------------
 
     // parse command, convert sequence of tokens into a syntax tree
-    node * tree[MAX_NUM_STMTS];
-    memset(tree, 0, sizeof(tree));
-    Parser parser(token_sequence, tree);
+    node * tree;
+    Parser parser(token_sequence, &tree);
     if ((return_code = parser.parse_input())) {
         return 1;
     }
     // ------------------------------------------------------------------------
     // // FOR DEBUGGING; print tree to see that parser works
     // printf("PARSED INFO:\n");
-    // int j = 0;
-    // while (tree[j]) {
-    //     print_tree(*tree[j]);
-    //     printf("\n");
-    //     j++;
-    // }
+    // print_tree(*tree);
+    // printf("\n");
     // ------------------------------------------------------------------------
 
     // evaluate command, convert syntax tree into a result

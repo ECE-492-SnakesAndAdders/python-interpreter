@@ -59,6 +59,21 @@ node make_new_binary(node * left, lexemes opcode, node * right) {
 
 
 /**
+ * \brief Constructor for a block's syntax tree node.
+ * \param [in] statements Pointer to the a pointer representing the list of statements.
+ * \return A structure representing the syntax tree node.
+ */
+node make_new_block(node ** statements) {
+    node current;
+    current.type = BLOCK_NODE;
+    for (int i = 0; i < MAX_NUM_STMTS; i++) {
+        current.entry.block_val.statements[i] = statements[i];
+    }
+    return current;
+}
+
+
+/**
  * \brief Constructor for a grouping's syntax tree node.
  * \param [in] expression Pointer to the node representing the nested expression.
  * \return A structure representing the syntax tree node.
@@ -79,18 +94,11 @@ node make_new_grouping(node * expression) {
  * \return A structure representing the syntax tree node.
  */
 node make_new_ifelse(node * condition, node * ifbranch, node * elsebranch) {
-// node make_new_ifelse(node * condition, node ** ifbranch, node ** elsebranch) {
     node current;
     current.type = IFELSE_NODE;
     current.entry.ifelse_val.condition = condition;
     current.entry.ifelse_val.ifbranch = ifbranch;
     current.entry.ifelse_val.elsebranch = elsebranch;
-    // for (int i = 0; i < MAX_NUM_STMTS; i++) {
-    //     current.entry.ifelse_val.ifbranch[i] = *ifbranch + i;
-    // }
-    // for (int i = 0; i < MAX_NUM_STMTS; i++) {
-    //     current.entry.ifelse_val.elsebranch[i] = *elsebranch + i;
-    // }
     return current;
 }
 
@@ -197,6 +205,7 @@ void stringify_value(literal_value value, char ** output_ptr) {
  * \param [in] tree The tree (or subtree, or node) to print.
  */
 void print_tree(node tree) {
+    int i = 0;
     switch (tree.type) {
         case ASSIGN_NODE:
             printf(" ( ");
@@ -212,6 +221,17 @@ void print_tree(node tree) {
             printf(token_names[tree.entry.binary_val.opcode]);
             print_tree(*(tree.entry.binary_val.right));
             printf(" ) ");
+            break;
+
+        case BLOCK_NODE:
+            printf("BLOCK (\n");
+            while (tree.entry.block_val.statements[i] != NULL) {
+                printf("    STATEMENT: ");
+                print_tree(*(tree.entry.block_val.statements[i]));
+                printf("\n");
+                i++;
+            }
+            printf(")");
             break;
 
         case GROUPING_NODE:

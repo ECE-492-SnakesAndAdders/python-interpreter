@@ -142,6 +142,9 @@ literal_value Evaluator::evaluate(node tree_node) {
         case BINARY_NODE:
             result = evaluate_binary(tree_node.entry.binary_val);
             break;
+        case BLOCK_NODE:
+            result = evaluate_block(tree_node.entry.block_val);
+            break;
         case GROUPING_NODE:
             result = evaluate_grouping(tree_node.entry.grouping_val);
             break;
@@ -708,6 +711,27 @@ literal_value Evaluator::evaluate_binary(binary_value expr) {
 
 
 /**
+ * \brief Evaluates a block of statements on a syntax tree node.
+ * \param [in] expr The internal represententation of the block of statements.
+ * \return The computed value of the syntax tree node.
+ */
+literal_value Evaluator::evaluate_block(block_value expr) {
+    int i = 0;
+    literal_value result;
+    // execute each statement pof the block in order
+    while (expr.statements[i]) {
+        result = evaluate(*(expr.statements[i]));
+        // add this result to the output string
+        stringify_value(result, &output_str);
+        i++;
+    }
+    // prevent double-counting the final result
+    result.type = NONE_VALUE;
+    return result;
+}
+
+
+/**
  * \brief Evaluates a nested expression within parentheses on a syntax tree node.
  * \param [in] expr The internal represententation of the nested expression.
  * \return The computed value of the syntax tree node.
@@ -903,23 +927,21 @@ bool Evaluator::has_error() {
  * \param [in] output Pointer to where to store the output value.
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
-int Evaluator::evaluate_input(node ** input, char ** output) {
-    int i = 0;
-    while (input[i]) {
-        // evaluate command, convert syntax tree into a result
-        // only execute actual trees, otherwise just print nothing
-        if (input[i]) {
-            literal_value result;
-            result = evaluate(*input[i]);
-            // save the result of the execution
-            stringify_value(result, output);
-        }
-        // report any errors that occurred during execution
-        if (has_error()) {
-            return 1;
-        }
-        i++;
+int Evaluator::evaluate_input(node * input, char ** output) {
+    // clear output string from other runs
+    memset(output_str, 0, sizeof(output_str));
+    // only execute non-empty blocks
+    if (input) {
+        // evaluate the input block of statements
+        literal_value result = evaluate(*input);
     }
-
+    // report any errors that occurred during execution
+    if (has_error()) {
+        return 1;
+    }
+    // copy over the output string for printing
+    for (int i = 0; i < MAX_OUTPUT_LEN; i++) {
+        *(*output + i) = output_str[i];
+    }
     return 0;
 }

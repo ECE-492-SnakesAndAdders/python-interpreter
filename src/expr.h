@@ -58,6 +58,15 @@ struct binary_value {
 
 
 /**
+ * \brief The internal representation of a block of statements.
+ */
+struct block_value {
+    // the statements to be executed at once
+    node * statements[MAX_NUM_STMTS];
+};
+
+
+/**
  * \brief The internal representation of a parenthetical expression.
  */
 struct grouping_value {
@@ -76,8 +85,6 @@ struct ifelse_value {
     // the statements to execute if the condiion is true or false
     node * ifbranch;
     node * elsebranch;
-    // node * ifbranch[MAX_NUM_STMTS];
-    // node * elsebranch[MAX_NUM_STMTS];
 };
 
 
@@ -146,13 +153,13 @@ struct variable_value {
  * \brief The list of all possible nodes in the syntax tree.
  */
 enum node_types {
-    ASSIGN_NODE, BINARY_NODE, GROUPING_NODE, IFELSE_NODE, LITERAL_NODE, LOGICAL_NODE, UNARY_NODE, VARIABLE_NODE
+    ASSIGN_NODE, BINARY_NODE, BLOCK_NODE, GROUPING_NODE, IFELSE_NODE, LITERAL_NODE, LOGICAL_NODE, UNARY_NODE, VARIABLE_NODE
 };
 
 
 // for ease of printing
 const char * const node_names[] = {
-    "assign", "binary", "grouping", "ifelse", "literal", "logical", "unary", "variable"
+    "assign", "binary", "block", "grouping", "ifelse", "literal", "logical", "unary", "variable"
 };
 
 
@@ -166,6 +173,7 @@ struct node {
     union {
         assign_value assign_val;
         binary_value binary_val;
+        block_value block_val;
         grouping_value grouping_val;
         ifelse_value ifelse_val;
         literal_value literal_val;
@@ -179,9 +187,9 @@ struct node {
 // constructor functions for these node structs
 node make_new_assign(char name[], node * value);
 node make_new_binary(node * left, lexemes opcode, node * right);
+node make_new_block(node ** statements);
 node make_new_grouping(node * expression);
 node make_new_ifelse(node * condition, node * ifbranch, node * elsebranch);
-// node make_new_ifelse(node * condition, node ** ifbranch, node ** elsebranch);
 node make_new_literal(literal_value value);
 node make_new_logical(node * left, lexemes opcode, node * right);
 node make_new_unary(lexemes opcode, node * right);

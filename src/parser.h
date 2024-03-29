@@ -47,6 +47,8 @@ class Parser {
         int current_node = 0;
         node ** syntax_trees;
         node * write_new_node(node * value);
+        // for parsing blocks
+        node * block();
         // for parsing statements
         node * statement();
         node * ifelse();
