@@ -80,7 +80,7 @@ node make_new_block(node ** statements) {
  * \param [in] statements Pointer to the node representing the statements to run at each iteration.
  * \return A structure representing the syntax tree node.
  */
-node make_new_forloop(char name[], node * expression, node * statements) {
+node make_new_forloop(char name[], node * expression, node * statements, node * end) {
     node current;
     current.type = FORLOOP_NODE;
     for (int i = 0; i < MAX_IDENTIFIER_LEN; i++) {
@@ -88,6 +88,7 @@ node make_new_forloop(char name[], node * expression, node * statements) {
     }
     current.entry.forloop_val.expression = expression;
     current.entry.forloop_val.statements = statements;
+    current.entry.forloop_val.end = end;
     return current;
 }
 
@@ -209,11 +210,12 @@ node make_new_variable(char name[]) {
  * \param [in] statements Pointer to the node representing the statements to run at each iteration.
  * \return A structure representing the syntax tree node.
  */
-node make_new_whileloop(node * expression, node * statements) {
+node make_new_whileloop(node * expression, node * statements, node * end) {
     node current;
     current.type = WHILELOOP_NODE;
     current.entry.whileloop_val.expression = expression;
     current.entry.whileloop_val.statements = statements;
+    current.entry.whileloop_val.end = end;
     return current;
 }
 

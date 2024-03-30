@@ -76,6 +76,8 @@ struct forloop_value {
     node * expression;
     // the statements to execute at each iteration
     node * statements;
+    // the statements to execute after normal execution
+    node * end;
 };
 
 
@@ -178,6 +180,8 @@ struct whileloop_value {
     node * expression;
     // the statements to execute at each iteration
     node * statements;
+    // the statements to execute after normal execution
+    node * end;
 };
 
 
@@ -234,7 +238,7 @@ struct node {
 node make_new_assign(char name[], node * value);
 node make_new_binary(node * left, lexemes opcode, node * right);
 node make_new_block(node ** statements);
-node make_new_forloop(char name[], node * expression, node * statements);
+node make_new_forloop(char name[], node * expression, node * statements, node * end);
 node make_new_grouping(node * expression);
 node make_new_ifelse(node * condition, node * ifbranch, node * elsebranch);
 node make_new_literal(literal_value value);
@@ -242,7 +246,7 @@ node make_new_logical(node * left, lexemes opcode, node * right);
 node make_new_special(lexemes keyword);
 node make_new_unary(lexemes opcode, node * right);
 node make_new_variable(char name[]);
-node make_new_whileloop(node * expression, node * statements);
+node make_new_whileloop(node * expression, node * statements, node * end);
 // to convert a literal value into a well-formatted string
 void stringify_value(literal_value value, char ** output_ptr);
 // to print a representation of the syntax tree for debugging

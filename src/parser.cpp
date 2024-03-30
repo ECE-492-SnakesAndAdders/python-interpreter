@@ -170,9 +170,29 @@ node * Parser::forloop() {
         // the block to execute immediately follows
         node * for_block = block();
         
+        // no longer in the loop body
         loop_depth--;
+
+        node * final_block = NULL;
+        // else-branch depends on what is provided
+        if (current_matches(ELSE)) {
+            // consume required colon and optional newline
+            if (!current_matches(COLON)) {
+                report_error(SYNTAX, "invalid syntax");
+                error_occurred = true;
+            }
+            current_matches(NEWLINE);
+            final_block = block();
+        // if none provided, then make it explicit
+        } else {
+            literal_value temp_val;
+            temp_val.type = NONE_VALUE;
+            node temp_node = make_new_literal(temp_val);
+            final_block = write_new_node(&temp_node);
+        }
+
         // create tree node for the branching
-        node expr = make_new_forloop(name, iterable, for_block);
+        node expr = make_new_forloop(name, iterable, for_block, final_block);
         node * expr_ptr = write_new_node(&expr);
         return expr_ptr;
     }
@@ -205,9 +225,29 @@ node * Parser::whileloop() {
         // the block to execute immediately follows
         node * while_block = block();
         
+        // no longer in the loop body
         loop_depth--;
+        
+        node * final_block = NULL;
+        // else-branch depends on what is provided
+        if (current_matches(ELSE)) {
+            // consume required colon and optional newline
+            if (!current_matches(COLON)) {
+                report_error(SYNTAX, "invalid syntax");
+                error_occurred = true;
+            }
+            current_matches(NEWLINE);
+            final_block = block();
+        // if none provided, then make it explicit
+        } else {
+            literal_value temp_val;
+            temp_val.type = NONE_VALUE;
+            node temp_node = make_new_literal(temp_val);
+            final_block = write_new_node(&temp_node);
+        }
+
         // create tree node for the branching
-        node expr = make_new_whileloop(condition, while_block);
+        node expr = make_new_whileloop(condition, while_block, final_block);
         node * expr_ptr = write_new_node(&expr);
         return expr_ptr;
     }

@@ -767,6 +767,8 @@ literal_value Evaluator::evaluate_forloop(forloop_value expr) {
         error_occurred = true;
         return result;
     }
+    // track how loop returns to know whether to execute else-block
+    bool return_normal = true;
     // iterate over the iterable
     literal_value iterator;
     switch (iterable.type) {
@@ -788,6 +790,7 @@ literal_value Evaluator::evaluate_forloop(forloop_value expr) {
                 // handle break and continue statements
                 } catch (lexemes error_code) {
                     if (error_code == BREAK) {
+                        return_normal = false;
                         break;
                     } else if (error_code == CONTINUE) {
                         continue;
@@ -803,6 +806,10 @@ literal_value Evaluator::evaluate_forloop(forloop_value expr) {
         // TODO: add other iterables?
         default:
             break;
+    }
+    // execute the else-block if condition is satisfied
+    if (return_normal) {
+        result = evaluate(*(expr.end));
     }
     // return None from this operation so that nothing is printed
     result.type = NONE_VALUE;
@@ -1041,6 +1048,8 @@ literal_value Evaluator::evaluate_variable(variable_value expr) {
  */
 literal_value Evaluator::evaluate_whileloop(whileloop_value expr) {
     literal_value result;
+    // track how loop returns to know whether to execute else-block
+    bool return_normal = true;
     // execute the block as long as the entry condition is true
     while (boolify(evaluate(*(expr.expression)))) {
         // try to execute statements normally
@@ -1049,6 +1058,7 @@ literal_value Evaluator::evaluate_whileloop(whileloop_value expr) {
         // handle break and continue statements
         } catch (lexemes error_code) {
             if (error_code == BREAK) {
+                return_normal = false;
                 break;
             } else if (error_code == CONTINUE) {
                 continue;
@@ -1058,6 +1068,10 @@ literal_value Evaluator::evaluate_whileloop(whileloop_value expr) {
             report_failure("uncaught exception");
             error_occurred = true;
         }
+    }
+    // execute the else-block if condition is satisfied
+    if (return_normal) {
+        result = evaluate(*(expr.end));
     }
     // return None from this operation so that nothing is printed
     result.type = NONE_VALUE;
