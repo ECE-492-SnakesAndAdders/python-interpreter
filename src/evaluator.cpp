@@ -6,7 +6,9 @@
 *********************************************************************************/
 
 
+#include <cstdio>
 #include <cstring>
+#include <exception>
 #include "error.h"
 #include "evaluator.h"
 #include "utility.h"
@@ -169,6 +171,9 @@ literal_value Evaluator::evaluate(node tree_node) {
             break;
         case LOGICAL_NODE:
             result = evaluate_logical(tree_node.entry.logical_val);
+            break;
+        case SPECIAL_NODE:
+            result = evaluate_special(tree_node.entry.special_val);
             break;
         case UNARY_NODE:
             result = evaluate_unary(tree_node.entry.unary_val);
@@ -778,7 +783,20 @@ literal_value Evaluator::evaluate_forloop(forloop_value expr) {
                 iterator.data.string[0] = iterable.data.string[i];
                 write_variable(env, expr.name, iterator);
                 // run the statements with this version of the iterator
-                result = evaluate(*(expr.statements));
+                try {
+                    result = evaluate(*(expr.statements));
+                // handle break and continue statements
+                } catch (lexemes error_code) {
+                    if (error_code == BREAK) {
+                        break;
+                    } else if (error_code == CONTINUE) {
+                        continue;
+                    }
+                // should never happen
+                } catch (...) {
+                    report_failure("uncaught exception");
+                    error_occurred = true;
+                }
             }
             break;
 
@@ -896,6 +914,43 @@ literal_value Evaluator::evaluate_logical(logical_value expr) {
 
 
 /**
+ * \brief Evaluates a special keyword represented by a syntax tree node.
+ * \param [in] expr The internal representation of the special keyword.
+ * \return The computed value of the syntax tree node.
+ */
+literal_value Evaluator::evaluate_special(special_value expr) {
+    // perform corresponding operation
+    switch (expr.keyword) {
+        // break operation
+        case BREAK:
+            // throw error corresponding to the identifier of this keyword
+            throw BREAK;
+
+        // continue operation
+        case CONTINUE:
+            // throw error corresponding to the identifier of this keyword
+            throw CONTINUE;
+
+        // pass operation
+        case PASS:
+            // do nothing, as desired
+            break;
+
+        // theoretically unreachable
+        default:
+            report_failure("no such sepcial keyword exists");
+            error_occurred = true;
+            break;
+    }
+
+    // return None from this operation so that nothing is printed
+    literal_value result;
+    result.type = NONE_VALUE;
+    return result;
+}
+
+
+/**
  * \brief Evaluates a unary operation represented by a syntax tree node.
  * \param [in] expr The internal representation of the unary operation.
  * \return The computed value of the syntax tree node.
@@ -988,7 +1043,21 @@ literal_value Evaluator::evaluate_whileloop(whileloop_value expr) {
     literal_value result;
     // execute the block as long as the entry condition is true
     while (boolify(evaluate(*(expr.expression)))) {
-        result = evaluate(*(expr.statements));
+        // try to execute statements normally
+        try {
+            result = evaluate(*(expr.statements));
+        // handle break and continue statements
+        } catch (lexemes error_code) {
+            if (error_code == BREAK) {
+                break;
+            } else if (error_code == CONTINUE) {
+                continue;
+            }
+        // should never happen
+        } catch (...) {
+            report_failure("uncaught exception");
+            error_occurred = true;
+        }
     }
     // return None from this operation so that nothing is printed
     result.type = NONE_VALUE;

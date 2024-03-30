@@ -142,6 +142,15 @@ struct logical_value {
 
 
 /**
+ * \brief The internal representation of a special keyword statement.
+ */
+struct special_value {
+    // the special keyword used
+    lexemes keyword;
+};
+
+
+/**
  * \brief The internal representation of a unary operation.
  */
 struct unary_value {
@@ -184,6 +193,7 @@ enum node_types {
     IFELSE_NODE,
     LITERAL_NODE,
     LOGICAL_NODE,
+    SPECIAL_NODE,
     UNARY_NODE,
     VARIABLE_NODE,
     WHILELOOP_NODE,
@@ -192,7 +202,7 @@ enum node_types {
 
 // for ease of printing
 const char * const node_names[] = {
-    "assign", "binary", "block", "forloop", "grouping", "ifelse", "literal", "logical", "unary", "variable", "whileloop"
+    "assign", "binary", "block", "forloop", "grouping", "ifelse", "literal", "logical", "special", "unary", "variable", "whileloop"
 };
 
 
@@ -212,6 +222,7 @@ struct node {
         ifelse_value ifelse_val;
         literal_value literal_val;
         logical_value logical_val;
+        special_value special_val;
         unary_value unary_val;
         variable_value variable_val;
         whileloop_value whileloop_val;
@@ -228,6 +239,7 @@ node make_new_grouping(node * expression);
 node make_new_ifelse(node * condition, node * ifbranch, node * elsebranch);
 node make_new_literal(literal_value value);
 node make_new_logical(node * left, lexemes opcode, node * right);
+node make_new_special(lexemes keyword);
 node make_new_unary(lexemes opcode, node * right);
 node make_new_variable(char name[]);
 node make_new_whileloop(node * expression, node * statements);

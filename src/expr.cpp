@@ -161,6 +161,19 @@ node make_new_logical(node * left, lexemes opcode, node * right) {
 
 
 /**
+ * \brief Constructor for a special keyword statement's syntax tree node.
+ * \param [in] opcode The token representing the special keyword to execute.
+ * \return A structure representing the syntax tree node.
+ */
+node make_new_special(lexemes keyword) {
+    node current;
+    current.type = SPECIAL_NODE;
+    current.entry.special_val.keyword = keyword;
+    return current;
+}
+
+
+/**
  * \brief Constructor for a unary operation's syntax tree node.
  * \param [in] opcode The token representing the operation to complete.
  * \param [in] right Pointer to the node representing the operand.

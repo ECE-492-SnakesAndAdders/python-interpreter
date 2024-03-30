@@ -51,6 +51,7 @@ class Parser {
         node * block();
         // for parsing statements
         node * statement();
+        node * special();
         node * forloop();
         node * whileloop();
         node * ifelse();
@@ -79,6 +80,9 @@ class Parser {
         void advance_current();
         // checks if there are any more characters to be read
         bool end_reached();
+        // to track syntax errors
+        int loop_depth = 0;
+        bool not_in_loop();
         // for error handling
         bool error_occurred = false;
         bool has_error();

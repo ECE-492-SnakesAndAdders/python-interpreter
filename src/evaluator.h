@@ -44,6 +44,7 @@ class Evaluator {
         literal_value evaluate_ifelse(ifelse_value expr);
         literal_value evaluate_literal(literal_value expr);
         literal_value evaluate_logical(logical_value expr);
+        literal_value evaluate_special(special_value expr);
         literal_value evaluate_unary(unary_value expr);
         literal_value evaluate_variable(variable_value expr);
         literal_value evaluate_whileloop(whileloop_value expr);

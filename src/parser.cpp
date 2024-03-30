@@ -93,6 +93,38 @@ node * Parser::block() {
  */
 node * Parser::statement() {
     // start recursively looking for statement operators
+    return special();
+}
+
+
+/**
+ * \brief Handles special keyword statements.
+ * \return The internal representation of the statement parsed so far.
+ */
+node * Parser::special() {
+    // TODO: add support for mor single-keyword statements?
+    // for keywords allowed only when inside a loop
+    if (current_matches(BREAK) || current_matches(CONTINUE)) {
+        if (not_in_loop()) {
+            // error detected, must be inside a loop to leave one
+            report_error(SYNTAX, "outside loop");
+            error_occurred = true;
+        }
+        // create tree node for the statement
+        lexemes keyword = previous_token();
+        node expr = make_new_special(keyword);
+        node * expr_ptr = write_new_node(&expr);
+        return expr_ptr;
+    // for keywords that can be used at any time
+    } else if (current_matches(PASS)) {
+        // create tree node for the statement
+        lexemes keyword = previous_token();
+        node expr = make_new_special(keyword);
+        node * expr_ptr = write_new_node(&expr);
+        return expr_ptr;
+    }
+
+    // no special keywords, so try next type of statement
     return forloop();
 }
 
@@ -105,6 +137,7 @@ node * Parser::forloop() {
     // TODO: ...
     // for loop always begins with a for keyword
     if (current_matches(FOR)) {
+        loop_depth++;
         // variable must follow as loop variable
         char * name = NULL;
         if (current_matches(IDENTIFIER)) {
@@ -137,6 +170,7 @@ node * Parser::forloop() {
         // the block to execute immediately follows
         node * for_block = block();
         
+        loop_depth--;
         // create tree node for the branching
         node expr = make_new_forloop(name, iterable, for_block);
         node * expr_ptr = write_new_node(&expr);
@@ -156,6 +190,7 @@ node * Parser::whileloop() {
     // TODO: add break and continue support
     // while loop always begins with a while keyword
     if (current_matches(WHILE)) {
+        loop_depth++;
         // parse condition for breaking out which must be right after the initial keyword
         node * condition = expression();
         // consume colon which must be immediately after the expression
@@ -170,6 +205,7 @@ node * Parser::whileloop() {
         // the block to execute immediately follows
         node * while_block = block();
         
+        loop_depth--;
         // create tree node for the branching
         node expr = make_new_whileloop(condition, while_block);
         node * expr_ptr = write_new_node(&expr);
@@ -717,6 +753,15 @@ void Parser::advance_current() {
  */
 bool Parser::end_reached() {
     return current >= (command_info.token_count);
+}
+
+
+/**
+ * \brief Helper function to determine if we are outside the scope of a loop.
+ * \return True if we are not inside a loop; false otherwise.
+ */
+bool Parser::not_in_loop() {
+    return (loop_depth == 0);
 }
 
 
