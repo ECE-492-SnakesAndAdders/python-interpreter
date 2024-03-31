@@ -290,13 +290,11 @@ void print_tree(node tree) {
             break;
 
         case IFELSE_NODE:
-            printf("if");
-            printf(" ( ");
+            printf("if ( ");
             print_tree(*(tree.entry.ifelse_val.condition));
-            printf(" ) ");
-            printf("then");
+            printf(" ) then ( ");
             print_tree(*(tree.entry.ifelse_val.ifbranch));
-            printf("else");
+            printf(" ) else ( ");
             print_tree(*(tree.entry.ifelse_val.elsebranch));
             break;
 

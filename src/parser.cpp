@@ -262,11 +262,16 @@ node * Parser::whileloop() {
  * \return The internal representation of the statement parsed so far.
  */
 node * Parser::ifelse() {
-    // TODO: for now, no nested if statements, also add elif
+    // TODO: for now, no nested if statements
     // if-else statement always begins with an if keyword
     if (current_matches(IF)) {
+        // allow storage f an arbitrary number of branches in the statement
+        node * branch_conditions[MAX_NUM_BRANCHES] = {NULL};
+        node * branch_statements[MAX_NUM_BRANCHES] = {NULL};
+
+        // parse the first (if) branch
         // parse condition for branch which must be right after the initial keyword
-        node * condition = expression();
+        branch_conditions[0] = expression();
         // consume colon which must be immediately after the expression
         if (!current_matches(COLON)) {
             // error detected, must have colon to know that 
@@ -275,10 +280,32 @@ node * Parser::ifelse() {
         }
         // consume the optional newline if it exists
         current_matches(NEWLINE);
-
         // the branches to execute follow, always then-branch is first
-        node * first_branch = block();
-        node * second_branch = NULL;
+        branch_statements[0] = block();
+
+        // parse an arbitrary number of additional (elif) branches
+        int num_branches = 1;
+        while (current_matches(ELIF)) {
+            // parse condition for branch which must be right after the initial keyword
+            branch_conditions[num_branches] = expression();
+            // consume colon which must be immediately after the expression
+            if (!current_matches(COLON)) {
+                // error detected, must have colon to know that 
+                report_error(SYNTAX, "invalid syntax");
+                error_occurred = true;
+            }
+            // consume the optional newline if it exists
+            current_matches(NEWLINE);
+
+            // the branches to execute follow, always then-branch is first
+            branch_statements[num_branches] = block();
+
+            // one more branch stored, so move along size limit
+            num_branches++;
+        }
+
+        // parse the final (else) branch
+        node * final_branch = NULL;
         // else-branch depends on what is provided
         if (current_matches(ELSE)) {
             // consume required colon and optional newline
@@ -287,21 +314,27 @@ node * Parser::ifelse() {
                 error_occurred = true;
             }
             current_matches(NEWLINE);
-            second_branch = block();
-        // can have subsequent else-if blocks
-        } else if (current_matches(ELIF)) {
-            // TODO: make this work
+            final_branch = block();
         // if none provided, then make it explicit
         } else {
             literal_value temp_val;
             temp_val.type = NONE_VALUE;
             node temp_node = make_new_literal(temp_val);
-            second_branch = write_new_node(&temp_node);
+            final_branch = write_new_node(&temp_node);
         }
         
-        // create tree node for the branching
-        node expr = make_new_ifelse(condition, first_branch, second_branch);
+        // pointer now needs to point to last existing barnch, not next new one
+        num_branches--;
+        // make final branch with last elif condition and else branch first because of the tree structure
+        node expr = make_new_ifelse(branch_conditions[num_branches], branch_statements[num_branches], final_branch);
         node * expr_ptr = write_new_node(&expr);
+        num_branches--;
+        // repeat this tree construction process moving back to the original branch
+        while (num_branches >= 0) {
+            expr = make_new_ifelse(branch_conditions[num_branches], branch_statements[num_branches], expr_ptr);
+            expr_ptr = write_new_node(&expr);
+            num_branches--;
+        }
         return expr_ptr;
     }
 

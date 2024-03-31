@@ -29,6 +29,11 @@
 #define MAX_NUM_STMTS 32
 #endif
 
+// the maximum number of branches allowed on one if statement
+#ifndef MAX_NUM_BRANCHES
+#define MAX_NUM_BRANCHES 32
+#endif
+
 
 /**
  * \brief The parser of the interpreter; it takes a token list as input and a syntax tree as output.

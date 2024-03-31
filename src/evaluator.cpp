@@ -793,7 +793,7 @@ literal_value Evaluator::evaluate_forloop(forloop_value expr) {
                         return_normal = false;
                         break;
                     } else if (error_code == CONTINUE) {
-                        continue;
+                        // do nothing since this loop iteration is done anyway
                     }
                 // should never happen
                 } catch (...) {
@@ -1061,7 +1061,7 @@ literal_value Evaluator::evaluate_whileloop(whileloop_value expr) {
                 return_normal = false;
                 break;
             } else if (error_code == CONTINUE) {
-                continue;
+                // do nothing since this loop iteration is done anyway
             }
         // should never happen
         } catch (...) {
