@@ -10,7 +10,7 @@
 #define ENVIRONMENT_H
 
 
-#include "expr.h"
+#include "tree.h"
 
 
 // the maximum number of variables that may exist in a given scope
