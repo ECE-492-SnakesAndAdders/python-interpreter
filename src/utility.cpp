@@ -7,6 +7,10 @@
 
 
 #include <XPD.h>
+#include "GPIO_nio.h"
+#include "LCD.h"
+#include "time_funcs.h"
+#include "UART_GPIO_NIO.h"
 #include "utility.h"
 
 
@@ -14,6 +18,44 @@
 #ifndef MAX_LIT_LEN
 #define MAX_LIT_LEN 32
 #endif
+
+
+// boilerplate setup for uart and lcd
+using namespace LCD_Functions;
+using L = LCD_STARTUP<DisplaySettings::DISPLAY_ON, CursorSettings ::CURSOR_ON, CursorBlink ::BLINK_OFF, Cursor_Line ::LCD_HOME_L1>;
+L LCD_startup;
+UART uart;
+GPIO tx;
+GPIO rx;
+
+
+/**
+ * \brief Inititalizes the LCD driver.
+ */
+void setup_LCD() {
+    SPI_set_config((SPI_ENABLE | SPI_MASTER | SPI_CLK_RATE_DIV_256) & ~(SPI_CLK_PHASE | SPI_CLK_IDLE_AT_1), SPI0);
+    gpio_set_config((0x0C << 8), GPIO_C);
+    gpio_write(gpio_get_output_reg(GPIO_C) | 0xC, GPIO_C);
+    ResetLCD();
+    LCD_startup.initializeDOGM204();
+    LCD_startup.setViewAngleTop();
+    LCD_startup.clrDisplay();
+    LCD_startup.setDisplayMode();
+    LCD_startup.setCursorMode();
+    LCD_startup.setBlinkMode();
+    LCD_startup.setCursor(0, 0);
+}
+
+
+/**
+ * \brief Inititalizes the UART driver.
+ */
+void setup_UART() {
+    tx.init(PORT_C, 6, OUT);
+    rx.init(PORT_C, 7, IN);
+    uart.initTX(&tx, 96, 8, 0, 0, 1);
+    uart.initRX(&rx, 96, 8, 0, 0, 1);
+}
 
 
 /**
@@ -168,9 +210,14 @@ void itos(char ** num_str, uint16_t num_value) {
  */
 void print_string(char ** str) {
     // iteratively print each character in the string until NULL terminator encountered
-    while (**str) {
-        xpd_putc(**str);
-        (*str)++;
+    uint16_t i = 0;
+    while (*(*str + i)) {
+        if (*(*str + i) == '\n') {
+            // TODO: handle newline character properly
+        } else {
+            LCD_startup.writeChar(*(*str + i));
+        }
+        i++;
     }
 }
 
@@ -182,7 +229,22 @@ void print_string(char ** str) {
 void print_string(const char * str) {
     // iteratively print each character in the string until NULL terminator encountered
     while (*str) {
-        xpd_putc(*str);
+        LCD_startup.writeChar(*str);
         str++;
     }
+}
+
+
+/**
+ * \brief Reads a character from the UART (blocks until it is done).
+ * \return The character on the UART.
+ */
+char get_char_now() {
+    char input_char = 0;
+    // 0 on the line means no character to read
+    while (input_char == 0) {
+        input_char = (char) uart.readByte();
+    }
+    LCD_startup.writeChar(input_char);
+    return input_char;
 }

@@ -41,6 +41,12 @@
 */
 
 
+// forward declarations
+void setup_LCD();
+void setup_UART();
+char get_char_now();
+
+
 /**
  * \brief Reads in a line (until a '\n' character) of input.
  * \param [in] input_ptr Pointer to where to store the input received.
@@ -48,15 +54,11 @@
  */
 uint16_t read(char ** input_ptr) {
     // prompt user for command
-    xpd_putc('>');
-    xpd_putc('>');
-    xpd_putc('>');
-    xpd_putc(' ');
+    print_string(">>> ");
     // read characters until 'enter' key is hit or buffer is full
     for (uint16_t i = 0; i < MAX_INPUT_LEN - 1; i++) {
-        *(*input_ptr + i) = (char) xpd_getchar();
-        if ((*(*input_ptr + i) == '\n') || (i == MAX_INPUT_LEN - 2)) {
-            // add NULL terminator character after 'enter' key or final slot
+        *(*input_ptr + i) = get_char_now();
+        if ((*(*input_ptr + i) == '\r') || (i == MAX_INPUT_LEN - 2)) {
             *(*input_ptr + i + 1) = '\0';
             break;
         }
@@ -82,37 +84,37 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
     }
     // ------------------------------------------------------------------------
     // // FOR DEBUGGING; print each token to see that lexer works
-    // xpd_puts("LEXED INFO:\n");
-    // xpd_puts("Tokens: ");
+    // print_string("LEXED INFO:\n");
+    // print_string("Tokens: ");
     // for (uint16_t i = 0; i < token_sequence.token_count; i++) {
-    //     xpd_echo_int(token_sequence.tokens[i], XPD_Flag_UnsignedDecimal);
-    //     xpd_putc(' ');
-    //     xpd_puts(token_names[token_sequence.tokens[i]]);
-    //     xpd_putc(',');
-    //     xpd_putc(' ');
+    //     // xpd_echo_int(token_sequence.tokens[i], XPD_Flag_UnsignedDecimal);
+    //     print_string(" ");
+    //     print_string(token_names[token_sequence.tokens[i]]);
+    //     print_string(",");
+    //     print_string(" ");
     // }
-    // xpd_putc('\n');
-    // xpd_puts("Strings: ");
+    // print_string("\n");
+    // print_string("Strings: ");
     // for (uint16_t i = 0; i < token_sequence.str_lit_count; i++) {
-    //     xpd_puts(token_sequence.str_lits[i]);
-    //     xpd_putc(',');
-    //     xpd_putc(' ');
+    //     print_string(token_sequence.str_lits[i]);
+    //     print_string(",");
+    //     print_string(" ");
     // }
-    // xpd_putc('\n');
-    // xpd_puts("Numbers: ");
+    // print_string("\n");
+    // print_string("Numbers: ");
     // for (uint16_t i = 0; i < token_sequence.num_lit_count; i++) {
-    //     xpd_echo_int(token_sequence.num_lits[i], XPD_Flag_UnsignedDecimal);
-    //     xpd_putc(',');
-    //     xpd_putc(' ');
+    //     // xpd_echo_int(token_sequence.num_lits[i], XPD_Flag_UnsignedDecimal);
+    //     print_string(",");
+    //     print_string(" ");
     // }
-    // xpd_putc('\n');
-    // xpd_puts("Identifiers: ");
+    // print_string("\n");
+    // print_string("Identifiers: ");
     // for (uint16_t i = 0; i < token_sequence.identifier_count; i++) {
-    //     xpd_puts(token_sequence.identifiers[i]);
-    //     xpd_putc(',');
-    //     xpd_putc(' ');
+    //     print_string(token_sequence.identifiers[i]);
+    //     print_string(",");
+    //     print_string(" ");
     // }
-    // xpd_putc('\n');
+    // print_string("\n");
     // ------------------------------------------------------------------------
 
     // parse command, convert sequence of tokens into a syntax tree
@@ -125,7 +127,7 @@ uint16_t eval(char ** input_ptr, char ** output_ptr) {
     // // FOR DEBUGGING; print tree to see that parser works
     // xpd_puts("PARSED INFO:\n");
     // print_tree(*tree);
-    // xpd_putc('\n');
+    // print_string("\n");
     // ------------------------------------------------------------------------
 
     // evaluate command, convert syntax tree into a result
@@ -149,7 +151,7 @@ uint16_t print(char ** output_ptr) {
     // print the output string received
     if (**output_ptr) {
         print_string(output_ptr);
-        xpd_putc('\n');
+        print_string("\n");
     }
     return 0;
 }
@@ -160,7 +162,11 @@ uint16_t print(char ** output_ptr) {
  * \return 0 on success; a non-zero integer on failure.
  */
 int main() {
-    print_string("\nWelcome to Python on the C3 board.\n");
+    // initialize the peripheral drivers
+    setup_LCD();
+    setup_UART();
+    
+    print_string("Welcome to Python on the C3 board.\r\n");
 
     uint16_t return_code = 0;
     // REPL: Read-Eval-Print-Loop
@@ -176,15 +182,24 @@ int main() {
 
         // read in user input (command / code), handle sytem error
         if ((return_code = read(&input_ptr))) {
+            // print_string(&input_ptr);
             report_failure("error in read()");
             break;
         }
+
+        // print_string("HELLO WORLD:\r\n");
+        // print_string(&input_ptr);
+        // print_string("HELLO WORLD DONE\r\n");
+
+        // print_string("HELLO WORLD 2");
 
         // evaluate and execute input received
         if ((return_code = eval(&input_ptr, &output_ptr))) {
             // if an error occurred, stop this command and prompt for a new one
             continue;
         }
+
+        // print_string("HELLO WORLD 3");
         
         // display the correct output from this input, handle sytem error
         if ((return_code = print(&output_ptr))) {
