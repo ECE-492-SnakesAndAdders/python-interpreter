@@ -43,7 +43,7 @@
 /**
  * \brief Basic constructor for the parser.
  * \param [in] input Pointer to the token list returned by the lexer.
- * \param [in] output Pointer to pointer to where to store the produced syntax tree.
+ * \param [inout] output Pointer to pointer to where to store the produced syntax tree.
  */
 Parser::Parser(lexed_command input, node ** output) {
     command_info = input;
@@ -102,7 +102,7 @@ node * Parser::statement() {
  * \return The internal representation of the statement parsed so far.
  */
 node * Parser::special() {
-    // TODO: add support for mor single-keyword statements?
+    // TODO: add support for more single-keyword statements?
     // for keywords allowed only when inside a loop
     if (current_matches(BREAK) || current_matches(CONTINUE)) {
         if (not_in_loop()) {
@@ -134,7 +134,6 @@ node * Parser::special() {
  * \return The internal representation of the statement parsed so far.
  */
 node * Parser::forloop() {
-    // TODO: ...
     // for loop always begins with a for keyword
     if (current_matches(FOR)) {
         loop_depth++;

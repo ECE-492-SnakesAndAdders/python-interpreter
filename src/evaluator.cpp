@@ -22,7 +22,7 @@
 
 /**
  * \brief Constructor for the evaluator class.
- * \param [in] env Pointer to the pre-created environment to use.
+ * \param [inout] env Pointer to the pre-created environment to use.
  */
 Evaluator::Evaluator(environment * env) {
     this -> env = env;
@@ -1091,7 +1091,7 @@ bool Evaluator::has_error() {
 /**
  * \brief Evaluates the input syntax tree and executes it.
  * \param [in] input The syntax tree to evaluate.
- * \param [in] output Pointer to where to store the output value.
+ * \param [inout] output Pointer to where to store the output value.
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
 int Evaluator::evaluate_input(node * input, char ** output) {

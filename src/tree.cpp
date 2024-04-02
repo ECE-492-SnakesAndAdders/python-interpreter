@@ -223,7 +223,7 @@ node make_new_whileloop(node * expression, node * statements, node * end) {
 /**
  * \brief Converts a literal value to a properly-formatted string.
  * \param [in] value The literal value to be converted into a string.
- * \param [in] output_ptr Pointer to the output string buffer.
+ * \param [inout] output_ptr Pointer to the output string buffer.
  */
 void stringify_value(literal_value value, char ** output_ptr) {
     switch (value.type) {

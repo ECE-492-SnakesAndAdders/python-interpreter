@@ -22,8 +22,8 @@
 
 /**
  * \brief Basic constructor for the lexer.
- * \param [in] input Pointer to the input string entered by the user.
- * \param [in] output Pointer to the location to store information about the lexed command.
+ * \param [inout] input Pointer to the input string entered by the user.
+ * \param [inout] output Pointer to the location to store information about the lexed command.
  */
 Lexer::Lexer(char ** input, lexed_command * output) {
     // transfer input string into object
@@ -337,7 +337,7 @@ bool Lexer::next_matches(char character) {
 /**
  * \brief Recovers the string literal in the instruction.
  * \param [in] terminator The string terminator (either '"' or "'").
- * \param [in] output_ptr Pointer to where to store the literal value.
+ * \param [inout] output_ptr Pointer to where to store the literal value.
  */
 void Lexer::match_string(char terminator, char ** output_ptr) {
     // make an index to track the literal's value string
@@ -361,7 +361,7 @@ void Lexer::match_string(char terminator, char ** output_ptr) {
 
 /**
  * \brief Recovers the number literal in the instruction.
- * \param [in] output_ptr Pointer to where to store the literal value.
+ * \param [inout] output_ptr Pointer to where to store the literal value.
  */
 void Lexer::match_number(int * output_ptr) {
     // track the number string to be parsed
@@ -383,7 +383,7 @@ void Lexer::match_number(int * output_ptr) {
 
 /**
  * \brief Recovers the name of an identifier used in the instruction.
- * \param [in] output_ptr Pointer to where to store the identifier name.
+ * \param [inout] output_ptr Pointer to where to store the identifier name.
  */
 void Lexer::match_identifier(char ** output_ptr) {
     int i = 0;

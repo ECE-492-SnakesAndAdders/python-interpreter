@@ -93,7 +93,7 @@ int stoi(char ** num_str, int str_len) {
 
 /**
  * \brief Converts an integer to a string; the opposite of stoi() above.
- * \param [in] num_str Pointer to where to store the produced string.
+ * \param [inout] num_str Pointer to where to store the produced string.
  * \param [in] num_value The integer to convert.
  * \return The string representation of the integer.
  */

@@ -17,8 +17,8 @@
 
 /**
  * \brief Executes a single command from start to finish.
- * \param [in] input_ptr Pointer to where the input received is stored.
- * \param [in] output_ptr Pointer to where to store the text to be printed.
+ * \param [inout] input_ptr Pointer to where the input received is stored.
+ * \param [inout] output_ptr Pointer to where to store the text to be printed.
  * \return 0 on success; a non-zero error number on failure.
  */
 int Interpreter::interpret_command(char ** input_ptr, char ** output_ptr) {

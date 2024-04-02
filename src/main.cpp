@@ -41,7 +41,7 @@
 
 /**
  * \brief Reads in a line (until a '\n' character) of input.
- * \param [in] input_ptr Pointer to where to store the input received.
+ * \param [inout] input_ptr Pointer to where to store the input received.
  * \return 0 on success; a non-zero error number on failure.
  */
 int read(char ** input_ptr) {
@@ -61,8 +61,8 @@ int read(char ** input_ptr) {
 /**
  * \brief Parses, analyzes, and executes the Python code to produce output.
  * \param [in] interpreter The interpreter to analyze and execute the command.
- * \param [in] input_ptr Pointer to where the input received is stored.
- * \param [in] output_ptr Pointer to where to store the text to be printed.
+ * \param [inout] input_ptr Pointer to where the input received is stored.
+ * \param [inout] output_ptr Pointer to where to store the text to be printed.
  * \return 0 on success; a non-zero error number on failure.
  */
 int eval(Interpreter interpreter, char ** input_ptr, char ** output_ptr) {
