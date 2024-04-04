@@ -36,7 +36,9 @@ namespace LCD_Functions {
         ROM_PAGE_JAPANESE = 0x0C
     };*/
 }
-template<LCD_Functions :: DisplaySettings DISPLAYMODE, LCD_Functions :: CursorSettings CURSORMODE, LCD_Functions ::CursorBlink BlinkMode, LCD_Functions :: Cursor_Line CURSORLINE> class LCD_STARTUP {
+
+template<LCD_Functions :: DisplaySettings DISPLAYMODE, LCD_Functions :: CursorSettings CURSORMODE, LCD_Functions ::CursorBlink BlinkMode, LCD_Functions :: Cursor_Line CURSORLINE>
+class LCD_STARTUP {
 
     public:
         // Settings of display, cursor and blinking via flags
@@ -44,15 +46,12 @@ template<LCD_Functions :: DisplaySettings DISPLAYMODE, LCD_Functions :: CursorSe
         {
             writeIns(0x08 + (uint16_t)DISPLAYMODE);
         }
-
         void setCursorMode(){
             writeIns(0x08 + (uint16_t)CURSORMODE);
         }
-
         void setBlinkMode(){ // Setting Blink Mode
             writeIns(0x08 + (uint16_t)BlinkMode);
         }
-
         void setCursor(uint16_t col, uint16_t row)
         {
             int row_offsets[] = {0x00, 0x20, 0x40, 0x60};
@@ -66,7 +65,6 @@ template<LCD_Functions :: DisplaySettings DISPLAYMODE, LCD_Functions :: CursorSe
             }
             writeIns((uint16_t)CURSORLINE + col + row_offsets[row]);
         }
-
         void initializeDOGM204() // Initialization of the EA DOGM204, as in the specs.
         {
             // init display, copied directly from the dogm204e.pdf
@@ -82,21 +80,18 @@ template<LCD_Functions :: DisplaySettings DISPLAYMODE, LCD_Functions :: CursorSe
             writeIns(0x38); // 8-Bit data length extension Bit RE=0; IS=0
             writeIns(0x0F); // Display on, cursor on, blink on
         }
-
         void setViewAngleBottom()// Direction of view when LED connections are at the bottom
         {
             writeIns(0x3A);
             writeIns(0x05);
             writeIns(0x38);
         }
-
         void setViewAngleTop()// Direction of view when LED connections are at the bottom
         {
             writeIns(0x3A);
             writeIns(0x06);
             writeIns(0x38);
         }
-
         void setContrast(uint16_t p_contr) // set contrast, goes from 0 to 63, 63 is maximum
         {
             writeIns(0x39);
@@ -104,20 +99,17 @@ template<LCD_Functions :: DisplaySettings DISPLAYMODE, LCD_Functions :: CursorSe
             writeIns(0x70 | (p_contr & 0x0F));
             writeIns(0x38);
         }
-
         void clrDisplay() // Clear the LCD
         {
             writeIns(0x01);
             setCursor(0, 0);
             wait_ms(100); // Wait 100 milliseconds
         }
-
         void writeChar(uint16_t p_x, uint16_t p_y, uint16_t p_char)
         {
             setCursor(p_x, p_y);
             writeData(p_char);
         }
-
         void writeString(uint16_t p_x, uint16_t p_y, uint16_t p_str[], int len)
         {
             int idx = 0;
@@ -128,12 +120,10 @@ template<LCD_Functions :: DisplaySettings DISPLAYMODE, LCD_Functions :: CursorSe
                 idx = idx + 1;
             }
         }
-
         void writeChar(uint16_t p_char)
         {
             writeData(p_char);
         }
-
         void takeInput(uint16_t myString)
         {
             // int len = sizeof(myString) / sizeof(uint16_t);
@@ -173,6 +163,7 @@ void ResetLCD()
     gpio_write(gpio_get_output_reg(GPIO_C) | (1 << 3), GPIO_C);
     wait_ms(100);
 }
+
 // Select character set, with constants defined above
 /*void setROMPAGE(unsigned uint16_t p_rompage)
 {
