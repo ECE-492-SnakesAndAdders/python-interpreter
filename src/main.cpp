@@ -58,6 +58,14 @@ uint16_t read(char ** input_ptr) {
     // read characters until 'enter' key is hit or buffer is full
     for (uint16_t i = 0; i < MAX_INPUT_LEN - 1; i++) {
         *(*input_ptr + i) = get_char_now();
+
+        // gets rid of the backspace character but is BUGGY
+        // commented out because it doesn't give the user feedback
+        // if (*(*input_ptr + i) == 0x7F && i > 0) {
+        //     i--;
+        //     *(*input_ptr + i) = '\0';
+        // }
+        
         if ((*(*input_ptr + i) == '\r') || (i == MAX_INPUT_LEN - 2)) {
             *(*input_ptr + i + 1) = '\0';
             break;
@@ -151,7 +159,7 @@ uint16_t print(char ** output_ptr) {
     // print the output string received
     if (**output_ptr) {
         print_string(output_ptr);
-        print_string("\n");
+        // print_string("\n");
     }
     return 0;
 }
@@ -166,7 +174,7 @@ int main() {
     setup_LCD();
     setup_UART();
     
-    print_string("Welcome to Python on the C3 board.\r\n");
+    print_string("Welcome to Python on the C3 board.      ");
 
     uint16_t return_code = 0;
     // REPL: Read-Eval-Print-Loop
@@ -182,24 +190,15 @@ int main() {
 
         // read in user input (command / code), handle sytem error
         if ((return_code = read(&input_ptr))) {
-            // print_string(&input_ptr);
             report_failure("error in read()");
             break;
         }
-
-        // print_string("HELLO WORLD:\r\n");
-        // print_string(&input_ptr);
-        // print_string("HELLO WORLD DONE\r\n");
-
-        // print_string("HELLO WORLD 2");
 
         // evaluate and execute input received
         if ((return_code = eval(&input_ptr, &output_ptr))) {
             // if an error occurred, stop this command and prompt for a new one
             continue;
         }
-
-        // print_string("HELLO WORLD 3");
         
         // display the correct output from this input, handle sytem error
         if ((return_code = print(&output_ptr))) {

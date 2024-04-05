@@ -245,6 +245,18 @@ char get_char_now() {
     while (input_char == 0) {
         input_char = (char) uart.readByte();
     }
+
+    // // if the entered character is backspace, don't write it on the board
+    // if (input_char == 0x7F ){
+    //     // LCD_startup.writeChar(0x41); // when debugging: should print 'A'
+    //     return input_char;
+    // }
+
+    // Makes it so you don't print the . character when carriage return entered
+    // if ( (input_char == '\r') || (input_char == 0xA5) || (input_char == 10) || (input_char == 13) ){
+    //     return input_char;
+    // }
+
     LCD_startup.writeChar(input_char);
     return input_char;
 }
