@@ -10,8 +10,8 @@
 #define PARSER_H
 
 
+#include "expr.h"
 #include "lexer.h"
-#include "tree.h"
 
 
 // the maximum number of characters in a literal
@@ -24,16 +24,6 @@
 #define MAX_NUM_NODES 64
 #endif
 
-// the maximum number of statements allowed on one line
-#ifndef MAX_NUM_STMTS
-#define MAX_NUM_STMTS 32
-#endif
-
-// the maximum number of branches allowed on one if statement
-#ifndef MAX_NUM_BRANCHES
-#define MAX_NUM_BRANCHES 32
-#endif
-
 
 /**
  * \brief The parser of the interpreter; it takes a token list as input and a syntax tree as output.
@@ -43,24 +33,14 @@ class Parser {
         // input information
         lexed_command command_info;
         // the current indices of command information being read
-        int current = 0;
-        int current_str_lit = 0;
-        int current_num_lit = 0;
-        int current_identifier = 0;
+        uint16_t current = 0;
+        uint16_t current_str_lit = 0;
+        uint16_t current_num_lit = 0;
         // output tree information and operations
         node tree_nodes[MAX_NUM_NODES];
-        int current_node = 0;
-        node ** syntax_trees;
+        uint16_t current_node = 0;
+        node ** syntax_tree;
         node * write_new_node(node * value);
-        // for parsing blocks
-        node * block();
-        // for parsing statements
-        node * statement();
-        node * special();
-        node * forloop();
-        node * whileloop();
-        node * ifelse();
-        node * assign();
         // for parsing expressions recursively
         node * expression();
         node * disjunction();
@@ -85,9 +65,6 @@ class Parser {
         void advance_current();
         // checks if there are any more characters to be read
         bool end_reached();
-        // to track syntax errors
-        int loop_depth = 0;
-        bool not_in_loop();
         // for error handling
         bool error_occurred = false;
         bool has_error();
@@ -96,7 +73,7 @@ class Parser {
         // basic constructor for the class
         Parser(lexed_command input, node ** output);
         // converts the input token list into a syntax tree
-        int parse_input();
+        uint16_t parse_input();
 };
 
 

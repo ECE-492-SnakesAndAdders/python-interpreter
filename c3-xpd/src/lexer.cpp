@@ -6,8 +6,7 @@
 *********************************************************************************/
 
 
-#include <cstdio>
-#include <cstring>
+#include <XPD.h>
 #include "error.h"
 #include "lexer.h"
 #include "utility.h"
@@ -22,12 +21,12 @@
 
 /**
  * \brief Basic constructor for the lexer.
- * \param [inout] input Pointer to the input string entered by the user.
- * \param [inout] output Pointer to the location to store information about the lexed command.
+ * \param [in] input Pointer to the input string entered by the user.
+ * \param [in] output Pointer to the location to store information about the lexed command.
  */
 Lexer::Lexer(char ** input, lexed_command * output) {
     // transfer input string into object
-    for (int i = 0; i < MAX_INPUT_LEN; i++) {
+    for (uint16_t i = 0; i < MAX_INPUT_LEN; i++) {
         line[i] = *(*input + i);
     }
     // get the number of non-null characters in the command
@@ -46,13 +45,12 @@ void Lexer::scan_next_token() {
     // to store string and number literals as well as identifiers
     char str_lit[MAX_LIT_LEN] = "";
     char * str_lit_ptr = (char *) str_lit;
-    int num_lit = 0;
+    uint16_t num_lit = 0;
     char identifier[MAX_IDENTIFIER_LEN] = "";
     char * identifier_ptr = (char *) identifier;
 
     // look at the current character in the string
     char current_char = line[current];
-    // printf("Character: \'%c\'\n", current_char);
     // consider each possible case entered
     switch (current_char) {
         // unconditionally single-character tokens
@@ -205,37 +203,6 @@ void Lexer::scan_next_token() {
             report_error(SYNTAX, "invalid syntax");
             error_occurred = true;
             return;
-        // testing
-        case '\n':
-            // newlines are significant, so always track them
-            add_token(NEWLINE);
-            // an if statement means we expect more input
-            if ((command_info -> tokens[0] == IF) ||
-                (command_info -> tokens[0] == FOR) ||
-                (command_info -> tokens[0] == WHILE)) {
-                // get another line of input
-                memset(line, 0, sizeof(line));
-                printf("... ");
-                gets((char *) line);
-                // if this line is blank, then it is the end of the statement
-                if (!line[0]) {
-                    add_token(NEWLINE);
-                    return;
-                }
-                // set up inpit to be parsed again
-                current = -1;
-                length = 0;
-                while (line[length] != '\0') {
-                    length++;
-                }
-                line[length] = '\n';
-                length++;
-                line[length] = '\0';
-            }
-            // printf("------------------------------\n");
-            // printf("%s", line);
-            // printf("------------------------------\n");
-            break;
         // default case handles the rest (number literals, identifiers, keywords, whitespace)
         default:
             // number literal case
@@ -279,7 +246,7 @@ void Lexer::add_token(lexemes token) {
  * \param [in] str_lit The string literal to be added to the list.
  */
 void Lexer::add_str_lit(char * str_lit) {
-    for (int i = 0; i < MAX_LIT_LEN; i++) {
+    for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
         command_info -> str_lits[command_info -> str_lit_count][i] = *(str_lit + i);
     }
     command_info -> str_lit_count++;
@@ -290,7 +257,7 @@ void Lexer::add_str_lit(char * str_lit) {
  * \brief Adds a number literal to the list for the instruction.
  * \param [in] num_lit The number literal to be added to the list.
  */
-void Lexer::add_num_lit(int num_lit) {
+void Lexer::add_num_lit(uint16_t num_lit) {
     command_info -> num_lits[command_info -> num_lit_count] = num_lit;
     command_info -> num_lit_count++;
 }
@@ -301,7 +268,7 @@ void Lexer::add_num_lit(int num_lit) {
  * \param [in] identifier The identifier to be added to the list.
  */
 void Lexer::add_identifier(char * identifier) {
-    for (int i = 0; i < MAX_LIT_LEN; i++) {
+    for (uint16_t i = 0; i < MAX_LIT_LEN; i++) {
         command_info -> identifiers[command_info -> identifier_count][i] = *(identifier + i);
     }
     command_info -> identifier_count++;
@@ -337,11 +304,11 @@ bool Lexer::next_matches(char character) {
 /**
  * \brief Recovers the string literal in the instruction.
  * \param [in] terminator The string terminator (either '"' or "'").
- * \param [inout] output_ptr Pointer to where to store the literal value.
+ * \param [in] output_ptr Pointer to where to store the literal value.
  */
 void Lexer::match_string(char terminator, char ** output_ptr) {
     // make an index to track the literal's value string
-    int i = 0;
+    uint16_t i = 0;
     // start at character after the leading delimiter
     current++;
     // add each character to the literla that is not its terminator
@@ -361,14 +328,14 @@ void Lexer::match_string(char terminator, char ** output_ptr) {
 
 /**
  * \brief Recovers the number literal in the instruction.
- * \param [inout] output_ptr Pointer to where to store the literal value.
+ * \param [in] output_ptr Pointer to where to store the literal value.
  */
-void Lexer::match_number(int * output_ptr) {
+void Lexer::match_number(uint16_t * output_ptr) {
     // track the number string to be parsed
     char num_str[MAX_LIT_LEN] = "";
     char * num_str_ptr = (char *) num_str;
     // add all numerical characters to a cumulative string
-    int i = 0;
+    uint16_t i = 0;
     while (isdigit(line[current]) && (i < MAX_LIT_LEN)) {
         *(num_str_ptr + i) = line[current];
         i++;
@@ -383,10 +350,10 @@ void Lexer::match_number(int * output_ptr) {
 
 /**
  * \brief Recovers the name of an identifier used in the instruction.
- * \param [inout] output_ptr Pointer to where to store the identifier name.
+ * \param [in] output_ptr Pointer to where to store the identifier name.
  */
 void Lexer::match_identifier(char ** output_ptr) {
-    int i = 0;
+    uint16_t i = 0;
     // add each character to the identifier until no more eligible characters
     while (isalphanumeric(line[current]) && (i < MAX_IDENTIFIER_LEN)) {
         *(*output_ptr + i) = line[current];
@@ -714,7 +681,7 @@ bool Lexer::has_error() {
  * \brief Scans the input string and returns a list of its tokens.
  * \return 0 if execution succeeded; non-zero value if an error occurred.
  */
-int Lexer::scan_input() {
+uint16_t Lexer::scan_input() {
     // keep on reading next character until command is over
     while (!(end_reached())) {
         scan_next_token();

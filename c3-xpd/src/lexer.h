@@ -10,6 +10,9 @@
 #define LEXER_H
 
 
+#include <XPD.h>
+
+
 // the maximum number of characters in a line of input
 #ifndef MAX_INPUT_LEN
 #define MAX_INPUT_LEN 64
@@ -70,8 +73,6 @@ enum lexemes {
     TRY, FINALLY, EXCEPT, RAISE,                            // exceptions
     IMPORT, FROM, WITH, AS,                                 // linking
     GLOBAL, NONLOCAL, ASYNC, AWAIT, ASSERT, DEL,            // other
-    // indentation
-    NEWLINE,
 };
 
 
@@ -92,7 +93,6 @@ const char * const token_names[] = {
     "TRY", "FINALLY", "EXCEPT", "RAISE",
     "IMPORT", "FROM", "WITH", "AS",
     "GLOBAL", "NONLOCAL", "ASYNC", "AWAIT", "ASSERT", "DEL",
-    "NEWLINE",
 };
 // for ease of printing
 const char * const token_symbols[] = {
@@ -111,7 +111,6 @@ const char * const token_symbols[] = {
     "try", "finally", "except", "raise",
     "import", "from", "with", "as",
     "global", "nonlocal", "async", "await", "assert", "del",
-    "newline",
 };
 
 
@@ -122,13 +121,13 @@ struct lexed_command {
     // the list of all tokens and other items in the order they appear in the input
     lexemes tokens[MAX_INPUT_TOKENS];
     char str_lits[MAX_LITS][MAX_LIT_LEN];
-    int num_lits[MAX_LITS];
+    uint16_t num_lits[MAX_LITS];
     char identifiers[MAX_IDENTIFIERS][MAX_IDENTIFIER_LEN];
     // the number of non-null values of each type produced
-    int token_count = 0;
-    int str_lit_count = 0;
-    int num_lit_count = 0;
-    int identifier_count = 0;
+    uint16_t token_count = 0;
+    uint16_t str_lit_count = 0;
+    uint16_t num_lit_count = 0;
+    uint16_t identifier_count = 0;
 };
 
 
@@ -142,21 +141,21 @@ class Lexer {
         // information extracted about the input
         lexed_command * command_info;
         // the current character index being read
-        int current = 0;
+        uint16_t current = 0;
         // the number of non-null input characters to decode
-        int length = 0;
+        uint16_t length = 0;
         // main logic of the lexer; maps charcters to tokens
         void scan_next_token();
         // adds a value to the end of that value's list
         void add_token(lexemes token);
         void add_str_lit(char * str_lit);
-        void add_num_lit(int num_lit);
+        void add_num_lit(uint16_t num_lit);
         void add_identifier(char * identifier);
         // checks if the next character in the input matches a certain value
         bool next_matches(char character);
         // parses a literal's value
         void match_string(char terminator, char ** output_ptr);
-        void match_number(int * output_ptr);
+        void match_number(uint16_t * output_ptr);
         void match_identifier(char ** output_ptr);
         lexemes iskeyword(char ** input_ptr);
         // checks if there are any more characters to be read
@@ -169,7 +168,7 @@ class Lexer {
         // basic constructor for the class
         Lexer(char ** input, lexed_command * output);
         // converts the input line into a list of tokens
-        int scan_input();
+        uint16_t scan_input();
 };
 
 
