@@ -1,0 +1,947 @@
+True and True
+True and False
+False and True
+False and False
+True and None
+None and True
+False and None
+None and False
+0 and True
+True and 0
+0 and False
+False and 0
+1 and True
+True and 1
+1 and False
+False and 1
+"" and True
+True and ""
+"" and False
+False and ""
+"test" and True
+True and "test"
+"test" and False
+False and "test"
+0 and 1
+1 and 0
+2 and 1
+1 and 2
+"test" and ""
+"" and "test"
+"test1" and "test2"
+"test2" and "test1"
+0 and "test"
+"test" and 0
+1 and "test"
+"test" and 1
+True & True
+True & False
+False & True
+False & False
+0 & True
+True & 0
+0 & False
+False & 0
+1 & True
+True & 1
+1 & False
+False & 1
+0 & 1
+1 & 0
+2 & 1
+1 & 2
+2 & 3
+3 & 2
+True & None
+None & True
+False & None
+None & False
+"" & True
+"test" & True
+"test" & False
+"test" & None
+"test" & 0
+"test" & "test"
+~True
+~False
+~0
+~1
+~2
+~100
+~None
+~""
+~"test"
+True | True
+True | False
+False | True
+False | False
+0 | True
+True | 0
+0 | False
+False | 0
+1 | True
+True | 1
+1 | False
+False | 1
+0 | 1
+1 | 0
+2 | 1
+1 | 2
+2 | 3
+3 | 2
+True | None
+None | True
+False | None
+None | False
+"" | True
+"test" | True
+"test" | False
+"test" | None
+"test" | 0
+"test" | "test"
+True >> True
+True >> False
+False >> True
+False >> False
+0 >> True
+True >> 0
+0 >> False
+False >> 0
+1 >> True
+True >> 1
+1 >> False
+False >> 1
+0 >> 1
+1 >> 0
+2 >> 1
+1 >> 2
+2 >> 3
+3 >> 2
+4 >> 1
+True >> None
+None >> True
+False >> None
+None >> False
+"" >> True
+"test" >> True
+"test" >> False
+"test" >> None
+"test" >> 0
+"test" >> "test"
+True << True
+True << False
+False << True
+False << False
+0 << True
+True << 0
+0 << False
+False << 0
+1 << True
+True << 1
+1 << False
+False << 1
+0 << 1
+1 << 0
+2 << 1
+1 << 2
+2 << 3
+3 << 2
+4 << 1
+True << None
+None << True
+False << None
+None << False
+"" << True
+"test" << True
+"test" << False
+"test" << None
+"test" << 0
+"test" << "test"
+True ^ True
+True ^ False
+False ^ True
+False ^ False
+0 ^ True
+True ^ 0
+0 ^ False
+False ^ 0
+1 ^ True
+True ^ 1
+1 ^ False
+False ^ 1
+0 ^ 1
+1 ^ 0
+2 ^ 1
+1 ^ 2
+2 ^ 3
+3 ^ 2
+True ^ None
+None ^ True
+False ^ None
+None ^ False
+"" ^ True
+"test" ^ True
+"test" ^ False
+"test" ^ None
+"test" ^ 0
+"test" ^ "test"
+True // True
+True // False
+False // True
+False // False
+0 // True
+True // 0
+0 // False
+False // 0
+1 // True
+True // 1
+1 // False
+False // 1
+0 // 1
+1 // 0
+2 // 1
+1 // 2
+2 // 3
+3 // 2
+100 // 50
+99 // 50
+1000 // 12
+True // None
+None // True
+False // None
+None // False
+"" // 2
+"test" // True
+"test" // False
+"test" // None
+"test" // 0
+"test" // 2
+"test" // "test"
+True ** True
+True ** False
+False ** True
+False ** False
+0 ** True
+True ** 0
+0 ** False
+False ** 0
+1 ** True
+True ** 1
+1 ** False
+False ** 1
+0 ** 0
+0 ** 1
+1 ** 0
+2 ** 1
+1 ** 2
+2 ** 3
+3 ** 2
+True ** None
+None ** True
+False ** None
+None ** False
+"" ** 2
+"test" ** True
+"test" ** False
+"test" ** None
+"test" ** 0
+"test" ** 2
+"test" ** "test"
+True == True
+True == False
+False == True
+False == False
+True == 0
+0 == True
+False == 0
+0 == False
+True == 1
+1 == True
+False == 1
+1 == False
+0 == 0
+0 == 1
+1 == 0
+1 == 1
+50 == 100
+333 == 333
+True == None
+None == True
+False == None
+None == False
+None == None
+0 == "test"
+0 == "0"
+"" == ""
+"" == "test"
+"test" == ""
+"test" == "test"
+"test1" == "test2"
+True > True
+True > False
+False > True
+False > False
+True > 0
+0 > True
+False > 0
+0 > False
+True > 1
+1 > True
+False > 1
+1 > False
+0 > 0
+0 > 1
+1 > 0
+1 > 1
+50 > 100
+333 > 333
+87 > 62
+"" > ""
+"" > "test"
+"test" > ""
+"test" > "test"
+"test1" > "test2"
+"test2" > "test1"
+"test" > 0
+1 > ""
+True > None
+None > True
+False > None
+None > False
+None > None
+True >= True
+True >= False
+False >= True
+False >= False
+True >= 0
+0 >= True
+False >= 0
+0 >= False
+True >= 1
+1 >= True
+False >= 1
+1 >= False
+0 >= 0
+0 >= 1
+1 >= 0
+1 >= 1
+50 >= 100
+333 >= 333
+87 >= 62
+"" >= ""
+"" >= "test"
+"test" >= ""
+"test" >= "test"
+"test1" >= "test2"
+"test2" >= "test1"
+"test" >= 0
+1 >= ""
+True >= None
+None >= True
+False >= None
+None >= False
+None >= None
+"" in ""
+"" in "test"
+"test" in ""
+"test" in "test"
+"t" in "test"
+"te" in "test"
+"tes" in "test"
+"e" in "test"
+"es" in "test"
+"est" in "test"
+"s" in "test"
+"st" in "test"
+"testing" in "test"
+"test" in "testing"
+"test1" in "test2"
+"test" in True
+True in "test"
+"test" in False
+False in "test"
+"test" in 0
+0 in "test"
+"1" in 1
+1 in "1"
+"test" in None
+None in "test"
+True is True
+True is False
+False is True
+False is False
+True is 0
+0 is True
+False is 0
+0 is False
+True is 1
+1 is True
+False is 1
+1 is False
+0 is 0
+0 is 1
+1 is 0
+1 is 1
+50 is 100
+333 is 333
+True is None
+None is True
+False is None
+None is False
+None is None
+0 is "test"
+0 is "0"
+"" is ""
+"" is "test"
+"test" is ""
+"test" is "test"
+"test1" is "test2"
+True is not True
+True is not False
+False is not True
+False is not False
+True is not 0
+0 is not True
+False is not 0
+0 is not False
+True is not 1
+1 is not True
+False is not 1
+1 is not False
+0 is not 0
+0 is not 1
+1 is not 0
+1 is not 1
+50 is not 100
+333 is not 333
+True is not None
+None is not True
+False is not None
+None is not False
+None is not None
+0 is not "test"
+0 is not "0"
+"" is not ""
+"" is not "test"
+"test" is not ""
+"test" is not "test"
+"test1" is not "test2"
+True < True
+True < False
+False < True
+False < False
+True < 0
+0 < True
+False < 0
+0 < False
+True < 1
+1 < True
+False < 1
+1 < False
+0 < 0
+0 < 1
+1 < 0
+1 < 1
+50 < 100
+333 < 333
+87 < 62
+"" < ""
+"" < "test"
+"test" < ""
+"test" < "test"
+"test1" < "test2"
+"test2" < "test1"
+"test" < 0
+1 < ""
+True < None
+None < True
+False < None
+None < False
+None < None
+True <= True
+True <= False
+False <= True
+False <= False
+True <= 0
+0 <= True
+False <= 0
+0 <= False
+True <= 1
+1 <= True
+False <= 1
+1 <= False
+0 <= 0
+0 <= 1
+1 <= 0
+1 <= 1
+50 <= 100
+333 <= 333
+87 <= 62
+"" <= ""
+"" <= "test"
+"test" <= ""
+"test" <= "test"
+"test1" <= "test2"
+"test2" <= "test1"
+"test" <= 0
+1 <= ""
+True <= None
+None <= True
+False <= None
+None <= False
+None <= None
+True - True
+True - False
+False - True
+False - False
+0 - True
+True - 0
+0 - False
+False - 0
+1 - True
+True - 1
+1 - False
+False - 1
+0 - 1
+1 - 0
+2 - 1
+1 - 2
+2 - 3
+3 - 2
+100 - 50
+99 - 50
+1000 - 12
+True - None
+None - True
+False - None
+None - False
+"" - 2
+"test" - True
+"test" - False
+"test" - None
+"test" - 0
+"test" - 2
+"test" - "test"
+-True
+-False
+-0
+-1
+-2
+-100
+-None
+-""
+-"test"
+True != True
+True != False
+False != True
+False != False
+True != 0
+0 != True
+False != 0
+0 != False
+True != 1
+1 != True
+False != 1
+1 != False
+0 != 0
+0 != 1
+1 != 0
+1 != 1
+50 != 100
+333 != 333
+True != None
+None != True
+False != None
+None != False
+None != None
+0 != "test"
+0 != "0"
+"" != ""
+"" != "test"
+"test" != ""
+"test" != "test"
+"test1" != "test2"
+"" not in ""
+"" not in "test"
+"test" not in ""
+"test" not in "test"
+"t" not in "test"
+"te" not in "test"
+"tes" not in "test"
+"e" not in "test"
+"es" not in "test"
+"est" not in "test"
+"s" not in "test"
+"st" not in "test"
+"testing" not in "test"
+"test" not in "testing"
+"test1" not in "test2"
+"test" not in True
+True not in "test"
+"test" not in False
+False not in "test"
+"test" not in 0
+0 not in "test"
+"1" not in 1
+1 not in "1"
+"test" not in None
+None not in "test"
+True or True
+True or False
+False or True
+False or False
+True or None
+None or True
+False or None
+None or False
+0 or True
+True or 0
+0 or False
+False or 0
+1 or True
+True or 1
+1 or False
+False or 1
+"" or True
+True or ""
+"" or False
+False or ""
+"test" or True
+True or "test"
+"test" or False
+False or "test"
+0 or 1
+1 or 0
+2 or 1
+1 or 2
+"test" or ""
+"" or "test"
+"test1" or "test2"
+"test2" or "test1"
+0 or "test"
+"test" or 0
+1 or "test"
+"test" or 1
+True % True
+True % False
+False % True
+False % False
+0 % True
+True % 0
+0 % False
+False % 0
+1 % True
+True % 1
+1 % False
+False % 1
+0 % 1
+1 % 0
+2 % 1
+1 % 2
+2 % 3
+3 % 2
+100 % 50
+99 % 50
+1000 % 12
+True % None
+None % True
+False % None
+None % False
+"" % 2
+"test" % True
+"test" % False
+"test" % None
+"test" % 0
+"test" % 2
+"test" % "test"
+True + True
+True + False
+False + True
+False + False
+0 + True
+True + 0
+0 + False
+False + 0
+1 + True
+True + 1
+1 + False
+False + 1
+0 + 1
+1 + 0
+2 + 1
+1 + 2
+2 + 3
+3 + 2
+100 + 50
+99 + 50
+1000 + 12
+"" + ""
+"" + "test"
+"test" + ""
+"test" + "test"
+"test1" + "test2"
+True + None
+None + True
+False + None
+None + False
+"" + 2
+"test" + True
+"test" + False
+"test" + None
+"test" + 0
+"test" + 2
++True
++False
++0
++1
++2
++100
++None
++""
++"test"
+True / True
+True / False
+False / True
+False / False
+0 / True
+True / 0
+0 / False
+False / 0
+1 / True
+True / 1
+1 / False
+False / 1
+0 / 1
+1 / 0
+2 / 1
+1 / 2
+2 / 3
+3 / 2
+100 / 50
+99 / 50
+1000 / 12
+True / None
+None / True
+False / None
+None / False
+"" / 2
+"test" / True
+"test" / False
+"test" / None
+"test" / 0
+"test" / 2
+"test" / "test"
+True * True
+True * False
+False * True
+False * False
+0 * True
+True * 0
+0 * False
+False * 0
+1 * True
+True * 1
+1 * False
+False * 1
+0 * 1
+1 * 0
+2 * 1
+1 * 2
+2 * 3
+3 * 2
+100 * 50
+99 * 50
+1000 * 12
+"" * 2
+"test" * True
+"test" * False
+"test" * 0
+0 * "test"
+"test" * 1
+1 * "test"
+"test" * 2
+2 * "test"
+"test" * "test"
+True * None
+None * True
+False * None
+None * False
+1 * None
+None * 1
+"test" * None
+--1
+++1
++-1
+-+1
+1 + 2 + 3 + 4 + 5
+1 - 2 - 3 - 4 - 5
++1 + +2 + +3 + +4 + +5
++1 - +2 - +3 - +4 - +5
+-1 + -2 + -3 + -4 + -5
+-1 - -2 - -3 - -4 - -5
+18 * 9 / 9
+18 / 9 * 9
+8 * 9 // 9
+8 // 9 * 9
+2 * -3
+-2 * 3
+-2 * -3
+76 // -3
+-76 // 3
+-76 // -3
+4 * 3 + 2 * 9
+4 * (3 + 2) * 9
+4 * 3 - 2 * 9
+4 * (3 - 2) * 9
+4 * (3 - 2) * 9
+2 ** 3 ** 2
+(2 ** 3) ** 2
+-1 ** 2
+(-1) ** 2
+5 ** -1
+5 ** (-1)
+12 // 4 - 2 ** 3 + 6 - 7
+12 // (4 - 2) ** 3 + 6 - 7
+(12 // 4 - 2) ** (3 + 6 - 7)
+16 % 5 % 3
+16 % (5 % 3)
+32 % -5
+-32 % 5
+-32 % -5
+2 ** 4 % 7 + 5 * -2 - 17 // 3
+2 ** (4 % 7 + 5) * -2 - 17 // 3
+2 ** 4 % 7 + 5 * (-2 - 17) // 3
+~~11
+5 << 1 << 1
+5 >> 1 >> 1
+5 << 1 >> 1
+5 >> 1 << 1
+8 & 4 & 2 & 1
+15 & 7 & 3 & 1
+8 | 4 | 2 | 1
+15 | 7 | 3 | 1
+8 ^ 4 ^ 2 ^ 1
+15 ^ 7 ^ 3 ^ 1
+13 & 6 ^ 9 | 11
+13 & 6 | 9 ^ 11
+13 ^ 6 & 9 | 11
+13 ^ 6 | 9 & 11
+13 | 6 & 9 ^ 11
+13 | 6 ^ 9 & 11
+~13 & ~6 ^ ~9 | ~11
+~13 & ~6 | ~9 ^ ~11
+~13 ^ ~6 & ~9 | ~11
+~13 ^ ~6 | ~9 & ~11
+~13 | ~6 & ~9 ^ ~11
+~13 | ~6 ^ ~9 & ~11
+8 | 23 >> 3 & 5
+(8 | 23) >> (3 & 5)
+21 & 7 >> 6 ^ 10
+(21 & 7) >> (6 ^ 10)
+8 | 23 << 3 & 5
+(8 | 23) << (3 & 5)
+21 & 7 << 6 ^ 10
+(21 & 7) << (6 ^ 10)
+~18 | 39 << 2 ^ 5 >> 9
+~(18 | 39 << 2 ^ 5 >> 9)
+False == 0 == False
+(False == 0) == False
+True == 0 == False
+(True == 0) == False
+False == 0 == True
+(False == 0) == True
+True == 0 == True
+(True == 0) == True
+(True == 1) is True
+(True == 1) is 1
+(True is 1) == (True == 1)
+(False is 0) == (False == 0)
+(True is 1) == (False is 0)
+(True == 1) is (False == 0)
+(True is 1) is (False is 0)
+(True == 1) is not True
+(True == 1) is not 1
+(True is not 1) == (True == 1)
+(False is not 0) == (False == 0)
+(True is not 1) == (False is not 0)
+(True == 1) is not (False == 0)
+(True is not 1) is not (False is not 0)
+2 != 0 != 1
+(2 != 0) and (0 != 1)
+(2 != 0) != 1
+2 != (0 != 1)
+1 != 2 != 0
+(1 != 2) and (2 != 0)
+(1 != 2) != 0
+1 != (2 != 0)
+-1 < 0 < 1
+(-1 < 0) and (0 < 1)
+(-1 < 0) < 1
+-1 < (0 < 1)
+-1 <= 0 <= 1
+(-1 <= 0) and (0 <= 1)
+(-1 <= 0) <= 1
+-1 <= (0 <= 1)
+1 > 0 > -1
+(1 > 0) and (0 > -1)
+(1 > 0) > -1
+1 > (0 > -1)
+1 >= 0 >= -1
+(1 >= 0) and (0 >= -1)
+(1 >= 0) >= -1
+1 >= (0 >= -1)
+(0 > 10) == (0 >= 10)
+(10 > 10) == (10 >= 10)
+(20 > 10) == (20 >= 10)
+(0 < 10) == (0 <= 10)
+(10 < 10) == (10 <= 10)
+(20 < 10) == (20 <= 10)
+False and False and False
+True and True and False
+True and True and True
+not False and not False and not False
+False and False and not False
+not True and True and True
+not not True and True and True
+not (not True and True and True)
+not (not False and True and True)
+False or False or False
+True or True or False
+True or True or True
+not False or not False or not False
+False or False or not False
+not True or True or True
+not not True or True or True
+not (not True or True or True)
+not (not False or True or True)
+True and True or True and True
+False and True or True and True
+False and False or True and True
+False and False or False and True
+True or False or True and False
+False or False or True and False
+(True or False) and (True or False)
+(True or False) and (False or False)
+"" + "test" * 2
+"test" + "" * 2
+("" + "test") * 2
+("test" + "") * 2
+"test" + "test" * 2
+("test" + "test") * 2
+"" * 10 in ""
+"" in "" * 10
+"test" * 1 in "test" * 1
+"test" * 1 in "test" * 2
+"test" * 2 in "test" * 1
+"test" * 2 in "test" * 2
+"test" * 3 in "test" * 2
+"test" * 2 in "test" * 3
+"" * 10 not in ""
+"" not in "" * 10
+"test" * 1 not in "test" * 1
+"test" * 1 not in "test" * 2
+"test" * 2 not in "test" * 1
+"test" * 2 not in "test" * 2
+"test" * 3 not in "test" * 2
+"test" * 2 not in "test" * 3
+exit()
