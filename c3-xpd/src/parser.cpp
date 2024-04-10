@@ -390,6 +390,19 @@ node * Parser::primary() {
             error_occurred = true;
         }
     }
+
+    // TODO: deal with identifiers
+    if (current_matches(IDENTIFIER)) {
+        xpd_puts("NOT IMPLEMENETED YET\n");
+        error_occurred = true;
+    }
+
+    // TODO: reconcile this with future additions
+    // // error detected, must have some operand
+    // if (expr_ptr == NULL) {
+    //     report_error(SYNTAX, "invalid syntax");
+    //     error_occurred = true;
+    // }
     
     return expr_ptr;
 }
