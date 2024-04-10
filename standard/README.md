@@ -8,7 +8,7 @@ This is the locally-ran version of the interpreter. It runs on any standard comp
 
 ### Running Instructions
 
-To run this program, navigate to `./standard` with `cd standard` and execute the following commands:
+To run this program, execute the following commands:
 
 To generate the executable:
 ```
