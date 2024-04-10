@@ -10,12 +10,7 @@ This is the locally-ran version of the interpreter. It runs on any standard comp
 
 To run this program, execute the following commands:
 
-To generate the executable:
 ```
 g++ src/main.cpp -I inc -o main src/environment.cpp src/error.cpp src/evaluator.cpp src/interpreter.cpp src/lexer.cpp src/parser.cpp src/tree.cpp src/utility.cpp
-```
-
-To run the executable:
-```
 ./main
 ```
